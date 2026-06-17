@@ -1,4 +1,5 @@
 ﻿import { useState, useMemo, useRef } from "react";
+import { Link } from "react-router-dom";
 import { Truck, ShieldCheck, RotateCcw, Headphones, HelpCircle, SearchX, MessageCircle } from "lucide-react";
 const FILTERS = [
   "All", "Orders", "Shipping", "Returns & Exchange",
@@ -486,9 +487,9 @@ export default function FaqPage() {
               </h2>
               <p className="cta-sub">Our support team is here to help — reach out anytime.</p>
               <div className="cta-btns">
-                <a href="#contact" className="btn-primary">
+                <Link to="/contact" className="btn-primary">
                   Contact Support ↗
-                </a>
+                </Link>
 
               </div>
             </div>
