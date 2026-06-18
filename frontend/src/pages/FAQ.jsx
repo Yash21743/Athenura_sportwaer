@@ -1,6 +1,7 @@
 ﻿import { useState, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Truck, ShieldCheck, RotateCcw, Headphones, HelpCircle, SearchX, MessageCircle } from "lucide-react";
+
 const FILTERS = [
   "All", "Orders", "Shipping", "Returns & Exchange",
   "Sizing", "Payments", "Products",
@@ -84,7 +85,6 @@ const styles = `
   .heading-display {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-style: italic;
     text-transform: uppercase;
     letter-spacing: -0.01em;
     line-height: 0.95;
@@ -294,7 +294,7 @@ const styles = `
   }
   .cta-content {
     position: relative; display: flex; flex-direction: column;
-    align-items: flex-start; gap: 1.5rem; padding: 4rem 2rem;
+    align-items: center; text-align: center; gap: 1.5rem; padding: 4rem 2rem;
   }
   @media (min-width: 768px) { .cta-content { padding: 6rem 4rem; } }
   .cta-title { font-size: clamp(2rem, 5vw, 3.5rem); color: var(--fg); max-width: 540px; }
@@ -416,8 +416,6 @@ export default function FaqPage() {
     <>
       <style>{styles}</style>
       <main className="page">
-
-        {/* HERO */}
         <header className="hero" ref={heroRef} onMouseMove={handleHeroMouseMove}>
           <div
             className={`hero-glow${glowPos ? " tracking" : ""}`}
@@ -425,7 +423,6 @@ export default function FaqPage() {
             aria-hidden="true"
           />
           <div className="hero-inner">
-
             <h1 className="heading-display hero-title">
               Frequently Asked <span>Questions</span>
             </h1>
@@ -445,7 +442,6 @@ export default function FaqPage() {
             </div>
           </div>
         </header>
-
         <div className="filters">
           <div className="filters-inner">
             <div className="filters-scroll" role="group" aria-label="Filter by category">
@@ -477,7 +473,6 @@ export default function FaqPage() {
             ))}
           </div>
         </section>
-
         <section className="cta-section">
           <div className="cta-box">
             <div className="cta-overlay" aria-hidden="true" />
@@ -490,7 +485,6 @@ export default function FaqPage() {
                 <Link to="/contact" className="btn-primary">
                   Contact Support ↗
                 </Link>
-
               </div>
             </div>
           </div>
