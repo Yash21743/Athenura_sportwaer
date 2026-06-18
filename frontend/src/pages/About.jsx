@@ -613,10 +613,10 @@ const styles = `
 `;
 
 const VALUES = [
-  { icon: Flame, title: "Relentless Drive", text: "We never settle. Every stitch and seam is engineered to push you past your limits, day after day." },
-  { icon: Target, title: "Built For Performance", text: "Tested by athletes, refined by data. Our gear is designed to move exactly the way you do." },
-  { icon: Heart, title: "Community First", text: "From local runs to global stages, we exist to fuel a community that lifts each other higher." },
-  { icon: ShieldCheck, title: "Honest Craft", text: "Sustainable materials and uncompromising quality — gear you can trust mile after mile." },
+  { icon: Flame, title: "Relentless Performance", text: "Every product is crafted to help you train harder, move faster, and perform better. We design gear that keeps up with your ambition." },
+  { icon: Target, title: "Engineered for Athletes", text: "From advanced fabrics to precision fits, our sportswear is built using athlete feedback and real-world testing to maximize comfort and performance." },
+  { icon: Heart, title: "Stronger Together", text: "We believe sport connects people. Whether you're a beginner or a champion, we're here to support a community that inspires, motivates, and grows together." },
+  { icon: ShieldCheck, title: "Quality with Purpose", text: "We combine durable craftsmanship, innovative materials, and responsible production practices to create sportswear that lasts through every challenge." },
 ];
 
 const STATS = [
@@ -629,46 +629,46 @@ const STATS = [
 const TIMELINE_JOURNEY = [
   {
     year: "2014",
-    title: "THE FIRST THREAD",
-    description: "Founded in a garage with a single goal: build performance gear that doesn't quit.",
+    title: "THE FIRST STITCH",
+    description: "Our journey began with a simple vision: create sportswear that delivers comfort, durability, and performance for every athlete.",
     icon: HomeIcon,
     side: "left",
   },
   {
     year: "2017",
-    title: "GOING NATIONAL",
-    description: "Launched our first flagship store and crossed 100,000 athletes wearing the brand.",
+    title: "GAINING MOMENTUM",
+    description: "Expanded our product range and earned the trust of thousands of fitness enthusiasts, runners, and sports lovers across the country.",
     icon: Rocket,
     side: "right",
   },
   {
     year: "2020",
-    title: "WORLDWIDE MOVEMENT",
-    description: "Expanded to 30+ countries and introduced our recycled-material training line.",
+    title: "PERFORMANCE EVOLUTION",
+    description: "Introduced advanced fabric technologies focused on breathability, flexibility, and all-day comfort for training and competition.",
     icon: Globe2,
     side: "left",
   },
   {
     year: "2023",
-    title: "INNOVATION LAB",
-    description: "Opened our R&D performance lab, partnering with pro athletes to test every product.",
+    title: "INNOVATION IN MOTION",
+    description: "Launched new performance collections and strengthened our commitment to sustainable materials and athlete-driven design.",
     icon: FlaskConical,
     side: "right",
   },
   {
     year: "2026",
-    title: "THE NEXT MILE",
-    description: "2M+ customers strong and just getting started — building the future of sport.",
+    title: "THE FUTURE OF SPORT",
+    description: "Continuing to push boundaries with premium sportswear, innovative technology, and a growing community united by movement and ambition.",
     icon: Flag,
     side: "left",
   },
 ];
 
 const TEAM = [
-  { name: "Anirudh Rautela", role: "Founder & CEO", initials: "MR", bio: "Former marathoner turned builder, obsessed with gear that performs under pressure.", image: "/team/anirudh.jpg" },
-  { name: "Arya Roy", role: "Head of Design", initials: "AR", bio: "Leads our design lab, turning athlete feedback into products people love to wear.", image: "/team/arya.jpg" },
-  { name: "Ramam Rajya", role: "VP, Product", initials: "RR", bio: "Bridges science and sweat, driving the innovation behind every fabric we ship.", image: "/team/ramam.jpg" },
-  { name: "Leena Rishi", role: "Community Lead", initials: "LR", bio: "Builds the movement — from run clubs to global ambassadors who live the brand.", image: "/team/leena.jpg" },
+  { name: "Anirudh Rautela", role: "Founder & CEO", initials: "MR", bio: "Driven by a passion for fitness and innovation, Anirudh founded the brand with a vision to create sportswear that empowers athletes to perform at their best.", image: "/team/anirudh.jpg" },
+  { name: "Arya Roy", role: "Head of Design", initials: "AR", bio: "Combines performance, comfort, and modern aesthetics to create apparel that looks as good as it feels during every workout.", image: "/team/arya.jpg" },
+  { name: "Ramam Rajya", role: "VP, Product", initials: "RR", bio: "Leads product innovation, ensuring every collection meets the highest standards of quality, durability, and athletic performance.", image: "/team/ramam.jpg" },
+  { name: "Leena Rishi", role: "Community Lead", initials: "LR", bio: "Fosters a strong community of athletes, fitness enthusiasts, and creators who inspire each other to push beyond their limits.", image: "/team/leena.jpg" },
 ];
 
 function AnimatedCounter({ target, suffix = "+" }) {
@@ -820,9 +820,8 @@ function TimelineCard({ milestone, active, complete, onRevealComplete }) {
 
       <div className="au-tl-node-wrap">
         <motion.div
-          className={`au-tl-node ${
-            complete ? "au-tl-node-complete" : active ? "au-tl-node-pulse" : "au-tl-node-pending"
-          }`}
+          className={`au-tl-node ${complete ? "au-tl-node-complete" : active ? "au-tl-node-pulse" : "au-tl-node-pending"
+            }`}
           style={
             active && !complete
               ? { background: "rgba(239,68,68,0.08)", borderColor: "#ef4444", color: "#ef4444" }
@@ -893,7 +892,7 @@ function TimelineJourneySection() {
             Our Journey
           </h2>
           <p style={{ color: "#6b7280" }}>
-            From a garage startup to a global movement — every milestone earned.
+            From our first performance wear collection to becoming a trusted sportswear brand, every milestone reflects our commitment to athletes and active lifestyles.
           </p>
         </div>
 
@@ -1058,7 +1057,7 @@ export default function AboutUs() {
         <div className="au-hero-glow" style={glowStyle} aria-hidden="true" />
         <div className="au-hero-inner">
           <h1 className="au-heading">
-           Built to Compete.<br />
+            Built to Compete.<br />
             <span className="au-accent au-shock au-glitch" style={{ display: 'inline-block' }}>Born to Conquer.</span>
           </h1>
           <p>
@@ -1175,15 +1174,15 @@ export default function AboutUs() {
             {TEAM.map((m) => (
               <article className="au-team-card" key={m.name}>
                 <div className="au-avatar" aria-label={`${m.name} avatar`}>
-                  <img 
-                    src={m.image} 
-                    alt={m.name} 
-                    style={{ 
-                      width: '100%', 
-                      height: '100%', 
-                      borderRadius: '50%', 
-                      objectFit: 'cover' 
-                    }} 
+                  <img
+                    src={m.image}
+                    alt={m.name}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '50%',
+                      objectFit: 'cover'
+                    }}
                   />
                 </div>
                 <h3>{m.name}</h3>
@@ -1198,10 +1197,9 @@ export default function AboutUs() {
       <section className="au-section au-dark" id="cta" aria-labelledby="cta-title">
         <div className="au-inner">
           <div className="au-cta-box">
-            <h2 className="au-heading" id="cta-title">Ready To Join The Movement?</h2>
+            <h2 className="au-heading" id="cta-title">Ready to Elevate Your Game?</h2>
             <p>
-              Gear up with sportswear engineered for the relentless. Have a question?
-              Our team is always ready to help you find your edge.
+              Push your limits with sportswear built for performance, comfort, and confidence. Whether you're training or competing, we're here to help you perform at your best.
             </p>
             <div className="au-cta-actions">
               <Link to="/contact" className="au-btn au-btn-dark">
