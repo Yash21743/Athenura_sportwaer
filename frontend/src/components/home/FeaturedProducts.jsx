@@ -1,4 +1,4 @@
-﻿const FeaturedProducts = () => {
+const FeaturedProducts = () => {
   return (
     <section style={{ padding: '60px 40px', textAlign: 'center', borderBottom: '1px solid #eee' }}>
       <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#FF3B30' }}>[ Featured Products ]</h2>

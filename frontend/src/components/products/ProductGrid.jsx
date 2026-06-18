@@ -1,8 +1,21 @@
-﻿const ProductGrid = () => {
+import ProductCard from './ProductCard';
+
+const ProductGrid = ({ products = [] }) => {
+  if (products.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="text-5xl mb-4 opacity-30">🔍</div>
+        <h3 className="text-lg font-black text-white mb-2">No products found</h3>
+        <p className="text-sm text-gray-500 mb-4">Try adjusting your filters to find what you're looking for.</p>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: '30px 40px', textAlign: 'center', borderBottom: '1px solid #eee' }}>
-      <h3 style={{ fontSize: '1.4rem', fontWeight: '600', color: '#0A2540' }}>[ Product Grid ]</h3>
-      <p style={{ color: '#aaa', marginTop: '6px' }}>Component coming soon</p>
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {products.map(product => (
+        <ProductCard key={product.id} product={product} />
+      ))}
     </div>
   );
 };
