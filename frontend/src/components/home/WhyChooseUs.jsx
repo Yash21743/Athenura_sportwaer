@@ -100,7 +100,7 @@ const styles = `
     background: #FF3B30; border-radius: 1px;
   }
   .wcu-heading {
-    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-size: clamp(1.9rem, 3.5vw, 2.9rem);
     font-weight: 900;
     color: #fff; letter-spacing: -1px;
     margin: 0 0 14px;

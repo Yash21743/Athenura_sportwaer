@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const styles = `
   @keyframes fadeSlideUp {
@@ -276,33 +277,39 @@ const SLIDES = [
 
 const BoltIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="#FF3B30">
-    <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>
+    <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
   </svg>
 );
 const ShieldIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
     <path d="M12 2L4 6v6c0 5.25 3.5 9.74 8 11 4.5-1.26 8-5.75 8-11V6L12 2z"
-      stroke="#FF3B30" strokeWidth="1.8" strokeLinejoin="round"/>
+      stroke="#FF3B30" strokeWidth="1.8" strokeLinejoin="round" />
     <path d="M9 12l2 2 4-4" stroke="#FF3B30" strokeWidth="2"
-      strokeLinecap="round" strokeLinejoin="round"/>
+      strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 const StarIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="#FF3B30">
-    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
   </svg>
 );
 const ArrowIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
     <path d="M5 12h14M14 6l6 6-6 6" stroke="#fff" strokeWidth="2.5"
-      strokeLinecap="round" strokeLinejoin="round"/>
+      strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const HeroSection = () => {
-  const [loaded, setLoaded]   = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [current, setCurrent] = useState(0);
   const [fadeKey, setFadeKey] = useState(0);
+  const navigate = useNavigate();
+
+  const scrollToProducts = () => {
+    const el = document.getElementById('featured-products');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   useEffect(() => {
     const t = setTimeout(() => setLoaded(true), 80);
@@ -318,9 +325,9 @@ const HeroSection = () => {
   }, []);
 
   const chips = [
-    { icon: <BoltIcon />,   text1: 'High Performance', text2: 'Fabric' },
-    { icon: <ShieldIcon />, text1: 'Premium',           text2: 'Quality' },
-    { icon: <StarIcon />,   text1: 'Top Rated',         text2: 'Brand' },
+    { icon: <BoltIcon />, text1: 'High Performance', text2: 'Fabric' },
+    { icon: <ShieldIcon />, text1: 'Premium', text2: 'Quality' },
+    { icon: <StarIcon />, text1: 'Top Rated', text2: 'Brand' },
   ];
 
   return (
@@ -342,32 +349,32 @@ const HeroSection = () => {
           width: 600, height: 600, borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(255,59,48,0.22) 0%, transparent 65%)',
           pointerEvents: 'none',
-        }}/>
+        }} />
         <div style={{
           position: 'absolute', bottom: -120, left: -80,
           width: 400, height: 400, borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(255,59,48,0.1) 0%, transparent 70%)',
           pointerEvents: 'none',
-        }}/>
+        }} />
         <div style={{
           position: 'absolute', inset: 0,
           backgroundImage: 'radial-gradient(rgba(255,59,48,0.06) 1px, transparent 1px)',
           backgroundSize: '44px 44px', pointerEvents: 'none',
-        }}/>
+        }} />
 
         {[
-          { top: '12%', left: '5%',   delay: '0s'   },
-          { top: '72%', left: '3%',   delay: '1.4s' },
-          { top: '38%', left: '36%',  delay: '0.8s' },
-          { top: '15%', right: '8%',  delay: '2s'   },
-          { top: '80%', right: '5%',  delay: '0.5s' },
+          { top: '12%', left: '5%', delay: '0s' },
+          { top: '72%', left: '3%', delay: '1.4s' },
+          { top: '38%', left: '36%', delay: '0.8s' },
+          { top: '15%', right: '8%', delay: '2s' },
+          { top: '80%', right: '5%', delay: '0.5s' },
         ].map((p, i) => (
           <div key={i} style={{
             position: 'absolute', width: 5, height: 5, borderRadius: '50%',
             background: '#FF3B30',
             animation: `particle ${3 + i * 0.4}s ease-in-out infinite`,
             animationDelay: p.delay, pointerEvents: 'none', ...p,
-          }}/>
+          }} />
         ))}
 
         <div className="hero-container">
@@ -387,7 +394,7 @@ const HeroSection = () => {
             <div className="divider-line" style={{
               animation: loaded ? 'fadeSlideUp 0.6s ease 0.22s both' : 'none',
             }}>
-              <div style={{ flex: 1, height: 1.5, background: 'linear-gradient(to right, transparent, #FF3B30)' }}/>
+              <div style={{ flex: 1, height: 1.5, background: 'linear-gradient(to right, transparent, #FF3B30)' }} />
               <span style={{
                 color: '#555', fontSize: 10.5, letterSpacing: 4,
                 textTransform: 'uppercase', whiteSpace: 'nowrap',
@@ -395,7 +402,7 @@ const HeroSection = () => {
               }}>
                 Wear Your Strength
               </span>
-              <div style={{ flex: 1, height: 1.5, background: 'linear-gradient(to left, transparent, #FF3B30)' }}/>
+              <div style={{ flex: 1, height: 1.5, background: 'linear-gradient(to left, transparent, #FF3B30)' }} />
             </div>
 
             {/* 4. Badges */}
@@ -426,8 +433,8 @@ const HeroSection = () => {
             <div className="hero-btns" style={{
               animation: loaded ? 'fadeSlideUp 0.65s ease 0.46s both' : 'none',
             }}>
-              <button className="btn-shopnow">SHOP NOW <ArrowIcon /></button>
-              <button className="btn-explore">EXPLORE COLLECTIONS</button>
+              <button className="btn-shopnow" onClick={scrollToProducts}>SHOP NOW <ArrowIcon /></button>
+              <button className="btn-explore" onClick={() => navigate('/products')}>EXPLORE COLLECTIONS</button>
             </div>
 
           </div>
@@ -444,7 +451,7 @@ const HeroSection = () => {
                 background: 'radial-gradient(ellipse, rgba(255,59,48,0.22) 0%, transparent 68%)',
                 animation: 'pulseGlow 4s ease-in-out infinite',
                 pointerEvents: 'none', zIndex: 0,
-              }}/>
+              }} />
 
               <div className="card-border-outer" style={{ position: 'relative', zIndex: 1 }}>
                 <div className="card-border-inner">
@@ -464,7 +471,7 @@ const HeroSection = () => {
           position: 'absolute', bottom: 0, left: 0, right: 0, height: 80,
           background: 'linear-gradient(to top, rgba(7,7,7,0.8), transparent)',
           pointerEvents: 'none',
-        }}/>
+        }} />
       </section>
     </>
   );

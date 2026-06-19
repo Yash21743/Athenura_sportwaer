@@ -131,7 +131,7 @@ const styles = `
     background: #FF3B30;
   }
   .ts-heading {
-    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+    font-size: clamp(1.9rem, 3.2vw, 2.9rem);
     font-weight: 900;
     color: #fff;
     letter-spacing: -0.5px;

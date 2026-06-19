@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const icons = {
@@ -173,7 +174,7 @@ const styles = `
     animation: fp-fadeUp 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
   .fp-heading {
-    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+    font-size: clamp(1.9rem, 3.2vw, 2.9rem);
     font-weight: 900;
     color: #111;
     letter-spacing: -0.5px;
@@ -936,9 +937,9 @@ const FeaturedProducts = () => {
           </div>
 
           <div className={`fp-view-all-wrap${gridVisible ? ' visible' : ''}`} style={{ opacity: gridVisible ? 1 : 0 }}>
-            <button className="fp-btn-view-all">
+            <Link to="/products" className="fp-btn-view-all">
               Explore Full Collection {icons.arrowRight}
-            </button>
+            </Link>
           </div>
         </div>
       </section>

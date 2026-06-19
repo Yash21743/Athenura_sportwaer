@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
 
@@ -80,7 +81,7 @@ const styles = `
     box-sizing: border-box;
   }
   .fc-heading {
-    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
     font-weight: 900;
     color: #111;
     display: block;
@@ -463,7 +464,7 @@ const FeaturedCategories = () => {
                 <div className="card-label">New Arrivals</div>
                 <h3 className="card-title">COMFY<br/><span>JERSEY</span></h3>
                 <p className="card-off">Up to <strong style={{ color: '#FF3B30' }}>70% Off</strong></p>
-                <button className="shop-btn-red">Shop Now <ArrowSm /></button>
+                <Link to="/products" className="shop-btn-red">Shop Now <ArrowSm /></Link>
               </div>
             </div>
           </div>
@@ -481,7 +482,7 @@ const FeaturedCategories = () => {
                 <div className="card-overlay"/>
                 <div className="card-body">
                   <h3 className="card-title" style={{ fontSize: '1rem' }}>COMMON<br/><span>JERSEY</span></h3>
-                  <button className="shop-link">Shop Now <ArrowSm /></button>
+                  <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
                 </div>
               </div>
 
@@ -495,7 +496,7 @@ const FeaturedCategories = () => {
                 <div className="card-overlay"/>
                 <div className="card-body">
                   <h3 className="card-title" style={{ fontSize: '1rem' }}>SPORTS<br/><span>JERSEY</span></h3>
-                  <button className="shop-link">Shop Now <ArrowSm /></button>
+                  <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
                 </div>
               </div>
             </div>
@@ -511,7 +512,7 @@ const FeaturedCategories = () => {
                 <div className="card-label">Training Wear</div>
                 <h3 className="card-title">GYM<br/><span>TRAINING JERSEY</span></h3>
                 <p className="card-off">Up to <strong style={{ color: '#FF3B30' }}>80% OFF</strong></p>
-                <button className="shop-link">Shop Now <ArrowSm /></button>
+                <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
               </div>
             </div>
 
