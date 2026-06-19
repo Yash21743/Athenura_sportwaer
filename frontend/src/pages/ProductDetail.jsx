@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, Star, Truck, Info, Check, 
-  MessageSquare, Users, ChevronRight, FileText, Send, X 
+  MessageSquare, Users, ChevronRight, FileText, Send, X, ArrowUpRight 
 } from 'lucide-react';
 import RelatedProducts from '../components/products/RelatedProducts';
 import { mockProducts } from '../services/mockProducts';
@@ -157,12 +157,54 @@ const ProductDetail = () => {
   const stock = stockConf[product.stockStatus] || { dot: '#888', color: '#888', label: product.stockStatus };
   const cleanDescription = stripHtml(product.description);
 
+  const styles = `
+    .pd-wrap { min-height: 100vh; background: #000; color: #fff; padding-bottom: 80px; font-family: 'Poppins', sans-serif; }
+    .pd-header { max-width: 1400px; margin: 0 auto; padding: 24px 48px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .pd-container { max-width: 1400px; margin: 0 auto; padding: 0 48px; }
+    .pd-card { background: #0a0a0a; border-radius: 24px; border: 1px solid rgba(255,255,255,0.07); padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .pd-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 48px; }
+    .pd-img-col { grid-column: span 5; display: flex; flex-direction: column; gap: 16px; }
+    .pd-info-col { grid-column: span 7; display: flex; flex-direction: column; justify-content: space-between; }
+    
+    .pd-form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .pd-form-full { grid-column: span 2; }
+    .pd-qty-box { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #111; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; margin: 4px 0; flex-wrap: wrap; gap: 12px; }
+    
+    .pd-action-btns { display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; }
+    .pd-action-btns button { flex: 1; min-width: 140px; }
+    
+    .pd-price-box { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 20px 24px; background: #111; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; flex-wrap: wrap; gap: 16px; }
+
+    @media (max-width: 1024px) {
+      .pd-grid { gap: 32px; }
+      .pd-img-col { grid-column: span 6; }
+      .pd-info-col { grid-column: span 6; }
+    }
+    @media (max-width: 768px) {
+      .pd-header { padding: 24px 24px; }
+      .pd-container { padding: 0 24px; }
+      .pd-card { padding: 24px; }
+      .pd-grid { display: flex; flex-direction: column; gap: 32px; }
+      .pd-form-grid { display: flex; flex-direction: column; }
+    }
+    @media (max-width: 480px) {
+      .pd-header { padding: 16px; flex-direction: column; align-items: flex-start; }
+      .pd-container { padding: 0 16px; }
+      .pd-card { padding: 16px; border-radius: 16px; }
+      .pd-action-btns { flex-direction: column; }
+      .pd-action-btns button { width: 100%; }
+      .pd-price-box { flex-direction: column; align-items: flex-start; text-align: left; }
+      .pd-price-box > div { text-align: left !important; }
+    }
+  `;
+
   return (
-    <div style={{ minHeight: '100vh', background: '#000000', color: '#FFFFFF', paddingBottom: '80px', fontFamily: 'Poppins, sans-serif' }}>
+    <>
+      <style>{styles}</style>
+      <div className="pd-wrap">
       
       {/* Navigation Breadcrumbs / Back button */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px 48px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="pd-header">
           <Link to="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: '13px', textDecoration: 'none', transition: 'color 0.2s' }}
             onMouseEnter={(e) => e.currentTarget.style.color = '#FF3B30'}
             onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
@@ -178,16 +220,15 @@ const ProductDetail = () => {
             <span style={{ color: '#fff', fontWeight: 700 }}>{product.code}</span>
           </div>
         </div>
-      </div>
 
       {/* Main product card details */}
-      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 48px' }}>
-        <div style={{ background: '#0a0a0a', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.07)', padding: '40px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+      <main className="pd-container">
+        <div className="pd-card">
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '48px' }}>
+          <div className="pd-grid">
             
             {/* Column 1: Image Gallery (Span 5) */}
-            <div style={{ gridColumn: 'span 5', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="pd-img-col">
               <div style={{ position: 'relative', width: '100%', aspectRatio: '1', borderRadius: '16px', overflow: 'hidden', background: '#111', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img src={activeImage} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <span style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(0,0,0,0.8)', color: '#fff', fontSize: '10px', fontFamily: 'monospace', fontWeight: 800, padding: '4px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -213,27 +254,8 @@ const ProductDetail = () => {
                   ))}
                 </div>
               )}
-
-              {/* Highlighting Activewear Features */}
-              <div style={{ marginTop: '16px', padding: '20px', background: '#111', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', fontSize: '12px', color: 'rgba(255,255,255,0.4)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <Truck size={16} color="#FF3B30" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <div>
-                    <span style={{ fontWeight: 700, color: '#fff', display: 'block', marginBottom: '4px', fontFamily: 'Montserrat, sans-serif' }}>Custom & Bulk Shipping</span>
-                    <span style={{ fontWeight: 300, lineHeight: 1.5 }}>Direct shipping across India. Custom printing adds 4-7 business days processing.</span>
-                  </div>
-                </div>
-                <div style={{ paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <Info size={16} color="#FF3B30" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <div>
-                    <span style={{ fontWeight: 700, color: '#fff', display: 'block', marginBottom: '4px', fontFamily: 'Montserrat, sans-serif' }}>Team Customizations Available</span>
-                    <span style={{ fontWeight: 300, lineHeight: 1.5 }}>Get sublimation numbers, logo embroidery, and player name prints custom configured.</span>
-                  </div>
-                </div>
-              </div>
-
               {/* Product Specifications */}
-              <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={{ background: '#111', border: '1px solid rgba(255,59,48,0.2)', borderRadius: '16px', padding: '28px', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: '#FF3B30' }} />
                   <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '20px', fontFamily: 'Montserrat, sans-serif' }}>Product Details</h3>
@@ -273,10 +295,29 @@ const ProductDetail = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Highlighting Activewear Features */}
+              <div style={{ marginTop: '16px', padding: '20px', background: '#111', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', fontSize: '12px', color: 'rgba(255,255,255,0.4)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <Truck size={16} color="#FF3B30" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <span style={{ fontWeight: 700, color: '#fff', display: 'block', marginBottom: '4px', fontFamily: 'Montserrat, sans-serif' }}>Custom & Bulk Shipping</span>
+                    <span style={{ fontWeight: 300, lineHeight: 1.5 }}>Direct shipping across India. Custom printing adds 4-7 business days processing.</span>
+                  </div>
+                </div>
+                <div style={{ paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <Info size={16} color="#FF3B30" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <span style={{ fontWeight: 700, color: '#fff', display: 'block', marginBottom: '4px', fontFamily: 'Montserrat, sans-serif' }}>Team Customizations Available</span>
+                    <span style={{ fontWeight: 300, lineHeight: 1.5 }}>Get sublimation numbers, logo embroidery, and player name prints custom configured.</span>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             {/* Column 2: Specs & Inquiry Details (Span 7) */}
-            <div style={{ gridColumn: 'span 7', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div className="pd-info-col">
               
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
@@ -309,7 +350,7 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Price */}
-                <div style={{ marginBottom: '24px', padding: '20px 24px', background: '#111', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div className="pd-price-box">
                   <div>
                     <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', fontWeight: 700, marginBottom: '4px' }}>Standard Unit Price</span>
                     <span style={{ fontSize: '32px', fontWeight: 900, color: '#fff', lineHeight: 1 }}>₹{product.price}</span>
@@ -321,27 +362,6 @@ const ProductDetail = () => {
                     <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', display: 'block' }}>Minimum order quantity: 10 units</span>
                   </div>
                 </div>
-
-                {/* Description */}
-                <div style={{ marginBottom: '24px' }}>
-                  <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#fff', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'Montserrat, sans-serif' }}>
-                    Product Description
-                  </h3>
-                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', lineHeight: 1.8, fontWeight: 300 }}>
-                    {cleanDescription}
-                  </p>
-                </div>
-
-                {/* Fabric Specifications */}
-                {product.fabric && (
-                  <div style={{ marginBottom: '24px', background: '#111', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '16px 20px', display: 'flex', gap: '16px' }}>
-                    <FileText size={20} color="#FF3B30" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <div>
-                      <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Fabric Composition</h4>
-                      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: 300 }}>{product.fabric}</p>
-                    </div>
-                  </div>
-                )}
 
                 {/* Color Selector */}
                 {product.colors && product.colors.length > 0 && (
@@ -409,12 +429,13 @@ const ProductDetail = () => {
                     </div>
                   </div>
                 )}
+
                 {/* Direct Purchase Actions */}
-                <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
+                <div className="pd-action-btns">
                   <button 
                     type="button" 
                     onClick={() => alert("Added to cart")}
-                    style={{ flex: 1, padding: '16px', background: '#111', color: '#fff', border: '1px solid #FF3B30', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    style={{ padding: '16px', background: '#111', color: '#fff', border: '1px solid #FF3B30', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                     onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,59,48,0.1)'}
                     onMouseLeave={(e) => e.currentTarget.style.background = '#111'}
                   >
@@ -423,22 +444,62 @@ const ProductDetail = () => {
                   <button 
                     type="button" 
                     onClick={() => alert("Proceeding to checkout")}
-                    style={{ flex: 1, padding: '16px', background: '#FF3B30', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    style={{ padding: '16px', background: '#FF3B30', color: '#fff', border: 'none', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                     onMouseEnter={(e) => e.currentTarget.style.background = '#cc2e25'}
                     onMouseLeave={(e) => e.currentTarget.style.background = '#FF3B30'}
                   >
                     Buy Now
                   </button>
                 </div>
+
+                {/* Description */}
+                <div style={{ marginBottom: '24px' }}>
+                  <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#fff', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'Montserrat, sans-serif' }}>
+                    Product Description
+                  </h3>
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', lineHeight: 1.8, fontWeight: 300 }}>
+                    {cleanDescription}
+                  </p>
+                </div>
+
+                {/* Fabric Specifications */}
+                {product.fabric && (
+                  <div style={{ marginBottom: '24px', background: '#111', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '16px 20px', display: 'flex', gap: '16px' }}>
+                    <FileText size={20} color="#FF3B30" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div>
+                      <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Fabric Composition</h4>
+                      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: 300 }}>{product.fabric}</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Inquiry Form */}
-              <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '32px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                  <MessageSquare size={20} color="#FF3B30" />
-                  <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#fff', fontFamily: 'Montserrat, sans-serif' }}>
-                    Request a Custom Quote
-                  </h3>
+              <div style={{ 
+                marginTop: '32px', 
+                background: 'linear-gradient(145deg, rgba(25,25,25,0.6) 0%, rgba(10,10,10,0.8) 100%)', 
+                border: '1px solid rgba(255,255,255,0.08)', 
+                borderRadius: '24px', 
+                padding: '32px',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                {/* Decorative background glow */}
+                <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '150px', height: '150px', background: '#FF3B30', filter: 'blur(100px)', opacity: 0.15, borderRadius: '50%', pointerEvents: 'none' }} />
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(255,59,48,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <MessageSquare size={16} color="#FF3B30" />
+                      </div>
+                      <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.02em' }}>
+                        Bulk & Team Orders
+                      </h3>
+                    </div>
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: 400, marginLeft: '42px' }}>Request a custom quote for wholesale pricing and customizations.</p>
+                  </div>
                 </div>
 
                 <AnimatePresence mode="wait">
@@ -448,19 +509,21 @@ const ProductDetail = () => {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0 }}
-                      style={{ background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.2)', borderRadius: '16px', padding: '24px', textAlign: 'center', color: '#4ade80' }}
+                      style={{ background: 'rgba(74,222,128,0.05)', border: '1px solid rgba(74,222,128,0.2)', borderRadius: '16px', padding: '32px 24px', textAlign: 'center', color: '#4ade80' }}
                     >
-                      <div style={{ width: '48px', height: '48px', background: '#4ade80', color: '#000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                        <Check size={24} strokeWidth={3} />
+                      <div style={{ width: '64px', height: '64px', background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)', color: '#000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 10px 20px rgba(74,222,128,0.2)' }}>
+                        <Check size={32} strokeWidth={3} />
                       </div>
-                      <h4 style={{ fontSize: '16px', fontWeight: 800, marginBottom: '8px' }}>Inquiry Submitted Successfully!</h4>
-                      <p style={{ fontSize: '12px', color: 'rgba(74,222,128,0.8)', maxWidth: '400px', margin: '0 auto 20px', lineHeight: 1.6 }}>
-                        Thank you, {inquiryName}! We received your request for <strong style={{ color: '#fff' }}>{quantity}x</strong> {product.name} ({selectedSize}, {product.colorNames ? product.colorNames[selectedColorIndex] : 'Default'}). Our team will get back to you within 24 hours.
+                      <h4 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '8px', color: '#fff' }}>Quote Request Sent!</h4>
+                      <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', maxWidth: '400px', margin: '0 auto 24px', lineHeight: 1.6 }}>
+                        Thank you, <strong style={{ color: '#4ade80' }}>{inquiryName}</strong>! We've received your request for <strong>{quantity}x</strong> units. Our sales team will get back to you within 24 hours with a custom proposal.
                       </p>
                       <button
                         type="button"
                         onClick={() => setInquirySuccess(false)}
-                        style={{ padding: '10px 20px', background: '#4ade80', color: '#000', fontWeight: 700, fontSize: '12px', borderRadius: '10px', border: 'none', cursor: 'pointer' }}
+                        style={{ padding: '12px 24px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontWeight: 700, fontSize: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
                       >
                         Submit Another Request
                       </button>
@@ -469,81 +532,101 @@ const ProductDetail = () => {
                     <motion.form
                       key="form"
                       onSubmit={handleInquirySubmit}
-                      style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}
+                      className="pd-form-grid"
                     >
                       {/* Name */}
                       <div>
-                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
                           Full Name <span style={{ color: '#FF3B30' }}>*</span>
                         </label>
-                        <input type="text" required value={inquiryName} onChange={(e) => setInquiryName(e.target.value)} placeholder="Your Name"
-                          style={{ width: '100%', padding: '12px 16px', background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif' }}
+                        <input type="text" required value={inquiryName} onChange={(e) => setInquiryName(e.target.value)} placeholder="Enter your name"
+                          style={{ width: '100%', padding: '14px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', transition: 'all 0.2s' }}
+                          onFocus={(e) => { e.currentTarget.style.borderColor = '#FF3B30'; e.currentTarget.style.background = 'rgba(255,59,48,0.05)'; }}
+                          onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.background = 'rgba(0,0,0,0.3)'; }}
                         />
                       </div>
 
                       {/* Email */}
                       <div>
-                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
                           Email Address <span style={{ color: '#FF3B30' }}>*</span>
                         </label>
-                        <input type="email" required value={inquiryEmail} onChange={(e) => setInquiryEmail(e.target.value)} placeholder="you@example.com"
-                          style={{ width: '100%', padding: '12px 16px', background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif' }}
+                        <input type="email" required value={inquiryEmail} onChange={(e) => setInquiryEmail(e.target.value)} placeholder="you@company.com"
+                          style={{ width: '100%', padding: '14px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', transition: 'all 0.2s' }}
+                          onFocus={(e) => { e.currentTarget.style.borderColor = '#FF3B30'; e.currentTarget.style.background = 'rgba(255,59,48,0.05)'; }}
+                          onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.background = 'rgba(0,0,0,0.3)'; }}
                         />
                       </div>
 
                       {/* Phone */}
                       <div>
-                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
                           Phone Number <span style={{ color: '#FF3B30' }}>*</span>
                         </label>
-                        <input type="tel" required value={inquiryPhone} onChange={(e) => setInquiryPhone(e.target.value)} placeholder="Mobile / Office number"
-                          style={{ width: '100%', padding: '12px 16px', background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif' }}
+                        <input type="tel" required value={inquiryPhone} onChange={(e) => setInquiryPhone(e.target.value)} placeholder="+91 xxxxx xxxxx"
+                          style={{ width: '100%', padding: '14px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', transition: 'all 0.2s' }}
+                          onFocus={(e) => { e.currentTarget.style.borderColor = '#FF3B30'; e.currentTarget.style.background = 'rgba(255,59,48,0.05)'; }}
+                          onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.background = 'rgba(0,0,0,0.3)'; }}
                         />
                       </div>
 
                       {/* Organization */}
                       <div>
-                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
                           Team / Organization
                         </label>
                         <input type="text" value={inquiryOrg} onChange={(e) => setInquiryOrg(e.target.value)} placeholder="Club, school or company"
-                          style={{ width: '100%', padding: '12px 16px', background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif' }}
+                          style={{ width: '100%', padding: '14px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', transition: 'all 0.2s' }}
+                          onFocus={(e) => { e.currentTarget.style.borderColor = '#FF3B30'; e.currentTarget.style.background = 'rgba(255,59,48,0.05)'; }}
+                          onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.background = 'rgba(0,0,0,0.3)'; }}
                         />
                       </div>
 
                       {/* Quantity Selector */}
-                      <div style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#111', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', marginTop: '4px', marginBottom: '4px' }}>
+                      <div className="pd-form-full pd-qty-box" style={{ background: 'rgba(0,0,0,0.2)', border: '1px dashed rgba(255,255,255,0.15)', borderRadius: '16px', padding: '20px' }}>
                         <div>
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff', display: 'block', marginBottom: '2px' }}>Required Quantity</span>
-                          <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>Order at least 10 units for customization</span>
+                          <span style={{ fontSize: '13px', fontWeight: 800, color: '#fff', display: 'block', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Required Quantity</span>
+                          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>Minimum order quantity: 10 units</span>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 5))} style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 700 }}>-</button>
-                          <input type="number" min="1" value={quantity} onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))} style={{ width: '50px', textAlign: 'center', fontSize: '16px', fontWeight: 800, color: '#fff', background: 'transparent', border: 'none', outline: 'none', fontFamily: 'Poppins, sans-serif' }} />
-                          <button type="button" onClick={() => setQuantity(quantity + 5)} style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 700 }}>+</button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#000', padding: '4px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 5))} style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 700, border: 'none', transition: 'all 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>-</button>
+                          <input type="number" min="1" value={quantity} onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))} style={{ width: '60px', textAlign: 'center', fontSize: '18px', fontWeight: 900, color: '#fff', background: 'transparent', border: 'none', outline: 'none', fontFamily: 'Montserrat, sans-serif' }} />
+                          <button type="button" onClick={() => setQuantity(quantity + 5)} style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 700, border: 'none', transition: 'all 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>+</button>
                         </div>
                       </div>
 
                       {/* Message */}
-                      <div style={{ gridColumn: 'span 2' }}>
-                        <label style={{ display: 'block', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
-                          Custom Message & Printing Requirements
+                      <div className="pd-form-full">
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
+                          Customizations & Instructions
                         </label>
-                        <textarea rows="3" value={inquiryMsg} onChange={(e) => setInquiryMsg(e.target.value)} placeholder="Include custom logo detail requests, names, specific sizing configurations, colors, or deadlines..."
-                          style={{ width: '100%', padding: '16px', background: '#111', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', resize: 'vertical' }}
+                        <textarea rows="4" value={inquiryMsg} onChange={(e) => setInquiryMsg(e.target.value)} placeholder="Include logo details, player names, sizing breakdown, specific colors, and your expected deadline..."
+                          style={{ width: '100%', padding: '16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', resize: 'vertical', transition: 'all 0.2s', lineHeight: 1.6 }}
+                          onFocus={(e) => { e.currentTarget.style.borderColor = '#FF3B30'; e.currentTarget.style.background = 'rgba(255,59,48,0.05)'; }}
+                          onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.background = 'rgba(0,0,0,0.3)'; }}
                         />
                       </div>
 
                       {/* Submit */}
-                      <div style={{ gridColumn: 'span 2', marginTop: '8px' }}>
+                      <div className="pd-form-full" style={{ marginTop: '16px' }}>
                         <button type="submit" disabled={inquirySubmitting}
-                          style={{ width: '100%', padding: '16px', background: '#FF3B30', color: '#fff', borderRadius: '16px', fontSize: '14px', fontWeight: 800, border: 'none', cursor: inquirySubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'background 0.2s', opacity: inquirySubmitting ? 0.7 : 1 }}
+                          style={{ 
+                            width: '100%', padding: '20px', 
+                            background: inquirySubmitting ? '#555' : 'linear-gradient(135deg, #FF3B30 0%, #ff6b00 100%)', 
+                            color: '#fff', borderRadius: '16px', fontSize: '14px', fontWeight: 900, border: 'none', 
+                            cursor: inquirySubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', 
+                            fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', 
+                            transition: 'all 0.3s ease', opacity: inquirySubmitting ? 0.7 : 1,
+                            boxShadow: inquirySubmitting ? 'none' : '0 10px 25px rgba(255, 59, 48, 0.4)'
+                          }}
+                          onMouseEnter={(e) => { if(!inquirySubmitting) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 15px 35px rgba(255, 59, 48, 0.5)'; } }}
+                          onMouseLeave={(e) => { if(!inquirySubmitting) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(255, 59, 48, 0.4)'; } }}
                         >
                           {inquirySubmitting ? (
-                            <span>Submitting Lead...</span>
+                            <span>Processing Request...</span>
                           ) : (
                             <>
-                              <Send size={16} /> Submit Bulk Inquiry
+                              Get Custom Quote <ArrowUpRight size={18} />
                             </>
                           )}
                         </button>
@@ -553,12 +636,14 @@ const ProductDetail = () => {
                 </AnimatePresence>
               </div>
 
+
+
             </div>
 
           </div>
 
           {/* Related Products Hook */}
-          <div style={{ marginTop: '48px', paddingTop: '40px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+          <div style={{ marginTop: '48px', paddingTop: '40px' }}>
             <RelatedProducts category={product.category} currentProductId={product._id} />
           </div>
 
@@ -634,6 +719,7 @@ const ProductDetail = () => {
       </AnimatePresence>
 
     </div>
+    </>
   );
 };
 

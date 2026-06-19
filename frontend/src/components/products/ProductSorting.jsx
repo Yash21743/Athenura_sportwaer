@@ -1,7 +1,31 @@
-import React from 'react';
-import { LayoutGrid, List, ArrowUpDown } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { LayoutGrid, List, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const SORT_OPTIONS = [
+  { value: 'featured', label: 'Sort by: Featured' },
+  { value: 'price-asc', label: 'Price: Low to High' },
+  { value: 'price-desc', label: 'Price: High to Low' },
+  { value: 'name-asc', label: 'Name: A → Z' },
+  { value: 'name-desc', label: 'Name: Z → A' },
+];
 
 const ProductSorting = ({ totalCount, sortBy, onSortChange, viewMode = 'grid', onViewModeChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const currentOption = SORT_OPTIONS.find((opt) => opt.value === sortBy) || SORT_OPTIONS[0];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingTop: '16px', paddingBottom: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
       {/* Count */}
@@ -12,42 +36,77 @@ const ProductSorting = ({ totalCount, sortBy, onSortChange, viewMode = 'grid', o
 
       {/* Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        {/* Sort select */}
-        <div style={{ 
-            display: 'flex', alignItems: 'center', gap: '8px', 
-            background: 'transparent', padding: '6px 0', 
-          }}
-        >
-          <select
-            value={sortBy}
-            onChange={(e) => onSortChange(e.target.value)}
-            style={{ background: 'transparent', color: '#fff', fontSize: '13px', fontWeight: 500, border: 'none', outline: 'none', cursor: 'pointer', fontFamily: 'Inter, Poppins, sans-serif' }}
+        
+        {/* Custom Premium Dropdown */}
+        <div ref={dropdownRef} style={{ position: 'relative' }}>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: 'transparent', color: '#fff', fontSize: '13px', fontWeight: 500,
+              border: 'none', cursor: 'pointer', fontFamily: 'Inter, Poppins, sans-serif',
+              padding: '6px 0',
+            }}
           >
-            <option value="featured" style={{ background: '#111', color: '#fff' }}>Sort by: Featured</option>
-            <option value="price-asc" style={{ background: '#111', color: '#fff' }}>Price: Low to High</option>
-            <option value="price-desc" style={{ background: '#111', color: '#fff' }}>Price: High to Low</option>
-            <option value="name-asc" style={{ background: '#111', color: '#fff' }}>Name: A → Z</option>
-            <option value="name-desc" style={{ background: '#111', color: '#fff' }}>Name: Z → A</option>
-          </select>
+            {currentOption.label}
+            <ChevronDown size={14} style={{ transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+          </button>
+
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: '8px',
+                  background: 'rgba(10, 10, 10, 0.95)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  width: '180px',
+                  zIndex: 50,
+                  boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+                  display: 'flex', flexDirection: 'column'
+                }}
+              >
+                {SORT_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => {
+                      onSortChange(option.value);
+                      setIsOpen(false);
+                    }}
+                    style={{
+                      background: sortBy === option.value ? 'rgba(255, 59, 48, 0.1)' : 'transparent',
+                      color: sortBy === option.value ? '#FF3B30' : '#fff',
+                      border: 'none', padding: '12px 16px', textAlign: 'left',
+                      fontSize: '13px', fontWeight: sortBy === option.value ? 600 : 400,
+                      cursor: 'pointer', transition: 'all 0.2s',
+                      fontFamily: 'Inter, Poppins, sans-serif',
+                      borderLeft: sortBy === option.value ? '2px solid #FF3B30' : '2px solid transparent'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (sortBy !== option.value) {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (sortBy !== option.value) {
+                        e.currentTarget.style.background = 'transparent';
+                      }
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        <div style={{ width: '1px', height: '16px', background: 'rgba(255,255,255,0.15)' }} />
-
-        {/* View toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {[{ mode: 'grid', Icon: LayoutGrid }, { mode: 'list', Icon: List }].map(({ mode, Icon }) => (
-            <button
-              key={mode}
-              onClick={() => onViewModeChange(mode)}
-              style={{ padding: '6px', border: 'none', cursor: 'pointer', transition: 'all 0.2s ease', background: 'transparent', color: viewMode === mode ? '#fff' : 'rgba(255,255,255,0.3)', borderRadius: '6px' }}
-              title={mode === 'grid' ? 'Grid View' : 'List View'}
-              onMouseEnter={(e) => { if(viewMode !== mode) e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
-              onMouseLeave={(e) => { if(viewMode !== mode) e.currentTarget.style.color = 'rgba(255,255,255,0.3)'; }}
-            >
-              <Icon size={16} />
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );

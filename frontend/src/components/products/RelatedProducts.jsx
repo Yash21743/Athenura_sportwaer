@@ -42,10 +42,17 @@ const RelatedProducts = ({ category, currentProductId }) => {
   if (related.length === 0) return null;
 
   return (
-    <div className="mt-16 pt-10 border-t border-zinc-800">
-      <h3 className="text-xl sm:text-2xl font-black text-white font-['Montserrat'] mb-6">
-        You May Also Like
-      </h3>
+    <div className="mt-16 pt-10">
+      <div className="flex flex-col items-center justify-center mb-12 sm:mb-16" style={{ marginBottom: '64px' }}>
+        <div className="flex items-center gap-4 sm:gap-6">
+          <div className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-transparent to-[#FF3B30] opacity-70"></div>
+          <h3 className="text-xl sm:text-3xl font-black text-white font-['Montserrat'] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-center m-0">
+            You May Also <span className="text-[#FF3B30]">Like</span>
+          </h3>
+          <div className="h-[1px] w-8 sm:w-16 bg-gradient-to-l from-transparent to-[#FF3B30] opacity-70"></div>
+        </div>
+        <p className="mt-3 text-[10px] sm:text-xs text-white/40 uppercase tracking-widest font-medium">Explore Similar Styles</p>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {related.map((prod) => (
           <ProductCard key={prod._id} product={prod} viewMode="grid" />
