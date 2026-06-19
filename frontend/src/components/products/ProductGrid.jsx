@@ -5,43 +5,34 @@ import { ArchiveX } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05
-    }
-  }
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } },
 };
-
 const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
-  show: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { type: 'spring', stiffness: 300, damping: 25 } 
-  }
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 280, damping: 26 } },
 };
 
 const ProductGrid = ({ products, viewMode = 'grid', onResetFilters }) => {
   if (!products || products.length === 0) {
     return (
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center py-16 px-4 bg-[#111] border border-zinc-800/80 rounded-3xl text-center"
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.01)', textAlign: 'center' }}
       >
-        <div className="w-16 h-16 bg-rose-500/10 text-rose-400 rounded-full flex items-center justify-center mb-4 border border-rose-500/25">
-          <ArchiveX className="w-8 h-8" />
+        <div style={{ width: '56px', height: '56px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', background: 'rgba(255,59,48,0.08)', border: '1px solid rgba(255,59,48,0.15)' }}>
+          <ArchiveX size={24} style={{ color: '#FF3B30', opacity: 0.7 }} />
         </div>
-        <h3 className="text-xl font-bold text-white mb-2 font-['Montserrat']">No Products Found</h3>
-        <p className="text-zinc-500 text-sm max-w-sm mb-6 font-['Poppins'] font-light">
-          We couldn't find any products matching your active filters. Try adjusting your search term, size or price limits.
+        <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#fff', fontFamily: 'Montserrat, sans-serif', marginBottom: '8px' }}>No Products Found</h3>
+        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', maxWidth: '280px', marginBottom: '20px', fontWeight: 300, lineHeight: 1.6 }}>
+          Try adjusting your filters or search term.
         </p>
         {onResetFilters && (
           <button
-            type="button"
             onClick={onResetFilters}
-            className="px-5 py-2.5 bg-[#FF3B30] hover:bg-[#cc2e25] text-white rounded-xl text-sm font-semibold transition-colors shadow-sm font-['Poppins']"
+            style={{ padding: '9px 22px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', background: 'rgba(255,59,48,0.12)', border: '1px solid rgba(255,59,48,0.3)', color: '#FF3B30', transition: 'all 0.2s' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#FF3B30'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,59,48,0.12)'; e.currentTarget.style.color = '#FF3B30'; }}
           >
             Clear All Filters
           </button>
@@ -56,10 +47,9 @@ const ProductGrid = ({ products, viewMode = 'grid', onResetFilters }) => {
       initial="hidden"
       animate="show"
       key={`${viewMode}-${products.length}`}
-      className={
-        viewMode === 'grid'
-          ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 justify-center justify-items-center'
-          : 'flex flex-col gap-4'
+      style={viewMode === 'grid'
+        ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }
+        : { display: 'flex', flexDirection: 'column', gap: '12px' }
       }
     >
       <AnimatePresence mode="popLayout">
@@ -68,8 +58,8 @@ const ProductGrid = ({ products, viewMode = 'grid', onResetFilters }) => {
             key={product._id}
             variants={itemVariants}
             layout
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="h-full"
+            exit={{ opacity: 0, scale: 0.93, transition: { duration: 0.15 } }}
+            style={{ height: viewMode === 'grid' ? '100%' : 'auto' }}
           >
             <ProductCard product={product} viewMode={viewMode} />
           </motion.div>

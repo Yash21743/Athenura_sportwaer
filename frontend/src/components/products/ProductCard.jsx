@@ -1,183 +1,174 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Star, MessageSquare } from 'lucide-react';
+import { Star, MessageSquare, ArrowUpRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const stripHtml = (html = '') => html.replace(/<[^>]*>/g, '');
+
+const stockConf = {
+  'In Stock':      { dot: '#4ade80', color: '#4ade80', label: 'In Stock' },
+  'Limited Stock': { dot: '#fbbf24', color: '#fbbf24', label: 'Limited' },
+  'Out of Stock':  { dot: '#f87171', color: '#f87171', label: 'Sold Out' },
+};
 
 const ProductCard = ({ product, viewMode = 'grid' }) => {
   const { _id, name, code, category, price, fabric, sizes, images, stockStatus } = product;
-  const primaryImage = images && images.length > 0 ? images[0] : '';
+  const description = stripHtml(product.description);
+  const img1 = images?.[0] || '';
+  const img2 = images?.[1] || images?.[0] || '';
+  const stock = stockConf[stockStatus] || { dot: '#888', color: '#888', label: stockStatus };
 
-  // Helper for stock status color (Dark-theme tailored)
-  const getStockBadgeClass = (status) => {
-    switch (status) {
-      case 'In Stock':
-        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25';
-      case 'Limited Stock':
-        return 'bg-amber-500/10 text-amber-400 border-amber-500/25';
-      case 'Out of Stock':
-        return 'bg-rose-500/10 text-rose-400 border-rose-500/25';
-      default:
-        return 'bg-zinc-800 text-zinc-400 border-zinc-700';
-    }
-  };
-
+  /* ─── LIST ─── */
   if (viewMode === 'list') {
     return (
-      <div className="group bg-[#111] rounded-3xl border border-zinc-800/80 p-5 flex flex-col md:flex-row gap-6 hover:shadow-lg hover:border-zinc-700/80 transition-all duration-300">
-        {/* Product Image Section */}
-        <div className="relative w-full md:w-56 h-48 rounded-2xl overflow-hidden bg-zinc-900 shrink-0">
-          <img
-            src={primaryImage}
-            alt={name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          <span className="absolute top-3 left-3 bg-zinc-950/90 backdrop-blur-xs text-xs font-semibold px-2.5 py-1 rounded-full text-white shadow-sm border border-zinc-800">
-            {category}
-          </span>
-        </div>
-
-        {/* Product Info Section */}
-        <div className="flex-1 flex flex-col justify-between py-1">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.3 } }}
+        className="group"
+        style={{ display: 'flex', background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', overflow: 'hidden', transition: 'border-color 0.25s, box-shadow 0.25s' }}
+        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(255,59,48,0.3)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.5)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.boxShadow = 'none'; }}
+      >
+        <Link to={`/products/${_id}`} style={{ position: 'relative', width: '220px', flexShrink: 0, overflow: 'hidden', background: '#1a1a1a', display: 'block', minHeight: '180px' }}>
+          {img1 && <img src={img1} alt={name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }} className="group-hover:scale-105" />}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, transparent, rgba(0,0,0,0.4))' }} />
+        </Link>
+        <div style={{ flex: 1, padding: '20px 24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div className="flex flex-wrap items-center gap-3 mb-1.5">
-              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md border tracking-wider uppercase ${getStockBadgeClass(stockStatus)}`}>
-                {stockStatus}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 10px', borderRadius: '999px', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{category}</span>
+              <span style={{ fontSize: '10px', fontFamily: 'monospace', color: 'rgba(255,255,255,0.3)' }}>{code}</span>
+              <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', fontWeight: 700, color: stock.color }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: stock.dot, display: 'inline-block' }} />{stock.label}
               </span>
-              <span className="text-xs text-zinc-500 font-mono font-medium">{code}</span>
             </div>
-            
             <Link to={`/products/${_id}`}>
-              <h3 className="text-lg font-bold text-white group-hover:text-[#FF3B30] transition-colors font-['Montserrat'] mb-2">
-                {name}
-              </h3>
+              <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#fff', fontFamily: 'Montserrat, sans-serif', marginBottom: '6px', transition: 'color 0.2s' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = '#FF3B30')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = '#fff')}
+              >{name}</h3>
             </Link>
-            
-            <p className="text-zinc-400 text-sm line-clamp-2 mb-4 font-['Poppins'] font-light">
-              {product.description}
-            </p>
-            
-            {fabric && (
-              <p className="text-xs text-zinc-400 mb-4 font-['Poppins']">
-                <span className="font-semibold text-zinc-300">Fabric:</span> {fabric}
-              </p>
-            )}
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, marginBottom: '12px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: 300 }}>{description}</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+              {sizes.map((sz) => (
+                <span key={sz} style={{ fontSize: '9px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)' }}>{sz}</span>
+              ))}
+            </div>
           </div>
-
-          {/* Sizes available */}
-          <div className="flex flex-wrap gap-1.5 items-center">
-            <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider mr-1">Sizes:</span>
-            {sizes.map((sz) => (
-              <span key={sz} className="text-[10px] font-bold bg-zinc-900 text-zinc-400 px-2 py-0.5 rounded-md border border-zinc-800 font-['Poppins']">
-                {sz}
-              </span>
-            ))}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            <span style={{ fontSize: '22px', fontWeight: 900, color: '#fff' }}>₹{price}</span>
+            <Link to={`/products/${_id}`}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, padding: '8px 18px', borderRadius: '10px', background: '#FF3B30', color: '#fff', textDecoration: 'none', transition: 'background 0.2s' }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#e0332a')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = '#FF3B30')}
+            >
+              <MessageSquare size={14} /> Inquire Now
+            </Link>
           </div>
         </div>
-
-        {/* Pricing and CTAs */}
-        <div className="w-full md:w-48 flex flex-col justify-center items-start md:items-end border-t md:border-t-0 md:border-l border-zinc-800 pt-4 md:pt-0 md:pl-6 shrink-0 font-['Poppins']">
-          {/* Star ratings */}
-          <div className="flex items-center gap-1 mb-2">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className={`w-3.5 h-3.5 ${i < 4 ? 'text-amber-400 fill-amber-400' : 'text-zinc-700 fill-zinc-700'}`} />
-            ))}
-            <span className="text-xs text-zinc-500 font-semibold ml-1">4.2</span>
-          </div>
-
-          <div className="text-2xl font-black text-white mb-4">
-            ₹{price}
-          </div>
-
-          <Link
-            to={`/products/${_id}`}
-            className="w-full text-center px-4 py-2.5 bg-[#FF3B30] hover:bg-[#cc2e25] text-white rounded-xl text-xs sm:text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 group/btn"
-          >
-            <MessageSquare className="w-4 h-4" />
-            <span>Inquire Now</span>
-          </Link>
-        </div>
-      </div>
+      </motion.div>
     );
   }
 
-  // Default: Grid view mode
+  /* ─── GRID ─── */
   return (
-    <div className="group bg-[#111] rounded-3xl border border-zinc-800/80 overflow-hidden hover:shadow-lg hover:border-zinc-700/80 transition-all duration-300 flex flex-col h-full font-['Poppins']">
-      {/* Image Container */}
-      <Link to={`/products/${_id}`} className="relative aspect-square w-full overflow-hidden bg-zinc-900 block">
-        <img
-          src={primaryImage}
-          alt={name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      whileHover={{ y: -5, transition: { duration: 0.3 } }}
+      className="group"
+      style={{ 
+        display: 'flex', flexDirection: 'column', background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', overflow: 'hidden', 
+        transition: 'all 0.3s ease-out'
+      }}
+      onMouseEnter={(e) => { 
+        e.currentTarget.style.borderColor = '#FF3B30'; 
+        e.currentTarget.style.boxShadow = '0 0 25px rgba(255,59,48,0.5), inset 0 0 15px rgba(255,59,48,0.2)'; 
+        e.currentTarget.style.zIndex = 10; 
+      }}
+      onMouseLeave={(e) => { 
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; 
+        e.currentTarget.style.boxShadow = 'none'; 
+        e.currentTarget.style.zIndex = 1; 
+      }}
+    >
+      {/* Image area */}
+      <Link to={`/products/${_id}`} style={{ position: 'relative', display: 'block', height: '220px', background: '#1a1a1a', overflow: 'hidden', flexShrink: 0 }}>
+        {img1 && (
+          <img src={img1} alt={name}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)' }}
+            className="group-hover:scale-110"
+          />
+        )}
+        {/* Gradient */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)', pointerEvents: 'none' }} />
 
-        {/* Dynamic Badge Overlays */}
-        <div className="absolute top-4 left-4 flex flex-col gap-1.5 items-start">
-          <span className="bg-zinc-950/90 backdrop-blur-xs text-[10px] font-bold px-2.5 py-1 rounded-full text-white shadow-sm border border-zinc-800 font-['Montserrat']">
-            {category}
-          </span>
-          <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-md border tracking-wider uppercase shadow-xs ${getStockBadgeClass(stockStatus)}`}>
-            {stockStatus}
-          </span>
+        {/* Category */}
+        <div style={{ position: 'absolute', top: '10px', left: '10px' }}>
+          <span style={{ fontSize: '8px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 10px', borderRadius: '5px', background: 'rgba(0,0,0,0.65)', color: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.08)' }}>{category}</span>
         </div>
-
-        {/* Code Overlay (Top-Right) */}
-        <span className="absolute top-4 right-4 text-[10px] bg-zinc-950/60 text-white/95 font-mono font-semibold px-2 py-0.5 rounded-md backdrop-blur-xs border border-zinc-800/50">
-          {code}
-        </span>
+        {/* Stock */}
+        <div style={{ position: 'absolute', top: '11px', right: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: stock.dot, display: 'inline-block' }} />
+          <span style={{ fontSize: '10px', fontWeight: 700, color: stock.color }}>{stock.label}</span>
+        </div>
+        {/* SKU */}
+        <div style={{ position: 'absolute', bottom: '10px', left: '12px' }}>
+          <span style={{ fontSize: '8px', fontFamily: 'monospace', color: 'rgba(255,255,255,0.3)' }}>{code}</span>
+        </div>
+        {/* Hover pill */}
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.3s' }} className="group-hover:opacity-100">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, padding: '7px 16px', borderRadius: '999px', background: 'rgba(255,59,48,0.85)', color: '#fff', backdropFilter: 'blur(4px)', transform: 'translateY(8px)', transition: 'transform 0.3s' }} className="group-hover:translate-y-0">
+            View Details <ArrowUpRight size={13} />
+          </div>
+        </div>
       </Link>
 
-      {/* Info Content */}
-      <div className="p-5 flex-1 flex flex-col justify-between text-center">
-        <div>
-          {/* Rating */}
-          <div className="flex justify-center items-center gap-1 mb-2">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className={`w-3.5 h-3.5 ${i < 4 ? 'text-amber-400 fill-amber-400' : 'text-zinc-700 fill-zinc-700'}`} />
-            ))}
-            <span className="text-xs text-zinc-500 font-semibold ml-1">4.0</span>
-          </div>
-
-          {/* Title */}
-          <Link to={`/products/${_id}`}>
-            <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-[#FF3B30] transition-colors font-['Montserrat'] line-clamp-1 mb-1.5">
-              {name}
-            </h3>
-          </Link>
-
-          {/* Small description excerpt */}
-          <p className="text-xs text-zinc-400 line-clamp-2 mb-3 font-light leading-relaxed">
-            {product.description}
-          </p>
-
-          {/* Sizes available */}
-          <div className="flex flex-wrap justify-center gap-1 items-center mb-4">
-            {sizes.slice(0, 4).map((sz) => (
-              <span key={sz} className="text-[9px] font-bold bg-zinc-900 text-zinc-400 border border-zinc-800 px-1.5 py-0.5 rounded-md">
-                {sz}
-              </span>
-            ))}
-            {sizes.length > 4 && (
-              <span className="text-[9px] font-bold text-zinc-500 pl-1">+{sizes.length - 4} more</span>
-            )}
-          </div>
+      {/* Info */}
+      <div style={{ padding: '14px 14px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        {/* Stars */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginBottom: '8px' }}>
+          {[...Array(5)].map((_, i) => <Star key={i} size={11} style={{ fill: i < 4 ? '#fbbf24' : '#2a2a2a', color: i < 4 ? '#fbbf24' : '#2a2a2a' }} />)}
+          <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)', fontWeight: 600, marginLeft: '5px' }}>4.0</span>
         </div>
 
-        {/* Pricing & CTA Column (Centered) */}
-        <div className="flex flex-col items-center pt-3 border-t border-zinc-800 mt-auto w-full gap-2.5">
-          <span className="text-lg font-black text-white">
-            ₹{price}
-          </span>
-          <Link
-            to={`/products/${_id}`}
-            className="w-full py-2.5 bg-zinc-900 text-[#FF3B30] hover:bg-[#FF3B30] hover:text-white rounded-xl transition-all shadow-xs hover:shadow-md group/btn flex items-center justify-center gap-1.5 border border-zinc-800 text-xs font-bold"
-            title="Inquire Now"
+        {/* Name */}
+        <Link to={`/products/${_id}`}>
+          <h3 style={{ fontSize: '13px', fontWeight: 900, color: '#fff', fontFamily: 'Montserrat, sans-serif', marginBottom: '5px', lineHeight: 1.2, transition: 'color 0.2s', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#FF3B30')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#fff')}
+          >{name}</h3>
+        </Link>
+
+        {/* Description */}
+        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.38)', lineHeight: 1.6, marginBottom: '10px', flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: 300 }}>{description}</p>
+
+        {/* Sizes */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '12px' }}>
+          {sizes.slice(0, 5).map((sz) => (
+            <span key={sz} style={{ fontSize: '8px', fontWeight: 700, padding: '2px 7px', borderRadius: '5px', background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.07)' }}>{sz}</span>
+          ))}
+          {sizes.length > 5 && <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.25)' }}>+{sizes.length - 5}</span>}
+        </div>
+
+        {/* Price + CTA */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <span style={{ fontSize: '17px', fontWeight: 900, color: '#fff' }}>₹{price}</span>
+          <Link to={`/products/${_id}`}
+            style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px', border: '1px solid rgba(255,59,48,0.3)', color: '#FF3B30', background: 'rgba(255,59,48,0.05)', textDecoration: 'none', transition: 'all 0.2s' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#FF3B30'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#FF3B30'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,59,48,0.05)'; e.currentTarget.style.color = '#FF3B30'; e.currentTarget.style.borderColor = 'rgba(255,59,48,0.3)'; }}
           >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>Inquire Now</span>
+            <MessageSquare size={11} /> Inquire
           </Link>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

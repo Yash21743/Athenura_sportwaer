@@ -3,41 +3,40 @@ import { Search, X } from 'lucide-react';
 
 const SearchBar = ({ value, onChange }) => {
   return (
-    <div className="relative w-full max-w-2xl mx-auto mb-8 font-['Poppins'] group">
-      {/* Background glow overlay */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-[#FF3B30] to-red-600 rounded-3xl opacity-5 group-focus-within:opacity-15 blur-lg transition duration-500"></div>
+    <div className="relative group font-['Poppins']">
+      {/* Glow backdrop */}
+      <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-[#FF3B30]/0 via-[#FF3B30]/0 to-[#FF3B30]/0 group-focus-within:from-[#FF3B30]/20 group-focus-within:via-[#FF3B30]/10 group-focus-within:to-[#FF3B30]/20 blur-xl transition-all duration-500 pointer-events-none" />
 
-      {/* Main glassmorphic search input block */}
-      <div className="relative flex items-center bg-[#111]/90 backdrop-blur-xl border border-zinc-800/85 rounded-2xl p-1.5 focus-within:border-[#FF3B30] focus-within:shadow-[0_0_20px_rgba(255,59,48,0.18)] transition-all duration-300">
-
-        {/* Neon Search Icon */}
-        <div className="pl-4 pr-3 text-[#FF3B30] flex items-center justify-center">
-          <Search className="w-5 h-5 drop-shadow-[0_0_5px_rgba(255,59,48,0.4)]" />
+      {/* Input wrapper */}
+      <div className="relative flex items-center bg-zinc-900/70 border border-zinc-800 rounded-2xl group-focus-within:border-[#FF3B30]/40 group-focus-within:bg-zinc-900/90 transition-all duration-300">
+        {/* Icon */}
+        <div className="pl-5 pr-3 flex items-center flex-shrink-0">
+          <Search className="w-4.5 h-4.5 text-zinc-600 group-focus-within:text-[#FF3B30] transition-colors duration-300" style={{ width: '18px', height: '18px' }} />
         </div>
 
-        {/* Input Text Box */}
+        {/* Input */}
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Search products by title, SKU, or tags..."
-          className="flex-1 bg-transparent border-none text-white text-sm sm:text-base placeholder-zinc-500 focus:outline-hidden font-light py-2.5 pr-2"
+          placeholder="Search by name, SKU, or tags..."
+          className="flex-1 bg-transparent text-white text-sm placeholder-zinc-600 focus:outline-none py-3.5 pr-3"
         />
 
-        {/* Clear Button */}
+        {/* Clear */}
         {value && (
           <button
             type="button"
             onClick={() => onChange('')}
-            className="text-zinc-500 hover:text-white p-1.5 rounded-xl hover:bg-zinc-850 transition-all mr-2 cursor-pointer"
+            className="mr-2 w-7 h-7 flex items-center justify-center rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         )}
 
-        {/* Premium console tag badge */}
-        <div className="bg-zinc-900 border border-zinc-800 text-zinc-400 px-3.5 py-2 rounded-xl text-[10px] font-mono font-bold tracking-widest uppercase hidden sm:block shadow-inner select-none">
-          go
+        {/* Kbd hint */}
+        <div className="hidden sm:flex items-center gap-1 mr-4 flex-shrink-0">
+          <span className="text-[10px] font-mono text-zinc-600 bg-zinc-800/80 border border-zinc-700/50 px-2 py-1 rounded-md">⌘K</span>
         </div>
       </div>
     </div>

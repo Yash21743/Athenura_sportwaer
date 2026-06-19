@@ -1,76 +1,52 @@
 import React from 'react';
-import { LayoutGrid, List, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
+import { LayoutGrid, List, ArrowUpDown } from 'lucide-react';
 
-const ProductSorting = ({
-  totalCount,
-  sortBy,
-  onSortChange,
-  viewMode = 'grid',
-  onViewModeChange,
-  onMobileFilterToggle
-}) => {
+const ProductSorting = ({ totalCount, sortBy, onSortChange, viewMode = 'grid', onViewModeChange }) => {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#111] border border-zinc-800/80 p-4 rounded-2xl mb-6 shadow-sm">
-      {/* Product count and mobile filter toggle */}
-      <div className="flex items-center justify-between sm:justify-start gap-4">
-        <button
-          type="button"
-          onClick={onMobileFilterToggle}
-          className="lg:hidden flex items-center gap-2 px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl text-white text-sm font-semibold transition-colors"
-        >
-          <SlidersHorizontal className="w-4 h-4 text-[#FF3B30]" />
-          <span>Filters</span>
-        </button>
-        
-        <p className="text-zinc-400 text-sm font-['Poppins']">
-          We found <span className="font-bold text-white">{totalCount}</span> {totalCount === 1 ? 'product' : 'products'} for you
-        </p>
-      </div>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingTop: '16px', paddingBottom: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      {/* Count */}
+      <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontFamily: 'Inter, Poppins, sans-serif' }}>
+        <span style={{ color: '#fff', fontWeight: 600, fontSize: '14px' }}>{totalCount}</span>
+        {' '}Products
+      </p>
 
-      {/* Sorting options and Grid/List toggles */}
-      <div className="flex items-center gap-3 justify-between sm:justify-end">
-        {/* Sort Select */}
-        <div className="relative flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-xl">
-          <ArrowUpDown className="w-3.5 h-3.5 text-zinc-500" />
+      {/* Controls */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        {/* Sort select */}
+        <div style={{ 
+            display: 'flex', alignItems: 'center', gap: '8px', 
+            background: 'transparent', padding: '6px 0', 
+          }}
+        >
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value)}
-            className="bg-transparent border-none text-zinc-300 text-xs sm:text-sm font-semibold focus:outline-hidden cursor-pointer font-['Poppins'] pr-1"
+            style={{ background: 'transparent', color: '#fff', fontSize: '13px', fontWeight: 500, border: 'none', outline: 'none', cursor: 'pointer', fontFamily: 'Inter, Poppins, sans-serif' }}
           >
-            <option value="featured">Sort by: Featured</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="name-asc">Name: A to Z</option>
-            <option value="name-desc">Name: Z to A</option>
+            <option value="featured" style={{ background: '#111', color: '#fff' }}>Sort by: Featured</option>
+            <option value="price-asc" style={{ background: '#111', color: '#fff' }}>Price: Low to High</option>
+            <option value="price-desc" style={{ background: '#111', color: '#fff' }}>Price: High to Low</option>
+            <option value="name-asc" style={{ background: '#111', color: '#fff' }}>Name: A → Z</option>
+            <option value="name-desc" style={{ background: '#111', color: '#fff' }}>Name: Z → A</option>
           </select>
         </div>
 
-        {/* View Mode Toggle Buttons */}
-        <div className="flex items-center border border-zinc-800 rounded-xl p-0.5 bg-zinc-900">
-          <button
-            type="button"
-            onClick={() => onViewModeChange('grid')}
-            className={`p-1.5 rounded-lg transition-colors ${
-              viewMode === 'grid'
-                ? 'bg-zinc-850 text-[#FF3B30] shadow-xs'
-                : 'text-zinc-500 hover:text-zinc-400'
-            }`}
-            title="Grid View"
-          >
-            <LayoutGrid className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewModeChange('list')}
-            className={`p-1.5 rounded-lg transition-colors ${
-              viewMode === 'list'
-                ? 'bg-zinc-850 text-[#FF3B30] shadow-xs'
-                : 'text-zinc-500 hover:text-zinc-400'
-            }`}
-            title="List View"
-          >
-            <List className="w-4 h-4" />
-          </button>
+        <div style={{ width: '1px', height: '16px', background: 'rgba(255,255,255,0.15)' }} />
+
+        {/* View toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          {[{ mode: 'grid', Icon: LayoutGrid }, { mode: 'list', Icon: List }].map(({ mode, Icon }) => (
+            <button
+              key={mode}
+              onClick={() => onViewModeChange(mode)}
+              style={{ padding: '6px', border: 'none', cursor: 'pointer', transition: 'all 0.2s ease', background: 'transparent', color: viewMode === mode ? '#fff' : 'rgba(255,255,255,0.3)', borderRadius: '6px' }}
+              title={mode === 'grid' ? 'Grid View' : 'List View'}
+              onMouseEnter={(e) => { if(viewMode !== mode) e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}
+              onMouseLeave={(e) => { if(viewMode !== mode) e.currentTarget.style.color = 'rgba(255,255,255,0.3)'; }}
+            >
+              <Icon size={16} />
+            </button>
+          ))}
         </div>
       </div>
     </div>
