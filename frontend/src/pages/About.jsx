@@ -180,6 +180,17 @@ const styles = `
 .au-hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
 .au-story { display: grid; grid-template-columns: 1.1fr 1fr; gap: 3rem; align-items: center; }
+.au-story-media-frame {
+  padding: 1.1rem;
+  border-radius: calc(var(--radius) + 0.75rem);
+  background: linear-gradient(145deg, #ff4d42, #e6291d);
+  box-shadow:
+    8px 8px 18px rgba(124, 15, 10, 0.45),
+    -8px -8px 18px rgba(255, 130, 120, 0.5),
+    inset 1px 1px 3px rgba(255, 180, 170, 0.5),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.25);
+}
+
 .au-story-media {
   border-radius: var(--radius);
   overflow: hidden;
@@ -187,7 +198,6 @@ const styles = `
   background: var(--surface);
   border: 1px solid #2a2a2a;
   box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.4), 0 15px 25px rgba(0, 0, 0, 0.15);
-  animation: au-float 7s ease-in-out infinite;
 }
 
 @keyframes au-float {
@@ -259,12 +269,13 @@ const styles = `
 
 .au-grid { 
   display: grid; 
-  gap: 1.5rem; 
+  gap: 2.5rem; 
   justify-content: center;
 }
 .au-grid-4 { 
   grid-template-columns: repeat(4, 1fr); 
   max-width: 100%;
+  gap: 3.5rem;
 }
 .au-grid-3 { grid-template-columns: repeat(3, 1fr); }
 .au-grid-2 { grid-template-columns: repeat(2, 1fr); }
@@ -277,23 +288,35 @@ const styles = `
   border: none;
   overflow: hidden;
   width: 100%;
-  max-width: 250px;
-  height: auto;
-  min-height: 254px;
+  max-width: 350px;
+  height: 100%;
+  min-height: 300px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 .au-card-header {
-  height: 70px;
-  background-color: #ff5858;
+  height: 85px;
+  flex-shrink: 0;
+  background: linear-gradient(120deg, #c81f16, #ff3b30, #7a0f0a, #ff3b30, #c81f16);
+  background-size: 300% 300%;
+  animation: au-card-header-glow 6s ease-in-out infinite;
   display: flex;
   align-items: flex-start;
-  padding: 10px;
-  gap: 10px;
+  padding: 14px;
+  gap: 12px;
+  transition: background 0.3s ease;
+}
+
+@keyframes au-card-header-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 .au-card-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
   background: #414141;
   color: var(--red);
   display: flex;
@@ -328,20 +351,27 @@ const styles = `
   overflow: hidden;
 }
 .au-card-body {
-  background: #414141;
-  margin: 6px 5px;
-  min-height: 130px;
-  height: auto;
+  background: linear-gradient(120deg, #2a2a2a, #414141, #1c1c1c, #414141, #2a2a2a);
+  background-size: 300% 300%;
+  animation: au-card-body-glow 7s ease-in-out infinite;
+  margin: 8px 6px;
+  flex: 1;
   border-radius: 5px;
   transition: background 0.3s ease;
-  padding: 12px;
+  padding: 16px;
+}
+
+@keyframes au-card-body-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .au-card-body p {
   margin: 0;
   color: rgba(255,255,255,0.75);
-  font-size: 0.82rem;
-  line-height: 1.5;
+  font-size: 0.9rem;
+  line-height: 1.6;
   display: block;
 }
 
@@ -351,12 +381,14 @@ const styles = `
 }
 
 .au-card:hover .au-card-header {
-  background-color: #262626;
-  transition: background-color 1s ease;
+  background: #262626;
+  animation: none;
+  transition: background 1s ease;
 }
 
 .au-card:hover .au-card-body {
   background: #ff5858;
+  animation: none;
 }
 
 .au-card:hover .au-card-body p {
@@ -451,15 +483,37 @@ const styles = `
 }
 
 .au-tl-node-complete {
-  background: var(--tl-active) !important;
+  background: linear-gradient(120deg, #c81f16, #ff3b30, #7a0f0a, #ff3b30, #c81f16) !important;
+  background-size: 300% 300% !important;
+  animation: au-tl-node-glow 5s ease-in-out infinite !important;
   border-color: var(--tl-active) !important;
   color: #ffffff !important;
+}
+
+@keyframes au-tl-node-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .au-tl-node-pending {
   background: #f3f4f6;
   border-color: var(--tl-line);
   color: #9ca3af;
+}
+
+.au-tl-node-active-glow {
+  background: linear-gradient(120deg, rgba(255,59,48,0.15), rgba(200,31,22,0.25), rgba(255,59,48,0.15)) !important;
+  background-size: 300% 300% !important;
+  animation: au-tl-node-pulse 1.8s ease-in-out infinite, au-tl-active-glow 3s ease-in-out infinite !important;
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+}
+
+@keyframes au-tl-active-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .au-tl-rail-mobile {
@@ -473,20 +527,36 @@ const styles = `
 }
 
 .au-team-card {
-  background: var(--surface);
+  background: linear-gradient(120deg, #1a1a1a, #2a2a2a, #0d0d0d, #2a2a2a, #1a1a1a);
+  background-size: 300% 300%;
+  animation: au-team-card-glow-dark 7s ease-in-out infinite;
   border: 1px solid #2a2a2a;
   border-radius: var(--radius);
   padding: 2rem 1.5rem;
   text-align: center;
-  transition: all 0.4s ease;
+  transition: border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
   cursor: pointer;
 }
 
+@keyframes au-team-card-glow-dark {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .au-team-card:hover {
-  background: #ff3b30;
+  background: linear-gradient(120deg, #c81f16, #ff3b30, #7a0f0a, #ff3b30, #c81f16);
+  background-size: 300% 300%;
+  animation: au-team-card-glow-red 5s ease-in-out infinite;
   border-color: #ff3b30;
   transform: translateY(-8px);
   box-shadow: 0 20px 40px rgba(255, 59, 48, 0.3);
+}
+
+@keyframes au-team-card-glow-red {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .au-team-card:hover .au-avatar {
@@ -561,14 +631,18 @@ const styles = `
   text-align: center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(120deg, #ff3b30, #c81f16, #ff3b30);
-  background-size: 200% 200%;
-  animation: au-gradient 8s ease infinite;
+  background: linear-gradient(to right,
+    rgba(255,59,48,0.90) 0%,
+    rgba(42,12,10,0.90) 25%,
+    rgba(22,22,22,0.96) 50%,
+    rgba(42,12,10,0.90) 75%,
+    rgba(255,59,48,0.90) 100%);
+  background-size: 200% 100%;
+  animation: au-ctaGlowMove 6s ease-in-out infinite alternate;
 }
-@keyframes au-gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes au-ctaGlowMove {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 0%; }
 }
 .au-cta-box h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); color: var(--white); margin-bottom: 1rem; }
 .au-cta-box p { color: rgba(255,255,255,0.9); max-width: 520px; margin: 0 auto 2rem; line-height: 1.6; font-size: 1.05rem; }
@@ -820,13 +894,8 @@ function TimelineCard({ milestone, active, complete, onRevealComplete }) {
 
       <div className="au-tl-node-wrap">
         <motion.div
-          className={`au-tl-node ${complete ? "au-tl-node-complete" : active ? "au-tl-node-pulse" : "au-tl-node-pending"
+          className={`au-tl-node ${complete ? "au-tl-node-complete" : active ? "au-tl-node-pulse au-tl-node-active-glow" : "au-tl-node-pending"
             }`}
-          style={
-            active && !complete
-              ? { background: "rgba(239,68,68,0.08)", borderColor: "#ef4444", color: "#ef4444" }
-              : undefined
-          }
           initial={{ scale: 0, rotate: -180 }}
           animate={active ? { scale: 1, rotate: 0 } : {}}
           transition={{ type: "spring", stiffness: 150 }}
@@ -1073,19 +1142,21 @@ export default function AboutUs() {
 
       <section className="au-section au-light" id="story" aria-labelledby="story-title">
         <div className="au-inner au-story">
-          <div
-            className="au-story-media"
-            onMouseEnter={handleVideoEnter}
-            onMouseLeave={handleVideoLeave}
-          >
-            <video
-              ref={videoRef}
-              src="/sport.mp4"
-              loop
-              muted
-              playsInline
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-            />
+          <div className="au-story-media-frame">
+            <div
+              className="au-story-media"
+              onMouseEnter={handleVideoEnter}
+              onMouseLeave={handleVideoLeave}
+            >
+              <video
+                ref={videoRef}
+                src="/sport.mp4"
+                loop
+                muted
+                playsInline
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
+            </div>
           </div>
           <div>
             <p className="au-eyebrow au-eyebrow-blink">Where It Started</p>
@@ -1194,7 +1265,7 @@ export default function AboutUs() {
         </div>
       </section>
 
-      <section className="au-section au-dark" id="cta" aria-labelledby="cta-title">
+      <section className="au-section au-light" id="cta" aria-labelledby="cta-title">
         <div className="au-inner">
           <div className="au-cta-box">
             <h2 className="au-heading" id="cta-title">Ready to Elevate Your Game?</h2>
