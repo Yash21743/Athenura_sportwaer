@@ -272,7 +272,7 @@ const styles = `
   .badge-label { font-size: 1rem; font-weight: 600; color: var(--fg); }
   .badge-sub { font-size: 0.8rem; color: var(--muted-fg); margin-top: 2px; }
 
-  .cta-section { background: var(--bg); padding: 1rem 1.5rem 6rem; }
+  .cta-section { background: #ffffff; padding: 1rem 1.5rem 6rem; }
   .cta-box {
     position: relative; max-width: 1200px; margin: 0 auto;
     border-radius: calc(var(--radius) + 8px); border: 1px solid var(--border); overflow: hidden;
