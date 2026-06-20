@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import {
@@ -1085,7 +1085,7 @@ function TimelineJourneySection() {
   );
 }
 
-const BRAND = "Comfy Sport Wear";
+const BRAND = "Athenura Sportswear";
 
 export default function AboutUs() {
   const [glow, setGlow] = useState({ x: 50, y: 30 });
@@ -1124,25 +1124,45 @@ export default function AboutUs() {
         aria-label="About hero"
       >
         <div className="au-hero-glow" style={glowStyle} aria-hidden="true" />
-        <div className="au-hero-inner">
+        <motion.div 
+          className="au-hero-inner"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
+        >
           <h1 className="au-heading">
             Built to Compete.<br />
             <span className="au-accent au-shock au-glitch" style={{ display: 'inline-block' }}>Born to Conquer.</span>
           </h1>
-          <p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.25, ease: "easeOut" }}
+          >
             {BRAND} was built for the ones who never settle. The ones who wake up before the world does. The ones who see every workout as a war against their own limits.
-          </p>
-          <div className="au-hero-actions">
+          </motion.p>
+          <motion.div 
+            className="au-hero-actions"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.5, ease: "easeOut" }}
+          >
             <a href="#story" className="au-btn au-btn-red">
               Our Journey <ArrowRight size={18} aria-hidden="true" />
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </header>
 
       <section className="au-section au-light" id="story" aria-labelledby="story-title">
         <div className="au-inner au-story">
-          <div className="au-story-media-frame">
+          <motion.div 
+            className="au-story-media-frame"
+            initial={{ opacity: 0, scale: 0.94, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.85, ease: "easeOut" }}
+          >
             <div
               className="au-story-media"
               onMouseEnter={handleVideoEnter}
@@ -1157,8 +1177,13 @@ export default function AboutUs() {
                 style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               />
             </div>
-          </div>
-          <div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 45 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.85, ease: "easeOut" }}
+          >
             <p className="au-eyebrow au-eyebrow-blink">Where It Started</p>
             <h2 className="au-heading" id="story-title">
               Forged In Sweat, Built To Last
@@ -1176,22 +1201,35 @@ export default function AboutUs() {
             <span className="au-pill au-pill-outline" style={{ marginTop: "0.5rem" }}>
               Est. 2014
             </span>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section className="au-section au-light" aria-labelledby="values-title">
         <div className="au-inner">
-          <div className="au-section-head">
+          <motion.div 
+            className="au-section-head"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.8 }}
+          >
             <p className="au-eyebrow">What Drives Us</p>
             <h2 className="au-heading au-gradient-text" id="values-title">Our Core Values</h2>
             <p>The principles stitched into everything we design, build, and stand for.</p>
-          </div>
+          </motion.div>
           <div className="au-grid au-grid-4">
-            {VALUES.map((v) => {
+            {VALUES.map((v, idx) => {
               const Icon = v.icon;
               return (
-                <article className="au-card" key={v.title}>
+                <motion.article 
+                  className="au-card" 
+                  key={v.title}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.65, delay: idx * 0.15, ease: "easeOut" }}
+                >
                   <div className="au-card-header">
                     <div className="au-card-icon">
                       <Icon size={24} aria-hidden="true" />
@@ -1203,7 +1241,7 @@ export default function AboutUs() {
                   <div className="au-card-body">
                     <p>{v.text}</p>
                   </div>
-                </article>
+                </motion.article>
               );
             })}
           </div>
@@ -1212,20 +1250,33 @@ export default function AboutUs() {
 
       <section className="au-section au-dark" aria-labelledby="stats-title">
         <div className="au-inner">
-          <div className="au-section-head">
+          <motion.div 
+            className="au-section-head"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.8 }}
+          >
             <p className="au-eyebrow au-eyebrow-shine">By The Numbers</p>
             <h2 className="au-heading au-gradient-text-move" id="stats-title">
               Milestones That Matter
             </h2>
-          </div>
+          </motion.div>
           <div className="au-stats-strip">
-            {STATS.map((s) => (
-              <div className="au-stat" key={s.label}>
+            {STATS.map((s, idx) => (
+              <motion.div 
+                className="au-stat" 
+                key={s.label}
+                initial={{ opacity: 0, scale: 0.88 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.55, delay: idx * 0.1, ease: "easeOut" }}
+              >
                 <div className="au-stat-num">
                   <AnimatedCounter target={s.target} suffix={s.suffix || "+"} />
                 </div>
                 <div className="au-stat-label">{s.label}</div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -1235,15 +1286,28 @@ export default function AboutUs() {
 
       <section className="au-section au-dark" aria-labelledby="team-title">
         <div className="au-inner">
-          <div className="au-section-head">
+          <motion.div 
+            className="au-section-head"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.8 }}
+          >
             <p className="au-eyebrow">The People Behind It</p>
             <h2 className="au-heading au-team-gradient" id="team-title">
               Meet The Team
             </h2>
-          </div>
+          </motion.div>
           <div className="au-grid au-grid-4">
-            {TEAM.map((m) => (
-              <article className="au-team-card" key={m.name}>
+            {TEAM.map((m, idx) => (
+              <motion.article 
+                className="au-team-card" 
+                key={m.name}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.65, delay: idx * 0.15, ease: "easeOut" }}
+              >
                 <div className="au-avatar" aria-label={`${m.name} avatar`}>
                   <img
                     src={m.image}
@@ -1259,7 +1323,7 @@ export default function AboutUs() {
                 <h3>{m.name}</h3>
                 <p className="au-team-role">{m.role}</p>
                 <p>{m.bio}</p>
-              </article>
+              </motion.article>
             ))}
           </div>
         </div>
@@ -1267,7 +1331,13 @@ export default function AboutUs() {
 
       <section className="au-section au-light" id="cta" aria-labelledby="cta-title">
         <div className="au-inner">
-          <div className="au-cta-box">
+          <motion.div 
+            className="au-cta-box"
+            initial={{ opacity: 0, scale: 0.94, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.85, ease: "easeOut" }}
+          >
             <h2 className="au-heading" id="cta-title">Ready to Elevate Your Game?</h2>
             <p>
               Push your limits with sportswear built for performance, comfort, and confidence. Whether you're training or competing, we're here to help you perform at your best.
@@ -1277,7 +1347,7 @@ export default function AboutUs() {
                 <Mail size={18} aria-hidden="true" /> Contact Us
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>

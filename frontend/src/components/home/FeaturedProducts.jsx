@@ -831,12 +831,77 @@ const FeaturedProducts = () => {
     localStorage.setItem('comfy_wishlist', JSON.stringify(updated));
   };
 
+  const colorHexToName = {
+    '#FF3B30': 'Red',
+    '#000000': 'Black',
+    '#FFFFFF': 'White',
+    '#1565C0': 'Blue',
+    '#0D47A1': 'Dark Blue',
+    '#8E8E93': 'Gray',
+    '#2C2C2E': 'Dark Gray'
+  };
+
+  const addItemToCart = (prod, size, color, quantity) => {
+    try {
+      const cartKey = 'csw_cart_items';
+      const stored = localStorage.getItem(cartKey);
+      let cart = stored ? JSON.parse(stored) : [];
+
+      const sizeName = size || prod.sizes?.[0] || 'Default';
+      const colorName = colorHexToName[color] || 'Default';
+      const code = prod.code || `ATH-FP-0${prod.id}`;
+      const productId = `featured-${prod.id}`;
+
+      const existingIndex = cart.findIndex(item =>
+        item._id === productId &&
+        item.size === sizeName &&
+        item.color === colorName
+      );
+
+      if (existingIndex > -1) {
+        cart[existingIndex].quantity += quantity;
+      } else {
+        cart.push({
+          _id: productId,
+          name: prod.name,
+          code: code,
+          price: prod.price,
+          image: prod.image || '',
+          size: sizeName,
+          color: colorName,
+          quantity: quantity
+        });
+      }
+
+      localStorage.setItem(cartKey, JSON.stringify(cart));
+      window.dispatchEvent(new Event('cartUpdated'));
+
+      toast.success(
+        (t) => (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+            <span>Added {quantity}x items to your bag!</span>
+            <Link
+              to="/cart"
+              onClick={() => toast.dismiss(t.id)}
+              style={{ color: '#FF3B30', fontWeight: 800, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+            >
+              View Bag
+            </Link>
+          </div>
+        ),
+        { duration: 4000 }
+      );
+    } catch (err) {
+      console.error('Failed to add item to cart:', err);
+      toast.error('Could not add item to cart. Please try again.');
+    }
+  };
+
   const addToCart = (e, prod) => {
     e.stopPropagation();
-    toast.success(`${prod.name} added to Cart!`, {
-      icon: '🛒',
-      style: { borderRadius: '10px', background: '#111', color: '#fff' },
-    });
+    const defaultSize = prod.sizes?.[0] || 'M';
+    const defaultColor = prod.colors?.[0] || '';
+    addItemToCart(prod, defaultSize, defaultColor, 1);
   };
 
   const openQuickView = (e, prod) => {
@@ -850,10 +915,7 @@ const FeaturedProducts = () => {
   const closeQuickView = () => setSelectedProduct(null);
 
   const handleModalAdd = () => {
-    toast.success(`${selectedProduct.name} (${selectedSize} / ${selectedColor ? 'Selected Color' : 'Default'}) x${qty} added to Cart!`, {
-      icon: '🛒',
-      style: { borderRadius: '10px', background: '#111', color: '#fff' },
-    });
+    addItemToCart(selectedProduct, selectedSize, selectedColor, qty);
     closeQuickView();
   };
 

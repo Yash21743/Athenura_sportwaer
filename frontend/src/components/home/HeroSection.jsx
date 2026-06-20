@@ -30,12 +30,6 @@ const styles = `
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
   }
-
-  html, body {
-    overflow-x: hidden;
-    max-width: 100%;
-  }
-
   .card-border-outer {
     position: relative;
     border-radius: 20px;
@@ -113,6 +107,12 @@ const styles = `
   }
 
   .hero-section {
+    position: relative;
+    min-height: calc(100vh - 76px);
+    background: linear-gradient(135deg, #070707 0%, #101010 55%, #0b0b0b 100%);
+    display: flex;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
     overflow: hidden !important;
   }
 
@@ -125,7 +125,7 @@ const styles = `
     max-width: 1280px;
     width: 100%;
     margin: 0 auto;
-    padding: 70px 28px;
+    padding: 30px 28px 50px;
     box-sizing: border-box;
   }
 
@@ -212,9 +212,12 @@ const styles = `
   }
 
   @media (max-width: 1024px) {
+    .hero-section {
+      min-height: auto;
+    }
     .hero-container {
-      padding: 60px 24px;
-      gap: 36px;
+      padding: 60px 24px 45px;
+      gap: 30px;
       flex-direction: column;
       align-items: center;
     }
@@ -240,9 +243,12 @@ const styles = `
   }
 
   @media (max-width: 600px) {
+    .hero-section {
+      min-height: auto;
+    }
     .hero-container {
-      padding: 48px 16px;
-      gap: 24px;
+      padding: 45px 16px 35px;
+      gap: 20px;
     }
     .hero-title-main { font-size: 2.8rem; letter-spacing: -1px; }
     .hero-title-sub  { font-size: 2rem; white-space: normal; }
@@ -334,15 +340,7 @@ const HeroSection = () => {
     <>
       <style>{styles}</style>
 
-      <section className="hero-section" style={{
-        position: 'relative',
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #070707 0%, #101010 55%, #0b0b0b 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        fontFamily: "'Poppins', sans-serif",
-        overflow: 'hidden',
-      }}>
+      <section className="hero-section">
 
         <div style={{
           position: 'absolute', top: -180, right: -80,

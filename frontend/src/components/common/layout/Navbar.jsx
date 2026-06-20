@@ -1,9 +1,10 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Menu, ShoppingBag, User, X, LogIn, Heart, Package, Settings } from "lucide-react"
 import { Link, NavLink as RouterNavLink } from "react-router-dom"
+import logo from "../../../assets/images/ath.logo.jpeg"
 
 const styles = `
 .nav-root {
@@ -34,7 +35,7 @@ const styles = `
 }
 
 .nav-shell[data-scrolled='true'] {
-  background: #222228;
+  background: #000000;
   box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light), 0 6px 25px rgba(200, 0, 0, 0.15);
 }
 
@@ -213,7 +214,7 @@ const styles = `
   left: 0;
   right: 0;
   overflow: hidden;
-  background: #222227;
+  background: #000000;
   border-top: 1px solid rgba(255, 255, 255, 0.03);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
   z-index: 49;
@@ -243,7 +244,7 @@ const styles = `
 }
 
 .mobile-link:hover {
-  background: #222227;
+  background: #111115;
   box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5), inset -2px -2px 4px rgba(255, 255, 255, 0.03);
 }
 
@@ -272,11 +273,38 @@ const NAV_LINKS = [
   { label: "Contact", href: "/contact" },
 ]
 
-export default function Navbar({ cartCount = 3 }) {
+export default function Navbar({ cartCount }) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
+  const [cartItemsCount, setCartItemsCount] = useState(0)
   const accountRef = useRef(null)
+
+  const updateCartCount = () => {
+    try {
+      const stored = localStorage.getItem('csw_cart_items');
+      if (stored) {
+        const items = JSON.parse(stored);
+        const count = items.reduce((acc, item) => acc + item.quantity, 0);
+        setCartItemsCount(count);
+      } else {
+        setCartItemsCount(0);
+      }
+    } catch (err) {
+      console.error('Error calculating cart count:', err);
+      setCartItemsCount(0);
+    }
+  };
+
+  useEffect(() => {
+    updateCartCount();
+    window.addEventListener('cartUpdated', updateCartCount);
+    window.addEventListener('storage', updateCartCount);
+    return () => {
+      window.removeEventListener('cartUpdated', updateCartCount);
+      window.removeEventListener('storage', updateCartCount);
+    };
+  }, []);
 
   useEffect(() => {
     const styleTag = document.createElement("style")
@@ -318,14 +346,18 @@ export default function Navbar({ cartCount = 3 }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Link to="/" className="nav-logo">
-          <motion.span
-            className="nav-logo__text"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            COMFY SPORT WEAR
-          </motion.span>
+        <Link to="/" className="nav-logo" style={{ display: 'flex', alignItems: 'center' }}>
+          <motion.img
+            src={logo}
+            alt="Athenura Sportswear Logo"
+            style={{ 
+              height: '72px', 
+              width: 'auto', 
+              objectFit: 'contain'
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          />
         </Link>
 
         <motion.ul
@@ -352,6 +384,29 @@ export default function Navbar({ cartCount = 3 }) {
         </motion.ul>
 
         <div className="nav-actions">
+          <Link to="/cart" style={{ textDecoration: 'none' }}>
+            <motion.button
+              type="button"
+              className="icon-btn"
+              aria-label={`Cart, ${cartItemsCount} items`}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ShoppingBag size={20} />
+              {cartItemsCount > 0 && (
+                <motion.span
+                  className="cart-badge"
+                  key={cartItemsCount}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 18 }}
+                >
+                  {cartItemsCount}
+                </motion.span>
+              )}
+            </motion.button>
+          </Link>
+
           <button
             type="button"
             className="icon-btn nav-burger"
@@ -372,71 +427,6 @@ export default function Navbar({ cartCount = 3 }) {
               </motion.span>
             </AnimatePresence>
           </button>
-          <motion.button
-            type="button"
-            className="icon-btn"
-            aria-label={`Cart, ${cartCount} items`}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ShoppingBag size={20} />
-            {cartCount > 0 && (
-              <motion.span
-                className="cart-badge"
-                key={cartCount}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 500, damping: 18 }}
-              >
-                {cartCount}
-              </motion.span>
-            )}
-          </motion.button>
-
-          <div className="account-wrap" ref={accountRef}>
-            <motion.button
-              type="button"
-              className="icon-btn"
-              aria-label="Account menu"
-              aria-haspopup="menu"
-              aria-expanded={accountOpen}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setAccountOpen((v) => !v)}
-            >
-              <User size={20} />
-            </motion.button>
-
-            <AnimatePresence>
-              {accountOpen && (
-                <motion.div
-                  className="account-menu"
-                  role="menu"
-                  initial={{ opacity: 0, scale: 0.92, y: -8 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.92, y: -8 }}
-                  transition={{ duration: 0.18, ease: "easeOut" }}
-                >
-                  <div className="account-menu__head">
-                    <strong>Hello, Guest</strong>
-                    <small>Sign in for a faster checkout</small>
-                  </div>
-                  <button className="account-item" role="menuitem">
-                    <LogIn size={16} /> Sign in
-                  </button>
-                  <button className="account-item" role="menuitem">
-                    <Package size={16} /> My Orders
-                  </button>
-                  <button className="account-item" role="menuitem">
-                    <Heart size={16} /> Wishlist
-                  </button>
-                  <button className="account-item" role="menuitem">
-                    <Settings size={16} /> Settings
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
       </motion.nav>
 

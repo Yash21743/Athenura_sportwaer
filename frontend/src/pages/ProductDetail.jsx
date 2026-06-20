@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { 
   ArrowLeft, Star, Truck, Info, Check, 
   MessageSquare, Users, ChevronRight, FileText, Send, X, ArrowUpRight 
@@ -122,26 +123,83 @@ const ProductDetail = () => {
 
   const stripHtml = (html = '') => html.replace(/<[^>]*>/g, '');
 
+  const handleAddToCart = () => {
+    if (!product) return;
+    try {
+      const cartKey = 'csw_cart_items';
+      const stored = localStorage.getItem(cartKey);
+      let cart = stored ? JSON.parse(stored) : [];
+
+      const colorName = product.colorNames && product.colorNames[selectedColorIndex]
+        ? product.colorNames[selectedColorIndex]
+        : 'Default';
+      const sizeName = selectedSize || (product.sizes && product.sizes[0]) || 'Default';
+
+      const existingIndex = cart.findIndex(item =>
+        item._id === product._id &&
+        item.size === sizeName &&
+        item.color === colorName
+      );
+
+      if (existingIndex > -1) {
+        cart[existingIndex].quantity += quantity;
+      } else {
+        cart.push({
+          _id: product._id,
+          name: product.name,
+          code: product.code,
+          price: product.price,
+          image: activeImage || (product.images && product.images[0]) || '',
+          size: sizeName,
+          color: colorName,
+          quantity: quantity
+        });
+      }
+
+      localStorage.setItem(cartKey, JSON.stringify(cart));
+      window.dispatchEvent(new Event('cartUpdated'));
+
+      toast.success(
+        (t) => (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+            <span>Added {quantity}x items to your bag!</span>
+            <Link
+              to="/cart"
+              onClick={() => toast.dismiss(t.id)}
+              style={{ color: '#FF3B30', fontWeight: 800, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+            >
+              View Bag
+            </Link>
+          </div>
+        ),
+        { duration: 4000 }
+      );
+    } catch (err) {
+      console.error('Failed to add item to cart:', err);
+      toast.error('Could not add item to cart. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#000000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+      <div style={{ minHeight: '100vh', background: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
         <div style={{ position: 'relative', width: '48px', height: '48px' }}>
-          <div style={{ position: 'absolute', inset: 0, border: '2px solid rgba(255,255,255,0.06)', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', inset: 0, border: '2px solid rgba(0,0,0,0.06)', borderRadius: '50%' }} />
           <div style={{ position: 'absolute', inset: 0, border: '2px solid transparent', borderTopColor: '#FF3B30', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         </div>
-        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '13px', fontFamily: 'Poppins, sans-serif' }}>Loading product details...</p>
+        <p style={{ color: 'rgba(0,0,0,0.45)', fontSize: '13px', fontFamily: 'Poppins, sans-serif' }}>Loading product details...</p>
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div style={{ minHeight: '100vh', background: '#000000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center', fontFamily: 'Poppins, sans-serif' }}>
+      <div style={{ minHeight: '100vh', background: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center', fontFamily: 'Poppins, sans-serif' }}>
         <div style={{ width: '64px', height: '64px', background: 'rgba(255,59,48,0.1)', color: '#FF3B30', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', border: '1px solid rgba(255,59,48,0.25)' }}>
           <Info size={32} />
         </div>
-        <h3 style={{ fontSize: '24px', fontWeight: 900, color: '#fff', marginBottom: '8px', fontFamily: 'Montserrat, sans-serif' }}>Product Not Found</h3>
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', maxWidth: '400px', marginBottom: '24px' }}>{error || 'Unable to locate details.'}</p>
+        <h3 style={{ fontSize: '24px', fontWeight: 900, color: '#000', marginBottom: '8px', fontFamily: 'Montserrat, sans-serif' }}>Product Not Found</h3>
+        <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '14px', maxWidth: '400px', marginBottom: '24px' }}>{error || 'Unable to locate details.'}</p>
         <Link to="/products" style={{ padding: '12px 24px', background: '#FF3B30', color: '#fff', borderRadius: '12px', fontWeight: 700, textDecoration: 'none' }}>
           Back to Catalog
         </Link>
@@ -158,10 +216,10 @@ const ProductDetail = () => {
   const cleanDescription = stripHtml(product.description);
 
   const styles = `
-    .pd-wrap { min-height: 100vh; background: #000; color: #fff; padding-bottom: 80px; font-family: 'Poppins', sans-serif; }
+    .pd-wrap { min-height: 100vh; background: #ffffff; color: #000; padding-bottom: 80px; font-family: 'Poppins', sans-serif; }
     .pd-header { max-width: 1400px; margin: 0 auto; padding: 24px 48px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .pd-container { max-width: 1400px; margin: 0 auto; padding: 0 48px; }
-    .pd-card { background: #0a0a0a; border-radius: 24px; border: 1px solid rgba(255,255,255,0.07); padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .pd-card { background: #0a0a0a; color: #ffffff; border-radius: 24px; border: 1px solid rgba(255,255,255,0.07); padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
     .pd-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 48px; }
     .pd-img-col { grid-column: span 5; display: flex; flex-direction: column; gap: 16px; }
     .pd-info-col { grid-column: span 7; display: flex; flex-direction: column; justify-content: space-between; }
@@ -205,19 +263,19 @@ const ProductDetail = () => {
       
       {/* Navigation Breadcrumbs / Back button */}
       <div className="pd-header">
-          <Link to="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: '13px', textDecoration: 'none', transition: 'color 0.2s' }}
+          <Link to="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'rgba(0,0,0,0.6)', fontWeight: 600, fontSize: '13px', textDecoration: 'none', transition: 'color 0.2s' }}
             onMouseEnter={(e) => e.currentTarget.style.color = '#FF3B30'}
-            onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(0,0,0,0.6)'}
           >
             <ArrowLeft size={16} />
             <span>Back to Catalog</span>
           </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 500, fontFamily: 'monospace' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'rgba(0,0,0,0.4)', fontWeight: 500, fontFamily: 'monospace' }}>
             <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>HOME</Link>
             <ChevronRight size={14} />
             <Link to="/products" style={{ color: 'inherit', textDecoration: 'none' }}>PRODUCTS</Link>
             <ChevronRight size={14} />
-            <span style={{ color: '#fff', fontWeight: 700 }}>{product.code}</span>
+            <span style={{ color: '#000', fontWeight: 700 }}>{product.code}</span>
           </div>
         </div>
 
@@ -434,7 +492,7 @@ const ProductDetail = () => {
                 <div className="pd-action-btns">
                   <button 
                     type="button" 
-                    onClick={() => alert("Added to cart")}
+                    onClick={handleAddToCart}
                     style={{ padding: '16px', background: '#111', color: '#fff', border: '1px solid #FF3B30', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                     onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,59,48,0.1)'}
                     onMouseLeave={(e) => e.currentTarget.style.background = '#111'}

@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 // Layout
@@ -14,6 +15,7 @@ import BulkOrder from './pages/BulkOrder';
 import Contact from './pages/Contact';
 import Testimonials from './pages/Testimonials';
 import FAQ from './pages/FAQ';
+import AddToBag from './pages/AddToBag';
 import NotFound from './pages/NotFound';
 
 // Admin Pages
@@ -25,9 +27,20 @@ import AdminLeads from './components/admin/AdminLeads';
 import AdminBulkOrders from './components/admin/AdminBulkOrders';
 import AdminTestimonials from './components/admin/AdminTestimonials';
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Toaster position="top-right" />
 
       <Routes>
@@ -47,6 +60,8 @@ function App() {
                   <Route path="/testimonials"    element={<Testimonials />} />
                   <Route path="/faq"             element={<FAQ />} />
                   <Route path="/contact"         element={<Contact />} />
+                  <Route path="/cart"            element={<AddToBag />} />
+                  <Route path="/add-to-bag"      element={<AddToBag />} />
                   <Route path="*"                element={<NotFound />} />
                 </Routes>
               </main>

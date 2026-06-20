@@ -27,10 +27,10 @@ const ProductSorting = ({ totalCount, sortBy, onSortChange, viewMode = 'grid', o
   }, []);
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingTop: '16px', paddingBottom: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingTop: '16px', paddingBottom: '16px', borderTop: '1px solid rgba(0,0,0,0.08)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
       {/* Count */}
-      <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontFamily: 'Inter, Poppins, sans-serif' }}>
-        <span style={{ color: '#fff', fontWeight: 600, fontSize: '14px' }}>{totalCount}</span>
+      <p style={{ fontSize: '13px', color: 'rgba(0,0,0,0.55)', fontFamily: 'Inter, Poppins, sans-serif' }}>
+        <span style={{ color: '#111', fontWeight: 600, fontSize: '14px' }}>{totalCount}</span>
         {' '}Products
       </p>
 
@@ -43,7 +43,7 @@ const ProductSorting = ({ totalCount, sortBy, onSortChange, viewMode = 'grid', o
             onClick={() => setIsOpen(!isOpen)}
             style={{
               display: 'flex', alignItems: 'center', gap: '8px',
-              background: 'transparent', color: '#fff', fontSize: '13px', fontWeight: 500,
+              background: 'transparent', color: '#111', fontSize: '13px', fontWeight: 500,
               border: 'none', cursor: 'pointer', fontFamily: 'Inter, Poppins, sans-serif',
               padding: '6px 0',
             }}
@@ -61,14 +61,13 @@ const ProductSorting = ({ totalCount, sortBy, onSortChange, viewMode = 'grid', o
                 transition={{ duration: 0.2 }}
                 style={{
                   position: 'absolute', top: '100%', right: 0, marginTop: '8px',
-                  background: 'rgba(10, 10, 10, 0.95)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: '#ffffff',
+                  border: '1px solid rgba(0,0,0,0.08)',
                   borderRadius: '12px',
                   overflow: 'hidden',
                   width: '180px',
                   zIndex: 50,
-                  boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+                  boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
                   display: 'flex', flexDirection: 'column'
                 }}
               >
@@ -80,8 +79,8 @@ const ProductSorting = ({ totalCount, sortBy, onSortChange, viewMode = 'grid', o
                       setIsOpen(false);
                     }}
                     style={{
-                      background: sortBy === option.value ? 'rgba(255, 59, 48, 0.1)' : 'transparent',
-                      color: sortBy === option.value ? '#FF3B30' : '#fff',
+                      background: sortBy === option.value ? 'rgba(255, 59, 48, 0.06)' : 'transparent',
+                      color: sortBy === option.value ? '#FF3B30' : '#111',
                       border: 'none', padding: '12px 16px', textAlign: 'left',
                       fontSize: '13px', fontWeight: sortBy === option.value ? 600 : 400,
                       cursor: 'pointer', transition: 'all 0.2s',
@@ -90,7 +89,7 @@ const ProductSorting = ({ totalCount, sortBy, onSortChange, viewMode = 'grid', o
                     }}
                     onMouseEnter={(e) => {
                       if (sortBy !== option.value) {
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                        e.currentTarget.style.background = 'rgba(0,0,0,0.03)';
                       }
                     }}
                     onMouseLeave={(e) => {

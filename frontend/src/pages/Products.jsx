@@ -89,7 +89,7 @@ const Products = () => {
   };
 
   return (
-    <div className="min-h-screen font-['Poppins']" style={{ background: '#000000', color: '#FFFFFF' }}>
+    <div className="min-h-screen font-['Poppins']" style={{ background: '#ffffff', color: '#111111' }}>
 
       {/* ══════════════════════════════
           HERO BANNER
@@ -209,9 +209,9 @@ const Products = () => {
                 <button
                   type="button"
                   onClick={() => setVisibleCount((prev) => prev + 8)}
-                  style={{ padding: '14px 32px', background: 'transparent', color: '#fff', border: '1px solid rgba(255,59,48,0.5)', borderRadius: '12px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', transition: 'all 0.3s' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,59,48,0.1)'; e.currentTarget.style.borderColor = '#FF3B30'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,59,48,0.5)'; }}
+                  style={{ padding: '14px 32px', background: 'transparent', color: '#FF3B30', border: '1px solid rgba(255,59,48,0.5)', borderRadius: '12px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', transition: 'all 0.3s' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#FF3B30'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#FF3B30'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#FF3B30'; e.currentTarget.style.borderColor = 'rgba(255,59,48,0.5)'; }}
                 >
                   Load More Products
                 </button>

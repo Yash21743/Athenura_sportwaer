@@ -33,13 +33,30 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
         onMouseEnter={(e) => { setIsHovered(true); e.currentTarget.style.borderColor = 'rgba(255,59,48,0.3)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.5)'; }}
         onMouseLeave={(e) => { setIsHovered(false); e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.boxShadow = 'none'; }}
       >
-        <Link to={`/products/${_id}`} className="w-full aspect-[4/5] sm:aspect-auto sm:w-[220px] shrink-0" style={{ position: 'relative', overflow: 'hidden', background: '#111', display: 'block', minHeight: '180px' }}>
-          {img1 && <img src={img1} alt={name} style={{ position: 'absolute', inset: '-1px', width: 'calc(100% + 2px)', height: 'calc(100% + 2px)', objectFit: 'cover', transition: 'all 0.5s ease', transform: isHovered ? 'scale(1.03)' : 'scale(1.01)', filter: isHovered ? 'contrast(1.1) saturate(1.2)' : 'contrast(1) saturate(1)' }} />}
+        <Link to={`/products/${_id}`} className="w-full aspect-[4/5] sm:aspect-auto sm:w-[220px] shrink-0 mb-[-1px] sm:mb-0 sm:mr-[-1px]" style={{ position: 'relative', overflow: 'hidden', background: '#111', display: 'block', minHeight: '180px' }}>
+          {img1 && (
+            <img 
+              src={img1} 
+              alt={name} 
+              style={{ 
+                position: 'absolute', 
+                inset: 0, 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover', 
+                transition: 'all 0.5s ease', 
+                transform: isHovered ? 'scale(1.03) translateZ(0)' : 'scale(1.01) translateZ(0)', 
+                filter: isHovered ? 'contrast(1.1) saturate(1.2)' : 'contrast(1) saturate(1)',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden'
+              }} 
+            />
+          )}
           {/* Glass Shine Effect */}
           <div style={{ position: 'absolute', top: 0, width: '50%', height: '100%', background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent)', transform: 'skewX(-25deg)', transition: isHovered ? 'left 0.6s ease-out' : 'none', left: isHovered ? '200%' : '-100%', zIndex: 5, pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, transparent, rgba(0,0,0,0.4))' }} />
+          <div style={{ position: 'absolute', inset: '-2px', background: 'linear-gradient(to right, transparent, rgba(0,0,0,0.4))' }} />
         </Link>
-        <div className="flex-1 p-5 sm:p-5 sm:px-6 flex flex-col justify-between overflow-hidden">
+        <div className="flex-1 p-5 sm:p-5 sm:px-6 flex flex-col justify-between overflow-hidden" style={{ background: '#111', position: 'relative', zIndex: 2 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
               <span className="text-[10px] font-bold px-[10px] py-[2px] rounded-full bg-white/5 text-white/50 uppercase tracking-wide">{category}</span>
@@ -87,7 +104,11 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
       className="group"
       style={{ 
         display: 'flex', flexDirection: 'column', background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', overflow: 'hidden', 
-        transition: 'all 0.3s ease-out'
+        transition: 'all 0.3s ease-out',
+        transform: 'translateZ(0)',
+        WebkitTransform: 'translateZ(0)',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden'
       }}
       onMouseEnter={(e) => { 
         setIsHovered(true);
@@ -103,16 +124,27 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
       }}
     >
       {/* Image area */}
-      <Link to={`/products/${_id}`} style={{ position: 'relative', display: 'block', height: '220px', background: '#111', overflow: 'hidden', flexShrink: 0 }}>
+      <Link to={`/products/${_id}`} style={{ position: 'relative', display: 'block', height: '220px', background: '#111', overflow: 'hidden', flexShrink: 0, marginBottom: '-1px' }}>
         {img1 && (
           <img src={img1} alt={name}
-            style={{ position: 'absolute', inset: '-1px', width: 'calc(100% + 2px)', height: 'calc(100% + 2px)', objectFit: 'cover', transition: 'all 0.5s ease', transform: isHovered ? 'scale(1.05)' : 'scale(1.01)', filter: isHovered ? 'contrast(1.1) saturate(1.2)' : 'contrast(1) saturate(1)' }}
+            style={{ 
+              position: 'absolute', 
+              inset: 0, 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover', 
+              transition: 'all 0.5s ease', 
+              transform: isHovered ? 'scale(1.05) translateZ(0)' : 'scale(1.01) translateZ(0)', 
+              filter: isHovered ? 'contrast(1.1) saturate(1.2)' : 'contrast(1) saturate(1)',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden'
+            }}
           />
         )}
         {/* Glass Shine Effect */}
         <div style={{ position: 'absolute', top: 0, width: '50%', height: '100%', background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.25), transparent)', transform: 'skewX(-25deg)', transition: isHovered ? 'left 0.7s ease-out' : 'none', left: isHovered ? '200%' : '-100%', zIndex: 5, pointerEvents: 'none' }} />
         {/* Gradient */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: '-2px', background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)', pointerEvents: 'none' }} />
 
         {/* Category */}
         <div style={{ position: 'absolute', top: '10px', left: '10px' }}>
@@ -130,7 +162,7 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
       </Link>
 
       {/* Info */}
-      <div style={{ padding: '14px 14px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <div style={{ padding: '14px 14px 14px', display: 'flex', flexDirection: 'column', flex: 1, background: '#111', position: 'relative', zIndex: 2 }}>
         {/* Stars */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginBottom: '8px' }}>
           {[...Array(5)].map((_, i) => <Star key={i} size={11} style={{ fill: i < 4 ? '#fbbf24' : '#2a2a2a', color: i < 4 ? '#fbbf24' : '#2a2a2a' }} />)}
