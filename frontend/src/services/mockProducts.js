@@ -57,7 +57,7 @@ export const mockProducts = [
       "Purple"
     ],
     "images": [
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800",
+      "/jerseys/red.png",
       "https://images.unsplash.com/photo-1506152983158-b4a74a01c721?auto=format&fit=crop&q=80&w=800"
     ],
     "isActive": true,
@@ -480,7 +480,7 @@ export const mockProducts = [
       "Green"
     ],
     "images": [
-      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=800",
+      "/jerseys/blue.png",
       "https://images.unsplash.com/photo-1557800636-894a64c1696f?auto=format&fit=crop&q=80&w=800"
     ],
     "isActive": true,
@@ -812,7 +812,7 @@ export const mockProducts = [
       "White"
     ],
     "images": [
-      "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&q=80&w=800",
+      "/jerseys/yellow.png",
       "https://images.unsplash.com/photo-1504198458649-3128b932f49e?auto=format&fit=crop&q=80&w=800"
     ],
     "isActive": true,
@@ -886,7 +886,7 @@ export const mockProducts = [
       "Purple"
     ],
     "images": [
-      "https://images.unsplash.com/photo-1483721310020-03333e577076?auto=format&fit=crop&q=80&w=800",
+      "/jerseys/black.png",
       "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=800"
     ],
     "isActive": true,
@@ -1428,7 +1428,7 @@ export const mockProducts = [
       "Yellow"
     ],
     "images": [
-      "https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&q=80&w=800",
+      "/jerseys/red.png",
       "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=800"
     ],
     "isActive": true,
@@ -1641,7 +1641,7 @@ export const mockProducts = [
       "Yellow"
     ],
     "images": [
-      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=800",
+      "/jerseys/blue.png",
       "https://images.unsplash.com/photo-1557800636-894a64c1696f?auto=format&fit=crop&q=80&w=800"
     ],
     "isActive": true,
@@ -1962,7 +1962,7 @@ export const mockProducts = [
       "White"
     ],
     "images": [
-      "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&q=80&w=800",
+      "/jerseys/yellow.png",
       "https://images.unsplash.com/photo-1504198458649-3128b932f49e?auto=format&fit=crop&q=80&w=800"
     ],
     "isActive": true,
