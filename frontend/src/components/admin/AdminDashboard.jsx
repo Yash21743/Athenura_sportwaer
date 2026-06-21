@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-const SIDEBAR_W = 256;
+// ─── Sidebar widths ───────────────────────────────────────────────────────────
+const SIDEBAR_EXPANDED  = 260;
+const SIDEBAR_COLLAPSED = 72;
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 const STATS = [
@@ -725,8 +726,9 @@ const ViewAllBtn = ({label="View All", red=false, onClick}) => (
 
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 const AdminDashboard = () => {
-  const [activeKey,   setActiveKey]   = useState("dashboard");
-  const [mobileOpen,  setMobileOpen]  = useState(false);
+  const [activeKey,        setActiveKey]        = useState("dashboard");
+  const [mobileOpen,       setMobileOpen]       = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showNotif,   setShowNotif]   = useState(false);
   const [showSearch,  setShowSearch]  = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -853,7 +855,7 @@ const AdminDashboard = () => {
         /* ── Topbar ── */
         .csw-topbar{
           position:fixed;top:0;
-          left:${SIDEBAR_W}px;right:0;
+          left:${sidebarCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED}px;right:0;
           height:64px;
           background:rgba(5,14,26,0.92);
           backdrop-filter:blur(14px);
@@ -862,15 +864,15 @@ const AdminDashboard = () => {
           justify-content:space-between;
           padding:0 24px;gap:12px;
           z-index:30;
-          transition:left 0.32s cubic-bezier(0.4,0,0.2,1);
+          transition:left 0.35s cubic-bezier(0.4,0,0.2,1);
         }
 
         /* ── Main ── */
         .csw-main{
-          margin-left:${SIDEBAR_W}px;
+          margin-left:${sidebarCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED}px;
           padding:80px 24px 40px;
           min-height:100vh;
-          transition:margin-left 0.32s cubic-bezier(0.4,0,0.2,1);
+          transition:margin-left 0.35s cubic-bezier(0.4,0,0.2,1);
         }
 
         /* ── Stat grid ── */
@@ -950,6 +952,7 @@ const AdminDashboard = () => {
           onNavigate={setActiveKey}
           isMobileOpen={mobileOpen}
           onMobileClose={()=>setMobileOpen(false)}
+          onCollapsedChange={setSidebarCollapsed}
         />
 
         {/* ── Topbar ── */}

@@ -66,11 +66,16 @@ const navItems = [
   },
 ];
 
-const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose }) => {
+const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCollapsedChange }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [hoveredKey, setHoveredKey] = useState(null);
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
+
+  // Notify parent whenever collapsed state changes
+  useEffect(() => {
+    if (onCollapsedChange) onCollapsedChange(collapsed);
+  }, [collapsed, onCollapsedChange]);
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 100);
@@ -160,7 +165,7 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose }) =>
                 width: "36px",
                 height: "36px",
                 background: "#FF3B30",
-                borderRadius: "8px",
+                borderRadius: "8px",  
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
