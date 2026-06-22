@@ -35,7 +35,6 @@ const styles = `
   color: var(--white);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
 .au-root * { box-sizing: border-box; }

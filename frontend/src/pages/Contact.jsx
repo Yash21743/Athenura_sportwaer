@@ -18,7 +18,6 @@ const styles = `
   color: var(--white);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
 .ct-root * { box-sizing: border-box; margin: 0; padding: 0; }
