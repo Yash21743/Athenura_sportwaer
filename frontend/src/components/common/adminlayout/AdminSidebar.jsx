@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion"
+import logo from "../../../assets/images/ath.logo.jpeg";
 
 const navItems = [
   {
@@ -122,7 +124,7 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
           left: 0,
           height: "100vh",
           width: isMobileOpen ? "260px" : collapsed ? "72px" : "260px",
-          background: "linear-gradient(180deg, #0A2540 0%, #000000 100%)",
+          background: "#000000",
           display: "flex",
           flexDirection: "column",
           zIndex: 50,
@@ -148,52 +150,14 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
             transition: "all 0.35s ease",
           }}
         >
-          <Link
-            to="/"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              overflow: "hidden",
-              textDecoration: "none",
-              cursor: "pointer",
-            }}
-          >
-            {/* Logo Mark */}
-            <div
-              style={{
-                width: "36px",
-                height: "36px",
-                background: "#FF3B30",
-                borderRadius: "8px",  
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                boxShadow: "0 0 16px rgba(255,59,48,0.4)",
-              }}
-            >
-              <span style={{ color: "#fff", fontWeight: 800, fontSize: "14px", fontFamily: "'Montserrat', sans-serif" }}>
-                CS
-              </span>
-            </div>
-            {/* Brand Name */}
-            <div
-              style={{
-                opacity: collapsed ? 0 : 1,
-                maxWidth: collapsed ? 0 : "160px",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                transition: "opacity 0.25s ease, max-width 0.35s ease",
-              }}
-            >
-              <p style={{ color: "#fff", fontWeight: 700, fontSize: "13px", margin: 0, fontFamily: "'Montserrat', sans-serif", letterSpacing: "0.5px" }}>
-                COMFY SPORT
-              </p>
-              <p style={{ color: "rgba(255,255,255,0.45)", fontWeight: 400, fontSize: "10px", margin: 0, letterSpacing: "1.5px" }}>
-                ADMIN PANEL
-              </p>
-            </div>
+          <Link to="/" className="dashboard-logo" style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <motion.img
+              src={logo}
+              alt="Athenura Sportswear Logo"
+              style={{ height: '84px', width: 'auto', objectFit: 'contain', paddingLeft: '30px' }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            />
           </Link>
 
           {/* Collapse Toggle (desktop only) */}

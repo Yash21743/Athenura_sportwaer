@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/images/ath.logo.jpeg";
+
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -41,7 +43,7 @@ const AdminLogin = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #050e1a;
+          background: #000000;
           position: relative;
           padding: 20px;
           overflow: hidden;
@@ -158,26 +160,29 @@ const AdminLogin = () => {
         <div className={`login-card ${pageIn ? "active" : ""}`}>
           {/* Brand Logo Header */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "28px" }}>
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                background: "#FF3B30",
-                borderRadius: "12px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "12px",
-                boxShadow: "0 0 20px rgba(255,59,48,0.45)",
-              }}
+            <img
+            src={logo}
+            alt="Athenura Logo"
+            style={{
+            width: "180px",
+            height: "auto",
+            objectFit: "contain",
+            marginBottom: "15px",
+      }}
+    />
+            <h2
+         style={{
+          fontFamily: "'Poppins', sans-serif",
+          fontWeight: 800,
+          fontSize: "18px",
+          color: "#fff",
+          letterSpacing: "0.5px",
+          textTransform: "uppercase",
+          marginBottom: "4px",
+        }}
             >
-              <span style={{ color: "#fff", fontWeight: 800, fontSize: "18px", fontFamily: "'Montserrat', sans-serif" }}>
-                CS
-              </span>
-            </div>
-            <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: "18px", color: "#fff", letterSpacing: "0.5px", textTransform: "uppercase" }}>
-              Comfy Sport Wear
-            </h2>
+         ATHENURA SPORTSWEAR
+          </h2>
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", letterSpacing: "1.5px", textTransform: "uppercase", marginTop: "2px" }}>
               Admin Access Panel
             </p>
