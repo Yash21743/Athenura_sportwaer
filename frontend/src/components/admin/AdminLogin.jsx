@@ -50,7 +50,7 @@ const AdminLogin = () => {
         }
 
         .login-card {
-          background: rgba(255, 255, 255, 0.03);
+          background: rgba(0, 0, 0, 0.03);
           border: 1px solid rgba(255, 255, 255, 0.08);
           backdrop-filter: blur(16px);
           border-radius: 24px;
@@ -133,6 +133,7 @@ const AdminLogin = () => {
 
         @media (max-width: 480px) {
           .login-card {
+          background: #000000ff;
             padding: 32px 20px;
           }
         }
