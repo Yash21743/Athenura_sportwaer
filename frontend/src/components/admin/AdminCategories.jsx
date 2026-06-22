@@ -97,6 +97,7 @@ const AdminCategories = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [pageIn, setPageIn] = useState(false);
   const navigate = useNavigate();
 
@@ -211,17 +212,17 @@ const AdminCategories = () => {
         body { background: #050e1a; color: #fff; font-family: 'Poppins', sans-serif; }
         
         .csw-topbar {
-          position: fixed; top: 0; left: 256px; right: 0; height: 64px;
+          position: fixed; top: 0; left: ${sidebarCollapsed ? 72 : 260}px; right: 0; height: 64px;
           background: rgba(5, 14, 26, 0.92); backdrop-filter: blur(14px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.07);
           display: flex; align-items: center; justify-content: space-between;
           padding: 0 24px; gap: 12px; z-index: 30;
-          transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .csw-main {
-          margin-left: 256px; padding: 80px 24px 40px; min-height: 100vh;
-          transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+          margin-left: ${sidebarCollapsed ? 72 : 260}px; padding: 80px 24px 40px; min-height: 100vh;
+          transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .category-grid {
@@ -294,6 +295,7 @@ const AdminCategories = () => {
           activeKey="categories"
           isMobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}
+          onCollapsedChange={setSidebarCollapsed}
         />
 
         {/* ── Topbar ── */}
