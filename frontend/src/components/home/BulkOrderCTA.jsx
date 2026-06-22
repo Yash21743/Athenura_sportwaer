@@ -45,7 +45,7 @@ const styles = `
 
   .bo-container-outer {
     max-width: 1200px;
-    margin: 48px auto 84px;
+    margin: 30px auto 25px;
     padding: 0 24px;
     font-family: 'Poppins', sans-serif;
     box-sizing: border-box;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import ProductFilter from '../components/products/ProductFilter';
 import ProductSorting from '../components/products/ProductSorting';
@@ -16,7 +16,8 @@ const Products = () => {
   const [selectedStockStatuses, setSelectedStockStatuses] = useState([]);
   const [sortBy, setSortBy] = useState('featured');
   const [viewMode, setViewMode] = useState('grid');
-  const [visibleCount, setVisibleCount] = useState(8);
+  const [visibleCount, setVisibleCount] = useState(10);
+  const scrollTargetId = useRef(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -76,8 +77,21 @@ const Products = () => {
   }, [products, searchTerm, selectedCategory, priceRange, selectedSizes, selectedStockStatuses, sortBy]);
 
   useEffect(() => {
-    setVisibleCount(8);
-  }, [searchTerm, selectedCategory, priceRange, selectedSizes, selectedStockStatuses, sortBy]);
+    setVisibleCount(10);
+  }, [searchTerm, selectedCategory, selectedSizes, selectedStockStatuses, sortBy]);
+
+  // Scroll to first new card after Load More
+  useEffect(() => {
+    if (scrollTargetId.current) {
+      const el = document.getElementById(`card-${scrollTargetId.current}`);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+      scrollTargetId.current = null;
+    }
+  }, [visibleCount]);
 
   const handleResetFilters = () => {
     setSearchTerm('');
@@ -87,6 +101,7 @@ const Products = () => {
     setSelectedStockStatuses([]);
     setSortBy('featured');
   };
+
 
   return (
     <div className="min-h-screen font-['Poppins']" style={{ background: '#ffffff', color: '#111111' }}>
@@ -208,7 +223,12 @@ const Products = () => {
               <div style={{ display: 'flex', justifyContent: 'center', marginTop: '48px' }}>
                 <button
                   type="button"
-                  onClick={() => setVisibleCount((prev) => prev + 8)}
+                  onClick={() => {
+                    // Save the id of the FIRST new card before loading more
+                    const firstNewCard = filteredProducts[visibleCount];
+                    if (firstNewCard) scrollTargetId.current = firstNewCard._id;
+                    setVisibleCount((prev) => prev + 10);
+                  }}
                   style={{ padding: '14px 32px', background: 'transparent', color: '#FF3B30', border: '1px solid rgba(255,59,48,0.5)', borderRadius: '12px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', transition: 'all 0.3s' }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = '#FF3B30'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#FF3B30'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#FF3B30'; e.currentTarget.style.borderColor = 'rgba(255,59,48,0.5)'; }}
@@ -217,6 +237,7 @@ const Products = () => {
                 </button>
               </div>
             )}
+
           </>
         )}
       </div>

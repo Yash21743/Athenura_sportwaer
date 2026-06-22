@@ -2,6 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
+import amuBl from '../../assets/ath.jersey/amu_bl.jpeg';
+import hills from '../../assets/ath.jersey/hills.jpeg';
+import purv from '../../assets/ath.jersey/purv.jpeg';
+import rcbred from '../../assets/ath.jersey/rcbred.jpeg';
+
 const icons = {
   star: (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" strokeWidth="1.5">
@@ -53,59 +58,59 @@ const icons = {
 const PRODUCTS_DATA = [
   {
     id: 1,
-    name: 'Pro Match Football Jersey',
-    category: 'Football Jersey',
+    name: 'AMU Blue Striker',
+    category: 'Jerseys',
     price: 1299,
     originalPrice: 1999,
-    image: 'https://i.pinimg.com/474x/eb/20/0a/eb200aa2f0416231516bac2a1041726d.jpg',
+    image: amuBl,
     rating: 4.8,
     reviews: 156,
     badge: 'Best Seller',
-    desc: 'Lightweight breathable football jersey with moisture-wicking fabric, built for speed and comfort on the pitch.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['#FF3B30', '#000000', '#FFFFFF'],
+    desc: 'Premium AMU edition blue striker jersey. Breathable polyester mesh, moisture-wicking fabric crafted for high performance and style.',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    colors: ['#2563eb', '#000000'],
   },
   {
     id: 2,
-    name: 'Elite Cricket Team Jersey',
-    category: 'Cricket Jersey',
-    price: 1499,
-    originalPrice: 2299,
-    image: 'https://i.pinimg.com/474x/d0/35/bc/d035bc947f313fbd1e1ed892332cf191.jpg',
+    name: 'Hills FC Classic',
+    category: 'Jerseys',
+    price: 1199,
+    originalPrice: 1799,
+    image: hills,
     rating: 4.7,
     reviews: 98,
     badge: 'New',
-    desc: 'Premium cricket jersey with UV-protective fabric and ventilated mesh panels for all-day match comfort.',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['#1565C0', '#FFFFFF', '#0D47A1'],
+    desc: 'Hills FC classic edition jersey. Lightweight and durable — perfect for match days and training sessions.',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    colors: ['#16a34a', '#ffffff'],
   },
   {
     id: 3,
-    name: 'Classic Basketball Jersey',
-    category: 'Basketball Jersey',
-    price: 999,
-    originalPrice: 1599,
-    image: 'https://i.pinimg.com/474x/73/bc/e7/73bce79294617ee37acf213b01208a50.jpg',
+    name: 'Purvanchal Legacy',
+    category: 'Jerseys',
+    price: 1399,
+    originalPrice: 1999,
+    image: purv,
     rating: 4.6,
     reviews: 210,
     badge: '30% OFF',
-    desc: 'Sleeveless basketball jersey with breathable mesh fabric and reinforced stitching for high-intensity play.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['#000000', '#FF3B30', '#8E8E93'],
+    desc: 'Purvanchal legacy jersey with bold design. A tribute to the spirit of the region — wear it with pride.',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    colors: ['#eab308', '#1e3a8a'],
   },
   {
     id: 4,
-    name: 'Premium Rugby Jersey',
-    category: 'Rugby Jersey',
-    price: 1799,
-    originalPrice: 2599,
-    image: 'https://i.pinimg.com/474x/88/e1/ad/88e1adf4790a798cae2d11774d080b62.jpg',
+    name: 'RCB Flame Edition',
+    category: 'Jerseys',
+    price: 1599,
+    originalPrice: 2299,
+    image: rcbred,
     rating: 4.9,
     reviews: 134,
     badge: 'Hot',
-    desc: 'Heavy-duty rugby jersey built with durable rip-stop fabric to withstand intense contact and rough play.',
-    sizes: ['M', 'L', 'XL'],
-    colors: ['#2C2C2E', '#FFFFFF', '#FF3B30'],
+    desc: 'RCB Flame edition — iconic red and black combination. Feel the fire every time you wear it.',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    colors: ['#dc2626', '#000000'],
   },
 ];
 
@@ -147,7 +152,7 @@ const styles = `
   .fp-section {
     background: #fafafa;
     font-family: 'Poppins', sans-serif;
-    padding: 76px 0 88px;
+    padding: 25px 0 30px;
     position: relative;
     overflow: hidden;
   }
@@ -838,7 +843,12 @@ const FeaturedProducts = () => {
     '#1565C0': 'Blue',
     '#0D47A1': 'Dark Blue',
     '#8E8E93': 'Gray',
-    '#2C2C2E': 'Dark Gray'
+    '#2C2C2E': 'Dark Gray',
+    '#2563eb': 'Blue',
+    '#16a34a': 'Green',
+    '#eab308': 'Yellow',
+    '#1e3a8a': 'Navy',
+    '#dc2626': 'Red'
   };
 
   const addItemToCart = (prod, size, color, quantity) => {
@@ -945,19 +955,12 @@ const FeaturedProducts = () => {
 
           <div ref={gridRef} className="fp-grid">
             {PRODUCTS_DATA.map((prod, index) => {
-              const isWishlisted = wishlist.includes(prod.id);
               return (
                 <div
                   key={prod.id}
                   className={`fp-card${gridVisible ? ' visible' : ''}`}
                   style={{ animationDelay: `${index * 0.15}s`, opacity: gridVisible ? 1 : 0 }}
                 >
-                  <button
-                    className={`fp-wishlist${isWishlisted ? ' active' : ''}`}
-                    onClick={(e) => toggleWishlist(e, prod)}
-                  >
-                    {isWishlisted ? icons.heartFilled : icons.heartOutline}
-                  </button>
 
                   {prod.badge && (
                     <div className="fp-badge-wrap">

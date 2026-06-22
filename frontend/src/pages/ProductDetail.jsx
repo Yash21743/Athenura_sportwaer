@@ -294,24 +294,7 @@ const ProductDetail = () => {
                 </span>
               </div>
 
-              {/* Gallery Thumbnails */}
-              {product.images && product.images.length > 1 && (
-                <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
-                  {product.images.map((img, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setActiveImage(img)}
-                      style={{
-                        width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', background: '#111', flexShrink: 0, cursor: 'pointer', transition: 'all 0.2s', padding: 0,
-                        border: activeImage === img ? '2px solid #FF3B30' : '1px solid rgba(255,255,255,0.1)',
-                        opacity: activeImage === img ? 1 : 0.6,
-                      }}
-                    >
-                      <img src={img} alt={`Preview ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </button>
-                  ))}
-                </div>
-              )}
+
               {/* Product Specifications */}
               <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={{ background: '#111', border: '1px solid rgba(255,59,48,0.2)', borderRadius: '16px', padding: '28px', position: 'relative', overflow: 'hidden' }}>
@@ -379,9 +362,6 @@ const ProductDetail = () => {
               
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <span style={{ background: 'rgba(255,59,48,0.1)', color: '#FF3B30', fontSize: '10px', fontWeight: 800, padding: '4px 12px', borderRadius: '999px', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'Montserrat, sans-serif' }}>
-                    {product.category}
-                  </span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 700, border: '1px solid rgba(255,255,255,0.1)', padding: '3px 10px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.05em', color: stock.color, background: 'rgba(255,255,255,0.03)' }}>
                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: stock.dot, display: 'inline-block' }} />
                     {stock.label}

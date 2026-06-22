@@ -64,7 +64,7 @@ const styles = `
   .wcu-section {
     background: linear-gradient(145deg, #080808 0%, #0f0f0f 50%, #0a0a0a 100%);
     font-family: 'Poppins', sans-serif;
-    padding: 72px 0 0;
+    padding: 25px 0 0;
     margin-top: 48px;
     overflow: hidden;
     position: relative;

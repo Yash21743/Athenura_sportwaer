@@ -268,7 +268,7 @@ const styles = `
 
 const SLIDES = [
   {
-    url: 'https://i.pinimg.com/474x/72/b3/7d/72b37da1923de4411fd381e20dbcdda8.jpg',
+    url: 'https://i.pinimg.com/474x/91/81/af/9181af76e06f9221db9d247fe15e91df.jpg',
     alt: 'Male athlete sportwear',
   },
   {
@@ -276,7 +276,7 @@ const SLIDES = [
     alt: 'Athlete running',
   },
   {
-    url: 'https://i.pinimg.com/474x/56/47/85/564785c08d507a7f1b43fe26d5ab5e0b.jpg',
+    url: 'https://i.pinimg.com/474x/4d/67/1a/4d671a7bddd93040b0ab1b0b8a99ba4c.jpg',
     alt: 'Premium gym sportwear',
   },
 ];

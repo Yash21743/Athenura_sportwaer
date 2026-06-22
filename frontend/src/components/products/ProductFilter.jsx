@@ -100,32 +100,6 @@ const ProductFilter = ({
         )}
       </div>
 
-      {/* Category pills */}
-      <div style={{ position: 'relative', marginBottom: '10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
-          {CATEGORIES.map((cat) => {
-            const isActive = selectedCategory === cat;
-            const count = productCounts[cat] || 0;
-            return (
-              <button
-                key={cat}
-                onClick={() => onCategoryChange(isActive && cat !== 'All' ? 'All' : cat)}
-                style={pillCategory(isActive)}
-                onMouseEnter={(e) => { if(!isActive) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.35)'; e.currentTarget.style.color = '#000'; } }}
-                onMouseLeave={(e) => { if(!isActive) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'; e.currentTarget.style.color = 'rgba(0,0,0,0.65)'; } }}
-              >
-                <span>{cat === 'All' ? 'All Categories' : cat}</span>
-                {isActive && cat !== 'All'
-                  ? <X size={13} style={{ opacity: 0.9 }} />
-                  : <span style={{ fontSize: '11px', fontWeight: 600, padding: '1px 6px', borderRadius: '999px', background: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)', color: isActive ? '#fff' : 'rgba(0,0,0,0.5)' }}>{count}</span>
-                }
-              </button>
-            );
-          })}
-        </div>
-        {/* right fade */}
-        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '40px', background: 'linear-gradient(to right, transparent, #ffffff)', pointerEvents: 'none' }} />
-      </div>
 
       {/* Filter dropdowns + clear */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>

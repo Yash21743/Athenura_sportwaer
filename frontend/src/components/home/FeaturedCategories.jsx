@@ -132,7 +132,7 @@ const styles = `
     cursor: pointer;
     transition: transform 0.35s ease, box-shadow 0.35s ease;
   }
-  .fc-card-big:hover { transform: translateY(-5px); box-shadow: 0 18px 48px rgba(0,0,0,0.28); }
+  .fc-card-big:hover { transform: translateY(-5px);  }
   .fc-card-big:hover .card-img { transform: scale(1.06); }
 
   .fc-right { flex: 1 1 0; display: flex; flex-direction: column; gap: 12px; }
@@ -360,56 +360,56 @@ const styles = `
 
 const TruckIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <rect x="1" y="3" width="13" height="13" rx="1" stroke="#FF3B30" strokeWidth="1.6"/>
-    <path d="M14 8h4.2L21 11.5V16h-7V8z" stroke="#FF3B30" strokeWidth="1.6" strokeLinejoin="round"/>
-    <circle cx="5.5" cy="18.5" r="2" stroke="#FF3B30" strokeWidth="1.6"/>
-    <circle cx="17.5" cy="18.5" r="2" stroke="#FF3B30" strokeWidth="1.6"/>
+    <rect x="1" y="3" width="13" height="13" rx="1" stroke="#FF3B30" strokeWidth="1.6" />
+    <path d="M14 8h4.2L21 11.5V16h-7V8z" stroke="#FF3B30" strokeWidth="1.6" strokeLinejoin="round" />
+    <circle cx="5.5" cy="18.5" r="2" stroke="#FF3B30" strokeWidth="1.6" />
+    <circle cx="17.5" cy="18.5" r="2" stroke="#FF3B30" strokeWidth="1.6" />
   </svg>
 );
 const LockIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <rect x="3" y="11" width="18" height="11" rx="2" stroke="#FF3B30" strokeWidth="1.6"/>
-    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#FF3B30" strokeWidth="1.6" strokeLinecap="round"/>
-    <circle cx="12" cy="16" r="1.5" fill="#FF3B30"/>
+    <rect x="3" y="11" width="18" height="11" rx="2" stroke="#FF3B30" strokeWidth="1.6" />
+    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#FF3B30" strokeWidth="1.6" strokeLinecap="round" />
+    <circle cx="12" cy="16" r="1.5" fill="#FF3B30" />
   </svg>
 );
 const MoneyIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="9" stroke="#FF3B30" strokeWidth="1.6"/>
-    <path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 010 3H11a1.5 1.5 0 000 3H15" stroke="#FF3B30" strokeWidth="1.6" strokeLinecap="round"/>
+    <circle cx="12" cy="12" r="9" stroke="#FF3B30" strokeWidth="1.6" />
+    <path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 010 3H11a1.5 1.5 0 000 3H15" stroke="#FF3B30" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
 const ChatIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#FF3B30" strokeWidth="1.6" strokeLinejoin="round"/>
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#FF3B30" strokeWidth="1.6" strokeLinejoin="round" />
   </svg>
 );
 const ArrowSm = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-    <path d="M5 12h14M14 6l6 6-6 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M5 12h14M14 6l6 6-6 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const TRUST = [
-  { icon: <TruckIcon />, title: 'Free Shipping',   sub: 'On All Orders Over ₹999' },
-  { icon: <LockIcon />,  title: 'Secure Payment',  sub: 'We secure your payment'  },
-  { icon: <MoneyIcon />, title: '100% Money Back', sub: '20 Days Return Policy'   },
-  { icon: <ChatIcon />,  title: 'Online Support',  sub: '24/7 Dedicated Support'  },
+  { icon: <TruckIcon />, title: 'Free Shipping', sub: 'On All Orders Over ₹999' },
+  { icon: <LockIcon />, title: 'Secure Payment', sub: 'We secure your payment' },
+  { icon: <MoneyIcon />, title: '100% Money Back', sub: '20 Days Return Policy' },
+  { icon: <ChatIcon />, title: 'Online Support', sub: '24/7 Dedicated Support' },
 ];
 
 const IMG = {
-  tracksuit: 'https://i.pinimg.com/474x/b0/2c/a8/b02ca8035c48d636df39758ce3c2b9a8.jpg',
-  jersey:    'https://i.pinimg.com/1200x/da/09/06/da09069367a8036583b8a5ed9354980a.jpg',
-  shorts:    'https://i.pinimg.com/474x/2e/34/8d/2e348d5802ad4e3460c7b23cea45f392.jpg',
-  gymBag:    'https://i.pinimg.com/736x/b3/2a/d6/b32ad682c86512bdd77f9159a9dcc291.jpg',
+  tracksuit: 'https://i.pinimg.com/1200x/9e/75/0a/9e750a109fb5f28a91f5eb4cc6e2ec3a.jpg',
+  jersey: 'https://i.pinimg.com/1200x/da/09/06/da09069367a8036583b8a5ed9354980a.jpg',
+  shorts: 'https://i.pinimg.com/474x/2e/34/8d/2e348d5802ad4e3460c7b23cea45f392.jpg',
+  gymBag: 'https://i.pinimg.com/736x/b3/2a/d6/b32ad682c86512bdd77f9159a9dcc291.jpg',
 };
 
 const FeaturedCategories = () => {
   const [titleRef, titleV] = useVisible();
-  const [bigRef,   bigV]   = useVisible();
-  const [sm1Ref,   sm1V]   = useVisible();
-  const [sm2Ref,   sm2V]   = useVisible();
-  const [wideRef,  wideV]  = useVisible();
+  const [bigRef, bigV] = useVisible();
+  const [sm1Ref, sm1V] = useVisible();
+  const [sm2Ref, sm2V] = useVisible();
+  const [wideRef, wideV] = useVisible();
   const [trustRef, trustV] = useVisible();
 
   return (
@@ -458,11 +458,11 @@ const FeaturedCategories = () => {
               className={`fc-card-big${bigV ? ' an-right' : ''}`}
               style={{ opacity: bigV ? 1 : 0, animationDelay: '0.1s' }}
             >
-              <img className="card-img" src={IMG.tracksuit} alt="Women's Tracksuit" style={{ objectPosition: 'center top' }}/>
-              <div className="card-overlay"/>
+              <img className="card-img" src={IMG.tracksuit} alt="Women's Tracksuit" style={{ objectPosition: 'center top' }} />
+              <div className="card-overlay" />
               <div className="card-body">
                 <div className="card-label">New Arrivals</div>
-                <h3 className="card-title">COMFY<br/><span>JERSEY</span></h3>
+                <h3 className="card-title">COMFY<br /><span>JERSEY</span></h3>
                 <p className="card-off">Up to <strong style={{ color: '#FF3B30' }}>70% Off</strong></p>
                 <Link to="/products" className="shop-btn-red">Shop Now <ArrowSm /></Link>
               </div>
@@ -478,10 +478,10 @@ const FeaturedCategories = () => {
                 style={{ opacity: sm1V ? 1 : 0, animationDelay: '0.18s' }}
               >
                 <div className="off-badge">20% OFF</div>
-                <img className="card-img" src={IMG.jersey} alt="Men's Jersey" style={{ objectPosition: 'center top' }}/>
-                <div className="card-overlay"/>
+                <img className="card-img" src={IMG.jersey} alt="Men's Jersey" style={{ objectPosition: 'center top' }} />
+                <div className="card-overlay" />
                 <div className="card-body">
-                  <h3 className="card-title" style={{ fontSize: '1rem' }}>COMMON<br/><span>JERSEY</span></h3>
+                  <h3 className="card-title" style={{ fontSize: '1rem' }}>COMMON<br /><span>JERSEY</span></h3>
                   <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
                 </div>
               </div>
@@ -492,10 +492,10 @@ const FeaturedCategories = () => {
                 style={{ opacity: sm2V ? 1 : 0, animationDelay: '0.28s' }}
               >
                 <div className="off-badge">40% OFF</div>
-                <img className="card-img" src={IMG.shorts} alt="Sports Shorts"/>
-                <div className="card-overlay"/>
+                <img className="card-img" src={IMG.shorts} alt="Sports Shorts" />
+                <div className="card-overlay" />
                 <div className="card-body">
-                  <h3 className="card-title" style={{ fontSize: '1rem' }}>SPORTS<br/><span>JERSEY</span></h3>
+                  <h3 className="card-title" style={{ fontSize: '1rem' }}>SPORTS<br /><span>JERSEY</span></h3>
                   <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
                 </div>
               </div>
@@ -506,11 +506,11 @@ const FeaturedCategories = () => {
               className={`fc-card-wide${wideV ? ' an-left' : ''}`}
               style={{ opacity: wideV ? 1 : 0, animationDelay: '0.35s' }}
             >
-              <img className="card-img" src={IMG.gymBag} alt="Gym Training Bag"/>
-              <div className="card-overlay-h"/>
+              <img className="card-img" src={IMG.gymBag} alt="Gym Training Bag" />
+              <div className="card-overlay-h" />
               <div className="card-body">
                 <div className="card-label">Training Wear</div>
-                <h3 className="card-title">GYM<br/><span>TRAINING JERSEY</span></h3>
+                <h3 className="card-title">GYM<br /><span>TRAINING JERSEY</span></h3>
                 <p className="card-off">Up to <strong style={{ color: '#FF3B30' }}>80% OFF</strong></p>
                 <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
               </div>

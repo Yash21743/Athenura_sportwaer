@@ -56,6 +56,7 @@ const ProductGrid = ({ products, viewMode = 'grid', onResetFilters }) => {
         {products.map((product) => (
           <motion.div
             key={product._id}
+            id={`card-${product._id}`}
             variants={itemVariants}
             layout
             exit={{ opacity: 0, scale: 0.93, transition: { duration: 0.15 } }}

@@ -625,32 +625,63 @@ const styles = `
 .au-quote-meta { color: var(--muted-light); font-size: 0.82rem; }
 .au-stars { display: flex; gap: 2px; color: var(--red); }
 
+#cta {
+  padding: 30px 1.5rem 25px;
+}
+
 .au-cta-box {
-  border-radius: var(--radius);
-  padding: 3.5rem 2rem;
+  border-radius: 20px;
+  padding: 80px 40px;
   text-align: center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(to right,
-    rgba(255,59,48,0.90) 0%,
-    rgba(42,12,10,0.90) 25%,
-    rgba(22,22,22,0.96) 50%,
-    rgba(42,12,10,0.90) 75%,
-    rgba(255,59,48,0.90) 100%);
-  background-size: 200% 100%;
-  animation: au-ctaGlowMove 6s ease-in-out infinite alternate;
+  background: linear-gradient(135deg, #FF3B30 0%, #b31c15 50%, #800f0a 100%);
+  box-shadow: 0 16px 44px rgba(255, 59, 48, 0.22);
 }
-@keyframes au-ctaGlowMove {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 100% 0%; }
+.au-cta-bg-wrap {
+  position: absolute; inset: 0;
+  z-index: 0;
+  overflow: hidden;
 }
-.au-cta-box h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); color: var(--white); margin-bottom: 1rem; }
-.au-cta-box p { color: rgba(255,255,255,0.9); max-width: 520px; margin: 0 auto 2rem; line-height: 1.6; font-size: 1.05rem; }
+.au-cta-bg-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.3;
+  transform: scale(1.1);
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.36, 1);
+}
+.au-cta-box:hover .au-cta-bg-img {
+  transform: scale(1);
+}
+.au-cta-box h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); color: var(--white); margin-bottom: 1.5rem; font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; }
+.au-cta-box p { color: rgba(255,255,255,0.9); max-width: 580px; margin: 0 auto 2.5rem; line-height: 1.75; font-size: 1.05rem; }
 .au-cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-.au-btn-white { background: var(--white); color: #111113; }
-.au-btn-white:hover { background: #f0f0f0; }
-.au-btn-dark { background: rgba(13,13,13,0.85); color: var(--white); border: 1px solid rgba(255,255,255,0.25); }
-.au-btn-dark:hover { background: var(--bg); }
+.au-btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #c92218;
+  border: none;
+  border-radius: 6px;
+  padding: 14px 34px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+}
+.au-btn-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  background: #f8f9fa;
+  color: #e62e22;
+}
 
 /* Responsive Styles */
 @media (max-width: 1024px) {
@@ -1338,12 +1369,20 @@ export default function AboutUs() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.85, ease: "easeOut" }}
           >
-            <h2 className="au-heading" id="cta-title">Ready to Elevate Your Game?</h2>
-            <p>
+            <div className="au-cta-bg-wrap">
+              <img
+                className="au-cta-bg-img"
+                src="https://images.unsplash.com/photo-1649520937981-763d6a14de7d?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Athletes Custom Sportswear Background"
+              />
+            </div>
+
+            <h2 className="au-heading" id="cta-title" style={{ position: 'relative', zIndex: 2 }}>Ready to Elevate Your Game?</h2>
+            <p style={{ position: 'relative', zIndex: 2 }}>
               Push your limits with sportswear built for performance, comfort, and confidence. Whether you're training or competing, we're here to help you perform at your best.
             </p>
-            <div className="au-cta-actions">
-              <Link to="/contact" className="au-btn au-btn-dark">
+            <div className="au-cta-actions" style={{ position: 'relative', zIndex: 2 }}>
+              <Link to="/contact" className="au-btn-cta">
                 <Mail size={18} aria-hidden="true" /> Contact Us
               </Link>
             </div>

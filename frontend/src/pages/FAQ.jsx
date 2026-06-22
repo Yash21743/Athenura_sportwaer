@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Truck, ShieldCheck, RotateCcw, Headphones, HelpCircle, SearchX, MessageCircle } from "lucide-react";
 
@@ -272,51 +272,59 @@ const styles = `
   .badge-label { font-size: 1rem; font-weight: 600; color: var(--fg); }
   .badge-sub { font-size: 0.8rem; color: var(--muted-fg); margin-top: 2px; }
 
-  .cta-section { background: #ffffff; padding: 1rem 1.5rem 6rem; }
+  .cta-section { background: #ffffff; padding: 30px 1.5rem 25px; }
   .cta-box {
     position: relative; max-width: 1200px; margin: 0 auto;
-    border-radius: calc(var(--radius) + 8px); border: 1px solid var(--border); overflow: hidden;
+    border-radius: 20px; overflow: hidden;
+    background: linear-gradient(135deg, #FF3B30 0%, #b31c15 50%, #800f0a 100%);
+    box-shadow: 0 16px 44px rgba(255, 59, 48, 0.22);
+    border: none;
   }
-  .cta-overlay {
+  .cta-bg-wrap {
     position: absolute; inset: 0;
-    background: linear-gradient(to right,
-      rgba(255,59,48,0.90) 0%,
-      rgba(42,12,10,0.90) 25%,
-      rgba(22,22,22,0.96) 50%,
-      rgba(42,12,10,0.90) 75%,
-      rgba(255,59,48,0.90) 100%);
-    background-size: 200% 100%;
-    animation: ctaGlowMove 6s ease-in-out infinite alternate;
+    z-index: 0;
+    overflow: hidden;
   }
-  @keyframes ctaGlowMove {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 100% 0%; }
+  .cta-bg-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.3;
+    transform: scale(1.1);
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.36, 1);
+  }
+  .cta-box:hover .cta-bg-img {
+    transform: scale(1);
   }
   .cta-content {
     position: relative; display: flex; flex-direction: column;
-    align-items: center; text-align: center; gap: 1.5rem; padding: 4rem 2rem;
+    align-items: center; text-align: center; gap: 1.5rem; padding: 80px 40px;
+    z-index: 2;
   }
-  @media (min-width: 768px) { .cta-content { padding: 6rem 4rem; } }
-  .cta-title { font-size: clamp(2rem, 5vw, 3.5rem); color: var(--fg); max-width: 540px; }
+  @media (min-width: 768px) { .cta-content { padding: 80px 60px; } }
+  .cta-title { font-size: clamp(2rem, 5vw, 3.5rem); color: var(--fg); max-width: 540px; font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase; }
   .cta-title span { color: var(--brand); }
-  .cta-sub { color: var(--muted-fg); font-size: 1rem; max-width: 400px; line-height: 1.7; }
-  .cta-btns { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .cta-sub { color: rgba(255,255,255,0.7); font-size: 1rem; max-width: 580px; line-height: 1.7; }
+  .cta-btns { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
   .btn-primary {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    background: var(--brand); color: var(--brand-fg);
-    padding: 0.875rem 1.75rem; border-radius: 99px; border: none; cursor: pointer;
-    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-    transition: transform 0.2s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #ffffff; color: #c92218;
+    padding: 14px 34px; border-radius: 6px; border: none; cursor: pointer;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); text-decoration: none;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+    font-family: 'Poppins', sans-serif;
   }
-  .btn-primary:hover { transform: scale(1.03); }
+  .btn-primary:hover { transform: translateY(-3px); background: #f8f9fa; color: #e62e22; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
   .btn-secondary {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    border: 1px solid rgba(245,245,245,0.3); background: rgba(245,245,245,0.06);
-    color: var(--fg); padding: 0.875rem 1.75rem; border-radius: 99px;
-    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-    cursor: pointer; transition: background 0.2s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1.5px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.08);
+    color: var(--fg); padding: 13px 32px; border-radius: 6px;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s, transform 0.15s, border-color 0.2s; text-decoration: none;
+    font-family: 'Poppins', sans-serif;
   }
-  .btn-secondary:hover { background: rgba(245,245,245,0.12); }
+  .btn-secondary:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); border-color: #ffffff; }
 `;
 
 const SearchIcon = () => (
@@ -475,13 +483,19 @@ export default function FaqPage() {
         </section>
         <section className="cta-section">
           <div className="cta-box">
-            <div className="cta-overlay" aria-hidden="true" />
+            <div className="cta-bg-wrap">
+              <img
+                className="cta-bg-img"
+                src="https://images.unsplash.com/photo-1649520937981-763d6a14de7d?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Athletes Custom Sportswear Background"
+              />
+            </div>
             <div className="cta-content">
-              <h2 className="heading-display cta-title">
-                Still Have <span>Questions?</span>
+              <h2 className="heading-display cta-title" style={{ position: 'relative', zIndex: 2 }}>
+                Still Have Questions?
               </h2>
-              <p className="cta-sub">Our support team is here to help — reach out anytime.</p>
-              <div className="cta-btns">
+              <p className="cta-sub" style={{ position: 'relative', zIndex: 2 }}>Our support team is here to help — reach out anytime.</p>
+              <div className="cta-btns" style={{ position: 'relative', zIndex: 2 }}>
                 <Link to="/contact" className="btn-primary">
                   Contact Support ↗
                 </Link>

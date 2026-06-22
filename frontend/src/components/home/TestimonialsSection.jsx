@@ -5,7 +5,7 @@ const TESTIMONIALS_DATA = [
     id: 1,
     name: 'Amit Sharma',
     role: 'Fitness Coach & Trainer',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&q=80&fit=crop',
+    avatar: 'https://i.pinimg.com/474x/6a/d1/57/6ad157c8278e090a7151341adc8eaaa6.jpg',
     rating: 5,
     quote: 'The fabric quality of the tracksuits is unmatched. It holds its stretch, absorbs sweat, and doesn’t lose color after multiple wash cycles. My clients absolutely love it!',
   },
@@ -13,7 +13,7 @@ const TESTIMONIALS_DATA = [
     id: 2,
     name: 'Sneha Patel',
     role: 'National Athletics Runner',
-    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&q=80&fit=crop',
+    avatar: 'https://i.pinimg.com/474x/8a/f2/42/8af2423a4071eb36c77db4e76d307993.jpg',
     rating: 5,
     quote: 'The Aero-Dry tees are a game-changer. They stay feather-light and incredibly breathable even during my intense 15k training runs. Comfy really understands athletic needs.',
   },
@@ -21,7 +21,7 @@ const TESTIMONIALS_DATA = [
     id: 3,
     name: 'Vikram Singh',
     role: 'Professional Weightlifter',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&q=80&fit=crop',
+    avatar: 'https://i.pinimg.com/474x/be/69/9f/be699f0544c1a487009112fd5c039167.jpg',
     rating: 5,
     quote: 'Elite compression tops are outstanding. They give excellent chest and core support. Recovering between heavy squat sets feels much quicker. A solid 10/10.',
   },
@@ -29,7 +29,7 @@ const TESTIMONIALS_DATA = [
     id: 4,
     name: 'Rohan Mehta',
     role: 'Marathon Runner',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&q=80&fit=crop',
+    avatar: 'https://i.pinimg.com/474x/cd/bf/10/cdbf10857a08b689e386def9667060a8.jpg',
     rating: 5,
     quote: 'Zero chafing during my half-marathon run! The mesh running shorts are lightweight and have a very secure inner liner. The waistband is extremely comfortable.',
   },
@@ -37,7 +37,7 @@ const TESTIMONIALS_DATA = [
     id: 5,
     name: 'Priya Rao',
     role: 'Power Yoga Practitioner',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&q=80&fit=crop',
+    avatar: 'https://i.pinimg.com/474x/bc/31/83/bc31839bb35df9605aad7f59171a1bf1.jpg',
     rating: 5,
     quote: 'Super comfy active joggers! The high-waisted fit sits perfectly without sliding down during stretches, and the material is buttery soft. Perfect for yoga and travel.',
   },
@@ -89,7 +89,7 @@ const styles = `
 
   .ts-section {
     background: #080808;
-    padding: 92px 0 100px;
+    padding: 25px 0 25px;
     font-family: 'Poppins', sans-serif;
     position: relative;
     overflow: hidden;

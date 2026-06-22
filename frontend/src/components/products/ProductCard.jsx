@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, MessageSquare, ArrowUpRight } from 'lucide-react';
+import { Star, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const stripHtml = (html = '') => html.replace(/<[^>]*>/g, '');
@@ -13,7 +13,7 @@ const stockConf = {
 
 const ProductCard = ({ product, viewMode = 'grid' }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const { _id, name, code, category, price, fabric, sizes, images, stockStatus } = product;
+  const { _id, name, code, category, price, sizes, images, stockStatus } = product;
   const description = stripHtml(product.description);
   const img1 = images?.[0] || '';
   const img2 = images?.[1] || images?.[0] || '';
@@ -35,21 +35,21 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
       >
         <Link to={`/products/${_id}`} className="w-full aspect-[4/5] sm:aspect-auto sm:w-[220px] shrink-0 mb-[-1px] sm:mb-0 sm:mr-[-1px]" style={{ position: 'relative', overflow: 'hidden', background: '#111', display: 'block', minHeight: '180px' }}>
           {img1 && (
-            <img 
-              src={img1} 
-              alt={name} 
-              style={{ 
-                position: 'absolute', 
-                inset: 0, 
-                width: '100%', 
-                height: '100%', 
-                objectFit: 'cover', 
-                transition: 'all 0.5s ease', 
-                transform: isHovered ? 'scale(1.03) translateZ(0)' : 'scale(1.01) translateZ(0)', 
+            <img
+              src={img1}
+              alt={name}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                transition: 'all 0.5s ease',
+                transform: isHovered ? 'scale(1.03) translateZ(0)' : 'scale(1.01) translateZ(0)',
                 filter: isHovered ? 'contrast(1.1) saturate(1.2)' : 'contrast(1) saturate(1)',
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden'
-              }} 
+              }}
             />
           )}
           {/* Glass Shine Effect */}
@@ -102,39 +102,39 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
       transition={{ duration: 0.5, ease: 'easeOut' }}
       whileHover={{ y: -5, transition: { duration: 0.3 } }}
       className="group"
-      style={{ 
-        display: 'flex', flexDirection: 'column', background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', overflow: 'hidden', 
+      style={{
+        display: 'flex', flexDirection: 'column', background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', overflow: 'hidden',
         transition: 'all 0.3s ease-out',
         transform: 'translateZ(0)',
         WebkitTransform: 'translateZ(0)',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden'
       }}
-      onMouseEnter={(e) => { 
+      onMouseEnter={(e) => {
         setIsHovered(true);
-        e.currentTarget.style.borderColor = '#FF3B30'; 
-        e.currentTarget.style.boxShadow = '0 0 25px rgba(255,59,48,0.5), inset 0 0 15px rgba(255,59,48,0.2)'; 
-        e.currentTarget.style.zIndex = 10; 
+        e.currentTarget.style.borderColor = '#FF3B30';
+        e.currentTarget.style.boxShadow = '0 0 25px rgba(255,59,48,0.5), inset 0 0 15px rgba(255,59,48,0.2)';
+        e.currentTarget.style.zIndex = 10;
       }}
-      onMouseLeave={(e) => { 
+      onMouseLeave={(e) => {
         setIsHovered(false);
-        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; 
-        e.currentTarget.style.boxShadow = 'none'; 
-        e.currentTarget.style.zIndex = 1; 
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)';
+        e.currentTarget.style.boxShadow = 'none';
+        e.currentTarget.style.zIndex = 1;
       }}
     >
       {/* Image area */}
       <Link to={`/products/${_id}`} style={{ position: 'relative', display: 'block', height: '220px', background: '#111', overflow: 'hidden', flexShrink: 0, marginBottom: '-1px' }}>
         {img1 && (
           <img src={img1} alt={name}
-            style={{ 
-              position: 'absolute', 
-              inset: 0, 
-              width: '100%', 
-              height: '100%', 
-              objectFit: 'cover', 
-              transition: 'all 0.5s ease', 
-              transform: isHovered ? 'scale(1.05) translateZ(0)' : 'scale(1.01) translateZ(0)', 
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              transition: 'all 0.5s ease',
+              transform: isHovered ? 'scale(1.05) translateZ(0)' : 'scale(1.01) translateZ(0)',
               filter: isHovered ? 'contrast(1.1) saturate(1.2)' : 'contrast(1) saturate(1)',
               backfaceVisibility: 'hidden',
               WebkitBackfaceVisibility: 'hidden'
@@ -145,11 +145,6 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
         <div style={{ position: 'absolute', top: 0, width: '50%', height: '100%', background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.25), transparent)', transform: 'skewX(-25deg)', transition: isHovered ? 'left 0.7s ease-out' : 'none', left: isHovered ? '200%' : '-100%', zIndex: 5, pointerEvents: 'none' }} />
         {/* Gradient */}
         <div style={{ position: 'absolute', inset: '-2px', background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)', pointerEvents: 'none' }} />
-
-        {/* Category */}
-        <div style={{ position: 'absolute', top: '10px', left: '10px' }}>
-          <span style={{ fontSize: '8px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 10px', borderRadius: '5px', background: 'rgba(0,0,0,0.65)', color: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.08)' }}>{category}</span>
-        </div>
         {/* Stock */}
         <div style={{ position: 'absolute', top: '11px', right: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: stock.dot, display: 'inline-block' }} />

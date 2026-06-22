@@ -381,72 +381,76 @@ const styles = `
 .ct-service-link:hover { gap: 0.7rem; }
 
 /* ── WhatsApp Banner (white section) ── */
-.ct-wa-section { background: #ffffff; padding: 5rem 1.5rem; }
+.ct-wa-section { background: #ffffff; padding: 30px 1.5rem 25px; }
 .ct-wa-box {
   max-width: 1120px; margin: 0 auto;
-  position: relative; border-radius: calc(var(--radius) + 8px);
+  position: relative; border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 25px 60px rgba(0,0,0,0.14);
+  background: linear-gradient(135deg, #FF3B30 0%, #b31c15 50%, #800f0a 100%);
+  box-shadow: 0 16px 44px rgba(255, 59, 48, 0.22);
 }
-.ct-wa-overlay {
+.ct-wa-bg-wrap {
   position: absolute; inset: 0;
-  background: linear-gradient(to right,
-    rgba(255,59,48,0.9) 0%,
-    rgba(42,12,10,0.92) 30%,
-    rgba(18,18,18,0.96) 55%,
-    rgba(42,12,10,0.92) 78%,
-    rgba(255,59,48,0.9) 100%);
-  background-size: 200% 100%;
-  animation: ct-glow-move 7s ease-in-out infinite alternate;
+  z-index: 0;
+  overflow: hidden;
 }
-@keyframes ct-glow-move {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 100% 0%; }
+.ct-wa-bg-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.3;
+  transform: scale(1.1);
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.36, 1);
+}
+.ct-wa-box:hover .ct-wa-bg-img {
+  transform: scale(1);
 }
 .ct-wa-content {
   position: relative;
   display: flex; flex-direction: column;
   align-items: center; text-align: center;
-  gap: 1.5rem; padding: 4rem 2rem;
+  gap: 1.5rem; padding: 80px 40px;
+  z-index: 2;
 }
 @media (min-width: 1024px) {
   .ct-wa-content {
-    padding: 5rem 4rem;
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: left;
+    padding: 80px 60px;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
   }
 }
-.ct-wa-text { display: flex; flex-direction: column; gap: 0.75rem; }
+.ct-wa-text { display: flex; flex-direction: column; gap: 0.75rem; align-items: center; text-align: center; }
 .ct-wa-title {
   font-family: 'Oswald', sans-serif; font-weight: 700;
   text-transform: uppercase; font-size: clamp(1.8rem, 4vw, 3rem);
   color: var(--white); line-height: 1.05;
 }
-.ct-wa-sub { color: rgba(255,255,255,0.7); font-size: 1rem; max-width: 400px; line-height: 1.6; }
+.ct-wa-sub { color: rgba(255,255,255,0.7); font-size: 1rem; max-width: 580px; line-height: 1.6; margin: 0 auto; }
 .ct-wa-btn {
   display: inline-flex; align-items: center; gap: 0.75rem;
-  padding: 1rem 2rem; border-radius: 999px;
-  background: #25D366; color: #fff;
-  font-size: 0.9rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 14px 34px; border-radius: 6px;
+  background: #ffffff; color: #c92218;
+  font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   text-decoration: none; flex-shrink: 0;
   transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  font-family: 'Poppins', sans-serif;
 }
-.ct-wa-btn:hover { transform: scale(1.04); background: #20bd5b; box-shadow: 0 8px 30px rgba(37,211,102,0.5); }
+.ct-wa-btn:hover { transform: translateY(-3px); background: #f8f9fa; color: #e62e22; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
 .ct-wa-call-btn {
   display: inline-flex; align-items: center; gap: 0.75rem;
-  padding: 1rem 2rem; border-radius: 999px;
-  border: 1.5px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08);
+  padding: 13px 32px; border-radius: 6px;
+  border: 1.5px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.08);
   color: var(--white);
-  font-size: 0.9rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   text-decoration: none; flex-shrink: 0;
-  transition: background 0.2s, transform 0.15s;
+  transition: background 0.2s, transform 0.15s, border-color 0.2s;
+  font-family: 'Poppins', sans-serif;
 }
-.ct-wa-call-btn:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); }
-.ct-wa-btns { display: flex; flex-wrap: nowrap; gap: 0.75rem; justify-content: center; }
-@media (min-width: 1024px) { .ct-wa-btns { justify-content: flex-start; } }
+.ct-wa-call-btn:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); border-color: #ffffff; }
+.ct-wa-btns { display: flex; flex-wrap: nowrap; gap: 0.75rem; justify-content: center; margin-top: 1rem; }
+@media (min-width: 1024px) { .ct-wa-btns { justify-content: center; } }
 
 /* ── Fade-in animations ── */
 .ct-fade-up {
@@ -902,11 +906,17 @@ export default function ContactPage() {
       <section className="ct-wa-section" aria-label="WhatsApp chat">
         <FadeUp delay={0}>
           <div className="ct-wa-box">
-            <div className="ct-wa-overlay" aria-hidden="true" />
+            <div className="ct-wa-bg-wrap">
+              <img
+                className="ct-wa-bg-img"
+                src="https://images.unsplash.com/photo-1649520937981-763d6a14de7d?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Athletes Custom Sportswear Background"
+              />
+            </div>
             <div className="ct-wa-content">
               <div className="ct-wa-text">
                 <h2 className="ct-heading ct-wa-title">
-                  Chat On <span style={{ color: "#25D366" }}>WhatsApp</span>
+                  Chat On WhatsApp
                 </h2>
                 <p className="ct-wa-sub">
                   Get instant replies for order tracking, bulk enquiries,

@@ -350,55 +350,66 @@ const styles = `
 .bo-success-meta { font-size: 0.82rem; color: #aaa; }
 
 /* ── CTA Banner (now white section) ── */
-.bo-cta-section { background: #ffffff; padding: 5rem 1.5rem; }
+.bo-cta-section { background: #ffffff; padding: 30px 1.5rem 25px; }
 .bo-cta-box {
   max-width: 1120px; margin: 0 auto; position: relative;
-  border-radius: calc(var(--radius) + 8px); overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 25px 60px rgba(0,0,0,0.14);
+  border-radius: 20px; overflow: hidden;
+  background: linear-gradient(135deg, #FF3B30 0%, #b31c15 50%, #800f0a 100%);
+  box-shadow: 0 16px 44px rgba(255, 59, 48, 0.22);
 }
-.bo-cta-overlay {
+.bo-cta-bg-wrap {
   position: absolute; inset: 0;
-  background: linear-gradient(to right,
-    rgba(255,59,48,0.9) 0%, rgba(42,12,10,0.92) 30%,
-    rgba(18,18,18,0.96) 55%, rgba(42,12,10,0.92) 78%, rgba(255,59,48,0.9) 100%);
-  background-size: 200% 100%;
-  animation: bo-glow-move 7s ease-in-out infinite alternate;
+  z-index: 0;
+  overflow: hidden;
 }
-@keyframes bo-glow-move { 0%{background-position:0% 0%;} 100%{background-position:100% 0%;} }
+.bo-cta-bg-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.3;
+  transform: scale(1.1);
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.36, 1);
+}
+.bo-cta-box:hover .bo-cta-bg-img {
+  transform: scale(1);
+}
 .bo-cta-content {
   position: relative; display: flex; flex-direction: column;
-  align-items: center; text-align: center; gap: 1.5rem; padding: 4rem 2rem;
+  align-items: center; text-align: center; gap: 1.5rem; padding: 80px 40px;
+  z-index: 2;
 }
 @media (min-width: 1024px) {
-  .bo-cta-content { padding: 5rem 4rem; flex-direction: row; justify-content: space-between; text-align: left; }
+  .bo-cta-content { padding: 80px 60px; flex-direction: column; justify-content: center; text-align: center; }
 }
-.bo-cta-text { display: flex; flex-direction: column; gap: 0.75rem; }
+.bo-cta-text { display: flex; flex-direction: column; gap: 0.75rem; align-items: center; text-align: center; }
 .bo-cta-title {
   font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase;
   font-size: clamp(1.8rem, 4vw, 3rem); color: var(--white); line-height: 1.05;
 }
-.bo-cta-sub { color: rgba(255,255,255,0.7); font-size: 1rem; max-width: 400px; line-height: 1.6; }
-.bo-cta-btns { display: flex; flex-wrap: nowrap; gap: 1rem; justify-content: center; }
-@media (min-width: 1024px) { .bo-cta-btns { justify-content: flex-start; } }
+.bo-cta-sub { color: rgba(255,255,255,0.7); font-size: 1rem; max-width: 580px; line-height: 1.6; margin: 0 auto; }
+.bo-cta-btns { display: flex; flex-wrap: nowrap; gap: 1rem; justify-content: center; margin-top: 1rem; }
+@media (min-width: 1024px) { .bo-cta-btns { justify-content: center; } }
 .bo-cta-btn-wa {
   display: inline-flex; align-items: center; gap: 0.75rem;
-  padding: 1rem 2rem; border-radius: 999px; background: #25D366; color: #fff;
-  font-size: 0.9rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 14px 34px; border-radius: 6px;
+  background: #ffffff; color: #c92218;
+  font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   text-decoration: none; flex-shrink: 0;
   transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  font-family: 'Poppins', sans-serif;
 }
-.bo-cta-btn-wa:hover { transform: scale(1.04); background: #20bd5b; }
+.bo-cta-btn-wa:hover { transform: translateY(-3px); background: #f8f9fa; color: #e62e22; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
 .bo-cta-btn-ghost {
   display: inline-flex; align-items: center; gap: 0.75rem;
-  padding: 1rem 2rem; border-radius: 999px;
-  border: 1.5px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08);
-  color: var(--white); font-size: 0.9rem; font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; flex-shrink: 0;
-  transition: background 0.2s, transform 0.15s;
+  padding: 13px 32px; border-radius: 6px;
+  border: 1.5px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.08);
+  color: var(--white); font-size: 0.85rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; text-decoration: none; flex-shrink: 0;
+  transition: background 0.2s, transform 0.15s, border-color 0.2s;
+  font-family: 'Poppins', sans-serif;
 }
-.bo-cta-btn-ghost:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); }
+.bo-cta-btn-ghost:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); border-color: #ffffff; }
 
 /* ── Fade animations ── */
 .bo-fade-up {
@@ -932,11 +943,17 @@ export default function BulkOrderPage() {
       <section className="bo-cta-section" aria-label="WhatsApp bulk order CTA">
         <FadeUp>
           <div className="bo-cta-box">
-            <div className="bo-cta-overlay" aria-hidden="true" />
+            <div className="bo-cta-bg-wrap">
+              <img
+                className="bo-cta-bg-img"
+                src="https://images.unsplash.com/photo-1649520937981-763d6a14de7d?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Athletes Custom Sportswear Background"
+              />
+            </div>
             <div className="bo-cta-content">
               <div className="bo-cta-text">
                 <h2 className="bo-heading bo-cta-title">
-                  Need a Quick <span style={{ color: "#25D366" }}>Quote?</span>
+                  Need a Quick Quote?
                 </h2>
                 <p className="bo-cta-sub">
                   Drop us a WhatsApp message with your requirements — we'll get back with

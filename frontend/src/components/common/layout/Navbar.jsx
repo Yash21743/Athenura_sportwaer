@@ -20,6 +20,11 @@ const styles = `
   width: 100%;
 }
 
+.nav-root--fixed {
+  position: fixed !important;
+}
+
+
 .nav-shell {
   position: relative;
   display: flex;
@@ -338,7 +343,7 @@ export default function Navbar({ cartCount }) {
   }, [mobileOpen])
 
   return (
-    <header className="nav-root">
+   <header className={`nav-root ${mobileOpen ? "nav-root--fixed" : ""}`}>
       <motion.nav
         className="nav-shell"
         data-scrolled={scrolled}
@@ -350,9 +355,9 @@ export default function Navbar({ cartCount }) {
           <motion.img
             src={logo}
             alt="Athenura Sportswear Logo"
-            style={{ 
-              height: '72px', 
-              width: 'auto', 
+            style={{
+              height: '72px',
+              width: 'auto',
               objectFit: 'contain'
             }}
             whileHover={{ scale: 1.05 }}
