@@ -127,42 +127,67 @@ const AddToBag = () => {
 
   // Styles injected for styling the layout
   const localStyles = `
-    .cart-wrap { min-height: 100vh; background: #ffffff; color: #111111; padding-bottom: 100px; font-family: 'Poppins', sans-serif; }
-    .cart-header { max-width: 1200px; margin: 0 auto; padding: 24px 24px 12px; }
-    .cart-layout { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr 380px; gap: 32px; }
-    .cart-list-sec { display: flex; flex-direction: column; gap: 16px; }
-    .cart-item-card { display: flex; gap: 20px; background: #0a0a0a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 20px; position: relative; transition: all 0.3s ease; color: #ffffff; }
-    .cart-item-card:hover { border-color: rgba(255, 59, 48, 0.4); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); }
-    .cart-item-img { width: 110px; height: 110px; border-radius: 12px; object-fit: cover; background: #111111; border: 1px solid rgba(255, 255, 255, 0.06); flex-shrink: 0; }
-    .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    
-    .qty-select { display: flex; alignItems: center; gap: 8px; background: #000000; padding: 2px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); width: fit-content; }
-    .qty-btn { width: 32px; height: 32px; border-radius: 8px; border: none; background: transparent; color: #ffffff; cursor: pointer; display: grid; place-items: center; font-weight: 700; transition: all 0.2s; }
-    .qty-btn:hover { background: rgba(255, 255, 255, 0.08); }
-    .qty-input { width: 36px; text-align: center; background: transparent; border: none; color: #ffffff; font-weight: 700; font-size: 14px; outline: none; }
-    
-    .summary-card { background: #0a0a0a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 28px; height: fit-content; position: sticky; top: 100px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); color: #ffffff; }
-    
-    .empty-state { text-align: center; padding: 80px 24px; max-width: 600px; margin: 0 auto; }
-    .explore-btn { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #FF3B30 0%, #ff6b00 100%); color: #fff; text-decoration: none; padding: 16px 36px; borderRadius: 16px; font-weight: 800; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(255, 59, 48, 0.35); }
-    .explore-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(255, 59, 48, 0.45); }
-    
-    .checkout-form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .cart-wrap { background: #ffffff; color: #111111; padding-bottom: 20px; font-family: 'Poppins', sans-serif; }
+    .cart-header { max-width: 1200px; margin: 0 auto; padding: 20px 16px 12px; }
+    .cart-layout { max-width: 1200px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
+    .cart-list-sec { display: flex; flex-direction: column; gap: 14px; }
+
+    /* ── Cart Item Card ── */
+    .cart-item-card { display: flex; flex-direction: row; gap: 14px; background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 14px; position: relative; transition: all 0.3s ease; color: #ffffff; align-items: flex-start; }
+    .cart-item-card:hover { border-color: rgba(255,59,48,0.4); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+    .cart-item-img { width: 90px; height: 90px; border-radius: 10px; object-fit: cover; background: #111; border: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
+
+    /* ── Quantity Selector ── */
+    .qty-select { display: flex; align-items: center; gap: 4px; background: #000; padding: 2px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.1); width: fit-content; }
+    .qty-btn { width: 28px; height: 28px; border-radius: 7px; border: none; background: transparent; color: #fff; cursor: pointer; display: grid; place-items: center; font-weight: 700; transition: all 0.2s; }
+    .qty-btn:hover { background: rgba(255,255,255,0.1); }
+    .qty-input { width: 32px; text-align: center; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 13px; outline: none; }
+
+    /* ── Item Bottom Row (qty + price) ── */
+    .item-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px; gap: 8px; flex-wrap: wrap; }
+
+    /* ── Summary Card ── */
+    .summary-card { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 24px; height: fit-content; position: sticky; top: 90px; box-shadow: 0 12px 36px rgba(0,0,0,0.18); color: #fff; }
+
+    /* ── Empty State ── */
+    .empty-state { text-align: center; padding: 60px 20px; max-width: 560px; margin: 0 auto; }
+    .explore-btn { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg,#FF3B30 0%,#ff6b00 100%); color:#fff; text-decoration:none; padding:15px 32px; border-radius:14px; font-weight:800; font-family:'Montserrat',sans-serif; text-transform:uppercase; letter-spacing:0.05em; transition:all 0.3s ease; box-shadow:0 10px 24px rgba(255,59,48,0.3); }
+    .explore-btn:hover { transform:translateY(-3px); box-shadow:0 15px 32px rgba(255,59,48,0.44); }
+
+    /* ── Checkout Form ── */
+    .checkout-form-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
     .form-col-full { grid-column: span 2; }
-    .input-field { width: 100%; padding: 12px 16px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; color: #ffffff; fontSize: 13px; outline: none; box-sizing: border-box; transition: all 0.2s; font-family: inherit; }
+    .input-field { width: 100%; padding: 11px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 11px; color: #fff; font-size: 13px; outline: none; box-sizing: border-box; transition: all 0.2s; font-family: inherit; }
     .input-field:focus { border-color: #FF3B30; background: rgba(255,59,48,0.03); }
-    
-    @media (max-width: 992px) {
-      .cart-layout { grid-template-columns: 1fr; }
+
+    /* ── Tablet ── */
+    @media (max-width: 960px) {
+      .cart-wrap { padding-bottom: 20px; }
+      .cart-layout { grid-template-columns: 1fr; padding: 0 14px; }
       .summary-card { position: static; }
     }
-    
-    @media (max-width: 480px) {
-      .cart-item-card { flex-direction: column; gap: 16px; }
-      .cart-item-img { width: 100%; height: 180px; }
-      .checkout-form-grid { display: flex; flex-direction: column; }
+
+    /* ── Mobile ── */
+    @media (max-width: 600px) {
+      .cart-wrap { padding-bottom: 20px; }
+      .cart-header { padding: 16px 14px 8px; }
+      .cart-layout { padding: 0 12px; gap: 16px; }
+      .cart-item-card { padding: 12px; gap: 10px; border-radius: 14px; }
+      .cart-item-img { width: 75px; height: 75px; border-radius: 8px; }
+      .cart-item-details h3 { font-size: 13px !important; }
+      .item-bottom-row { flex-direction: row; }
+      .summary-card { padding: 18px 14px; border-radius: 16px; }
+      .checkout-form-grid { grid-template-columns: 1fr; }
+      .form-col-full { grid-column: span 1; }
+    }
+
+    @media (max-width: 380px) {
+      .cart-item-img { width: 64px; height: 64px; }
+      .qty-btn { width: 26px; height: 26px; }
     }
   `;
+
 
   return (
     <>
@@ -265,7 +290,7 @@ const AddToBag = () => {
                         </div>
 
                         {/* Quantity selector & Price subtotal */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '12px' }}>
+                        <div className="item-bottom-row">
                           <div className="qty-select">
                             <button 
                               type="button" 
