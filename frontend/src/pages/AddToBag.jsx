@@ -57,6 +57,27 @@ const AddToBag = () => {
     };
   }, []);
 
+  // Sticky footer: only on AddToBag page
+  useEffect(() => {
+    const mainEl = document.querySelector('main');
+    const prevBodyDisplay = document.body.style.display;
+    const prevBodyDirection = document.body.style.flexDirection;
+    const prevBodyMinHeight = document.body.style.minHeight;
+    const prevMainFlex = mainEl ? mainEl.style.flex : '';
+
+    document.body.style.display = 'flex';
+    document.body.style.flexDirection = 'column';
+    document.body.style.minHeight = '100vh';
+    if (mainEl) mainEl.style.flex = '1';
+
+    return () => {
+      document.body.style.display = prevBodyDisplay;
+      document.body.style.flexDirection = prevBodyDirection;
+      document.body.style.minHeight = prevBodyMinHeight;
+      if (mainEl) mainEl.style.flex = prevMainFlex;
+    };
+  }, []);
+
   const saveCart = (items) => {
     setCartItems(items);
     localStorage.setItem('csw_cart_items', JSON.stringify(items));
@@ -127,16 +148,17 @@ const AddToBag = () => {
 
   // Styles injected for styling the layout
   const localStyles = `
+    /* AddToBag page styles */
     .cart-wrap { background: #ffffff; color: #111111; padding-bottom: 20px; font-family: 'Poppins', sans-serif; }
     .cart-header { max-width: 1200px; margin: 0 auto; padding: 20px 16px 12px; }
     .cart-layout { max-width: 1200px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
     .cart-list-sec { display: flex; flex-direction: column; gap: 14px; }
 
     /* ── Cart Item Card ── */
-    .cart-item-card { display: flex; flex-direction: row; gap: 14px; background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 14px; position: relative; transition: all 0.3s ease; color: #ffffff; align-items: flex-start; }
+    .cart-item-card { display: flex; flex-direction: row; gap: 14px; background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 14px; position: relative; transition: all 0.3s ease; color: #ffffff; align-items: flex-start; overflow: hidden; }
     .cart-item-card:hover { border-color: rgba(255,59,48,0.4); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
     .cart-item-img { width: 90px; height: 90px; border-radius: 10px; object-fit: cover; background: #111; border: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
-    .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
+    .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; overflow: hidden; }
 
     /* ── Quantity Selector ── */
     .qty-select { display: flex; align-items: center; gap: 4px; background: #000; padding: 2px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.1); width: fit-content; }
@@ -148,7 +170,7 @@ const AddToBag = () => {
     .item-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px; gap: 8px; flex-wrap: wrap; }
 
     /* ── Summary Card ── */
-    .summary-card { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 24px; height: fit-content; position: sticky; top: 90px; box-shadow: 0 12px 36px rgba(0,0,0,0.18); color: #fff; }
+    .summary-card { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 24px 24px 80px; height: fit-content; position: sticky; top: 90px; box-shadow: 0 12px 36px rgba(0,0,0,0.18); color: #fff; }
 
     /* ── Empty State ── */
     .empty-state { text-align: center; padding: 60px 20px; max-width: 560px; margin: 0 auto; }
