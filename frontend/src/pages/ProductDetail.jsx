@@ -45,7 +45,7 @@ const ProductDetail = () => {
         setLoading(true);
         setError(null);
         const response = await API.get(`/products/${id}`);
-        if (response.data) {
+        if (response.data && response.data._id) {
           setProduct(response.data);
           if (response.data.images && response.data.images.length > 0) {
             setActiveImage(response.data.images[0]);

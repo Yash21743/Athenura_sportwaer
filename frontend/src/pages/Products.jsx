@@ -24,9 +24,14 @@ const Products = () => {
       try {
         setLoading(true);
         const response = await API.get('/products');
-        if (response.data && response.data.length > 0) {
+        if (
+          response.data &&
+          Array.isArray(response.data) &&
+          response.data.length > 0 &&
+          response.data[0]._id
+        ) {
           setProducts(response.data.filter((p) => p.isActive !== false));
-        } else throw new Error('Empty');
+        } else throw new Error('Empty or invalid response');
       } catch {
         setProducts(mockProducts);
       } finally {
