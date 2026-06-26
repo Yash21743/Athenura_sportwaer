@@ -57,27 +57,6 @@ const AddToBag = () => {
     };
   }, []);
 
-  // Sticky footer: only on AddToBag page
-  useEffect(() => {
-    const mainEl = document.querySelector('main');
-    const prevBodyDisplay = document.body.style.display;
-    const prevBodyDirection = document.body.style.flexDirection;
-    const prevBodyMinHeight = document.body.style.minHeight;
-    const prevMainFlex = mainEl ? mainEl.style.flex : '';
-
-    document.body.style.display = 'flex';
-    document.body.style.flexDirection = 'column';
-    document.body.style.minHeight = '100vh';
-    if (mainEl) mainEl.style.flex = '1';
-
-    return () => {
-      document.body.style.display = prevBodyDisplay;
-      document.body.style.flexDirection = prevBodyDirection;
-      document.body.style.minHeight = prevBodyMinHeight;
-      if (mainEl) mainEl.style.flex = prevMainFlex;
-    };
-  }, []);
-
   const saveCart = (items) => {
     setCartItems(items);
     localStorage.setItem('csw_cart_items', JSON.stringify(items));
@@ -148,68 +127,115 @@ const AddToBag = () => {
 
   // Styles injected for styling the layout
   const localStyles = `
-    /* AddToBag page styles */
-    .cart-wrap { background: #ffffff; color: #111111; padding-bottom: 20px; font-family: 'Poppins', sans-serif; }
-    .cart-header { max-width: 1200px; margin: 0 auto; padding: 20px 16px 12px; }
-    .cart-layout { max-width: 1200px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start; }
-    .cart-list-sec { display: flex; flex-direction: column; gap: 14px; }
+    /* ── Base Reset ── */
+    .cart-wrap * { box-sizing: border-box; }
+    .cart-wrap { min-height: 100vh; background: #ffffff; color: #111111; padding-bottom: 20px; font-family: 'Poppins', sans-serif; overflow-x: hidden; width: 100%; max-width: 100vw; }
 
-    /* ── Cart Item Card ── */
-    .cart-item-card { display: flex; flex-direction: row; gap: 14px; background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 14px; position: relative; transition: all 0.3s ease; color: #ffffff; align-items: flex-start; overflow: hidden; }
-    .cart-item-card:hover { border-color: rgba(255,59,48,0.4); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
-    .cart-item-img { width: 90px; height: 90px; border-radius: 10px; object-fit: cover; background: #111; border: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
-    .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; overflow: hidden; }
+    /* ── Header ── */
+    .cart-header { max-width: 1200px; margin: 0 auto; padding: 24px 16px 12px; }
 
-    /* ── Quantity Selector ── */
-    .qty-select { display: flex; align-items: center; gap: 4px; background: #000; padding: 2px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.1); width: fit-content; }
-    .qty-btn { width: 28px; height: 28px; border-radius: 7px; border: none; background: transparent; color: #fff; cursor: pointer; display: grid; place-items: center; font-weight: 700; transition: all 0.2s; }
+    /* ── Two-column layout (desktop) ── */
+    .cart-layout { max-width: 1200px; margin: 0 auto; padding: 0 16px 0; display: grid; grid-template-columns: 1fr 360px; gap: 28px; }
+
+    /* ── Left column ── */
+    .cart-list-sec { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+    /* ── Cart item card (row layout on desktop) ── */
+    .cart-item-card { display: flex; flex-direction: row; gap: 14px; background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 16px; position: relative; transition: border-color 0.3s; color: #fff; width: 100%; overflow: hidden; }
+    .cart-item-card:hover { border-color: rgba(255,59,48,0.4); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+
+    /* ── Card image (fixed square on desktop) ── */
+    .cart-item-img { width: 100px; height: 100px; min-width: 100px; border-radius: 10px; object-fit: cover; background: #111; border: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; display: block; max-width: 100%; }
+
+    /* ── Card details ── */
+    .cart-item-details { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+
+    /* ── Qty + Price row ── */
+    .item-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; gap: 8px; flex-wrap: wrap; }
+    .item-price-block { text-align: right; flex-shrink: 0; }
+
+    /* ── Code / Size / Color meta row ── */
+    .item-meta-list { display: flex; flex-wrap: wrap; gap: 8px 12px; margin-top: 6px; font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 300; }
+
+    /* ── Promo form ── */
+    .promo-form { display: flex; gap: 8px; margin-bottom: 24px; }
+    .promo-input { flex: 1; min-width: 0; padding: 10px 14px; background: #000; border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; font-size: 12px; outline: none; }
+    .promo-btn { padding: 0 18px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
+    .promo-btn:hover { background: rgba(255,255,255,0.15); }
+
+    /* ── Quantity selector ── */
+    .qty-select { display: flex; align-items: center; gap: 4px; background: #000; padding: 2px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); width: fit-content; flex-shrink: 0; }
+    .qty-btn { width: 28px; height: 28px; border-radius: 7px; border: none; background: transparent; color: #fff; cursor: pointer; display: grid; place-items: center; font-weight: 700; transition: background 0.2s; flex-shrink: 0; }
     .qty-btn:hover { background: rgba(255,255,255,0.1); }
-    .qty-input { width: 32px; text-align: center; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 13px; outline: none; }
+    .qty-input { width: 38px; min-width: 38px; text-align: center; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 13px; outline: none; }
 
-    /* ── Item Bottom Row (qty + price) ── */
-    .item-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px; gap: 8px; flex-wrap: wrap; }
+    /* ── Summary card (right) ── */
+    .summary-card { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 22px; height: fit-content; position: sticky; top: 90px; box-shadow: 0 12px 36px rgba(0,0,0,0.18); color: #fff; width: 100%; }
 
-    /* ── Summary Card ── */
-    .summary-card { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 24px 24px 80px; height: fit-content; position: sticky; top: 90px; box-shadow: 0 12px 36px rgba(0,0,0,0.18); color: #fff; }
+    /* ── Empty state ── */
+    .empty-state { text-align: center; padding: 60px 16px; max-width: 600px; margin: 0 auto; }
+    .explore-btn { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg,#FF3B30 0%,#ff6b00 100%); color: #fff; text-decoration: none; padding: 14px 28px; border-radius: 14px; font-weight: 800; font-family: 'Montserrat',sans-serif; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s; box-shadow: 0 8px 20px rgba(255,59,48,0.35); }
+    .explore-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(255,59,48,0.45); }
 
-    /* ── Empty State ── */
-    .empty-state { text-align: center; padding: 60px 20px; max-width: 560px; margin: 0 auto; }
-    .explore-btn { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg,#FF3B30 0%,#ff6b00 100%); color:#fff; text-decoration:none; padding:15px 32px; border-radius:14px; font-weight:800; font-family:'Montserrat',sans-serif; text-transform:uppercase; letter-spacing:0.05em; transition:all 0.3s ease; box-shadow:0 10px 24px rgba(255,59,48,0.3); }
-    .explore-btn:hover { transform:translateY(-3px); box-shadow:0 15px 32px rgba(255,59,48,0.44); }
-
-    /* ── Checkout Form ── */
+    /* ── Checkout form ── */
     .checkout-form-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
     .form-col-full { grid-column: span 2; }
-    .input-field { width: 100%; padding: 11px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 11px; color: #fff; font-size: 13px; outline: none; box-sizing: border-box; transition: all 0.2s; font-family: inherit; }
+    .input-field { width: 100%; padding: 11px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: inherit; }
     .input-field:focus { border-color: #FF3B30; background: rgba(255,59,48,0.03); }
 
-    /* ── Tablet ── */
-    @media (max-width: 960px) {
-      .cart-wrap { padding-bottom: 20px; }
-      .cart-layout { grid-template-columns: 1fr; padding: 0 14px; }
+    /* ═BREAKPOINT══ */
+
+  
+    @media (max-width: 992px) {
+      .cart-layout { grid-template-columns: 1fr; gap: 18px; }
       .summary-card { position: static; }
     }
 
-    /* ── Mobile ── */
+   
     @media (max-width: 600px) {
-      .cart-wrap { padding-bottom: 20px; }
-      .cart-header { padding: 16px 14px 8px; }
-      .cart-layout { padding: 0 12px; gap: 16px; }
-      .cart-item-card { padding: 12px; gap: 10px; border-radius: 14px; }
-      .cart-item-img { width: 75px; height: 75px; border-radius: 8px; }
-      .cart-item-details h3 { font-size: 13px !important; }
-      .item-bottom-row { flex-direction: row; }
-      .summary-card { padding: 18px 14px; border-radius: 16px; }
-      .checkout-form-grid { grid-template-columns: 1fr; }
+      .cart-header { padding: 14px 12px 8px; }
+      .cart-layout { padding: 0 12px; gap: 14px; }
+      .cart-item-card { flex-direction: column; gap: 0; padding: 14px; border-radius: 16px; }
+      .cart-item-img { width: 100%; min-width: unset; height: 170px; border-radius: 10px; margin-bottom: 12px; }
+      .summary-card { padding: 16px; border-radius: 16px; }
+      .checkout-form-grid { display: flex; flex-direction: column; gap: 12px; }
       .form-col-full { grid-column: span 1; }
     }
 
-    @media (max-width: 380px) {
-      .cart-item-img { width: 64px; height: 64px; }
+  
+    @media (max-width: 420px) {
+      .cart-header { padding: 12px 10px 6px; }
+      .cart-layout { padding: 0 10px; gap: 10px; }
+      .cart-item-card { padding: 12px; border-radius: 14px; }
+      .cart-item-img { height: 150px; border-radius: 8px; margin-bottom: 10px; }
+      .summary-card { padding: 14px; border-radius: 14px; }
       .qty-btn { width: 26px; height: 26px; }
+      .qty-input { width: 26px; font-size: 12px; }
+      .item-bottom-row { flex-direction: row; }
+      .empty-state { padding: 36px 8px; }
+    }
+
+    
+    @media (max-width: 350px) {
+      .cart-header { padding: 10px 8px 6px; }
+      .cart-layout { padding: 0 8px; gap: 8px; }
+      .cart-item-card { padding: 10px; border-radius: 12px; }
+      .cart-item-img { height: 130px; margin-bottom: 8px; }
+      .summary-card { padding: 12px; border-radius: 12px; }
+      .item-bottom-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .item-price-block { text-align: left; width: 100%; }
+      .qty-btn { width: 26px; height: 26px; }
+      .qty-input { width: 36px; min-width: 36px; font-size: 12px; }
+    }
+
+    
+    @media (max-width: 316px) {
+      .item-meta-list { flex-direction: column; gap: 4px; }
+      .promo-form { flex-direction: column; gap: 8px; }
+      .promo-input { width: 100%; padding: 10px 12px; }
+      .promo-btn { width: 100%; padding: 10px 12px; text-align: center; }
     }
   `;
-
 
   return (
     <>
@@ -304,7 +330,7 @@ const AddToBag = () => {
                             </button>
                           </div>
                           
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '6px', fontSize: '12px', color: 'rgba(255, 255, 255, 0.45)', fontWeight: 300 }}>
+                          <div className="item-meta-list">
                             <span>Code: <strong style={{ color: '#fff', fontFamily: 'monospace' }}>{item.code}</strong></span>
                             <span>Size: <strong style={{ color: '#fff' }}>{item.size || 'N/A'}</strong></span>
                             <span>Color: <strong style={{ color: '#fff' }}>{item.color || 'N/A'}</strong></span>
@@ -321,7 +347,7 @@ const AddToBag = () => {
                               className="qty-btn"
                               style={{ opacity: item.quantity <= 1 ? 0.3 : 1 }}
                             >
-                              <Minus size={12} />
+                              <Minus size={11} />
                             </button>
                             <input 
                               type="number" 
@@ -334,13 +360,13 @@ const AddToBag = () => {
                               onClick={() => updateQuantity(item._id, item.size, item.color, item.quantity + 1)}
                               className="qty-btn"
                             >
-                              <Plus size={12} />
+                              <Plus size={11} />
                             </button>
                           </div>
                           
-                          <div style={{ textAlign: 'right' }}>
-                            <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.4)', display: 'block' }}>₹{item.price} each</span>
-                            <span style={{ fontSize: '16px', fontWeight: 900, color: '#fff' }}>₹{item.price * item.quantity}</span>
+                          <div className="item-price-block">
+                            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', display: 'block', whiteSpace: 'nowrap' }}>₹{item.price} each</span>
+                            <span style={{ fontSize: '15px', fontWeight: 900, color: '#fff', whiteSpace: 'nowrap' }}>₹{item.price * item.quantity}</span>
                           </div>
                         </div>
                       </div>
@@ -362,19 +388,17 @@ const AddToBag = () => {
                 </h3>
 
                 {/* Promo Code Form */}
-                <form onSubmit={applyPromoCode} style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+                <form onSubmit={applyPromoCode} className="promo-form">
                   <input 
                     type="text" 
                     placeholder="Promo Code" 
                     value={promoCode} 
                     onChange={(e) => setPromoCode(e.target.value)} 
-                    style={{ flex: 1, padding: '10px 14px', background: '#000000', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '10px', color: '#fff', fontSize: '12px', outline: 'none' }}
+                    className="promo-input"
                   />
                   <button 
                     type="submit" 
-                    style={{ padding: '0 18px', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '10px', color: '#fff', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
+                    className="promo-btn"
                   >
                     Apply
                   </button>
