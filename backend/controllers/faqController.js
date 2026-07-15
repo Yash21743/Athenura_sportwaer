@@ -1,120 +1,38 @@
-
-const Contact = require('../models/Contact');
-const { sendContactNotification, sendContactAckToUser } = require('../utils/emailService');
-const { buildFilter, buildPagination, paginationMeta } = require('../utils/helpers');
-
-exports.createContact = async (req, res, next) => {
+exports.getFaqs = async (req, res, next) => {
   try {
-    const { name, email, phone, subject, message } = req.body;
-
-    if (!name || !email || !message) {
-      return res.status(400).json({ success: false, message: 'Name, email, and message are required' });
-    }
-
-    const contact = await Contact.create({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone ? phone.trim() : '',
-      subject: subject ? subject.trim() : '',
-      message: message.trim(),
-      status: 'unread',
-    });
-
-    try {
-      await sendContactNotification(contact);
-      await sendContactAckToUser(contact);
-    } catch (emailError) {
-      console.error('Email notification failed:', emailError.message);
-    }
-
-    res.status(201).json({
-      success: true,
-      message: 'Your message has been sent successfully. We will get back to you soon!',
-      data: contact,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.getContacts = async (req, res, next) => {
-  try {
-    const allowedFields = ['search', 'status'];
-    const filter = buildFilter(req.query, allowedFields);
-    const { page, limit, skip } = buildPagination(req.query.page, req.query.limit);
-
-    const [contacts, total] = await Promise.all([
-      Contact.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
-      Contact.countDocuments(filter),
-    ]);
+    const faqs = [
+      {
+        id: 1,
+        question: "What is your minimum order quantity (MOQ) for bulk orders?",
+        answer: "Our minimum order quantity for custom sublimated jerseys is 20 units. For other catalog apparel, it ranges from 15 to 30 units depending on the complexity of customization."
+      },
+      {
+        id: 2,
+        question: "Can I request custom fabric samples before committing to a team order?",
+        answer: "Yes, absolutely! We can ship fabric swatches and fit samples to your school, academy, or club for a nominal deposit, which is fully refundable upon placing your bulk order."
+      },
+      {
+        id: 3,
+        question: "What customization methods do you offer?",
+        answer: "We offer professional full-sublimation printing, high-density embroidery, screen printing, and premium heat-pressed vinyl transfers to match your team style and budget."
+      },
+      {
+        id: 4,
+        question: "What is your production and delivery timeline?",
+        answer: "Standard production takes 12 to 18 business days from final design approval. Domestic shipping within India takes an additional 3 to 5 business days."
+      },
+      {
+        id: 5,
+        question: "Do you offer free graphic design support for custom team kits?",
+        answer: "Yes! Our in-house design team provides free 3D mockups and helps refine your logo or color scheme once a bulk order inquiry is initiated."
+      }
+    ];
 
     res.status(200).json({
       success: true,
-      count: contacts.length,
-      pagination: paginationMeta(total, page, limit),
-      data: contacts,
+      count: faqs.length,
+      data: faqs
     });
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.getContact = async (req, res, next) => {
-  try {
-    const contact = await Contact.findById(req.params.id);
-    if (!contact) {
-      return res.status(404).json({ success: false, message: 'Contact message not found' });
-    }
-    if (contact.status === 'unread') {
-      contact.status = 'read';
-      await contact.save();
-    }
-    res.status(200).json({ success: true, data: contact });
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.updateContact = async (req, res, next) => {
-  try {
-    const { status, adminNotes } = req.body;
-
-    let contact = await Contact.findById(req.params.id);
-    if (!contact) {
-      return res.status(404).json({ success: false, message: 'Contact message not found' });
-    }
-
-    const validStatuses = ['unread', 'read', 'replied', 'closed', 'spam'];
-    if (status && !validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
-      });
-    }
-
-    contact = await Contact.findByIdAndUpdate(
-      req.params.id,
-      {
-        status: status || contact.status,
-        adminNotes: adminNotes !== undefined ? adminNotes : contact.adminNotes,
-      },
-      { new: true, runValidators: true }
-    );
-
-    res.status(200).json({ success: true, data: contact });
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.deleteContact = async (req, res, next) => {
-  try {
-    const contact = await Contact.findById(req.params.id);
-    if (!contact) {
-      return res.status(404).json({ success: false, message: 'Contact message not found' });
-    }
-    await contact.deleteOne();
-    res.status(200).json({ success: true, message: 'Contact message deleted successfully' });
   } catch (error) {
     next(error);
   }

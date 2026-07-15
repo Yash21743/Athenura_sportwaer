@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Yash21743/Athenura_sportwaer#readme",
   "dependencies": {
+    "@getbrevo/brevo": "^6.0.2",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
