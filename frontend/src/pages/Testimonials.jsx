@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import API from "../services/api";
 
 const styles = `
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
@@ -672,50 +674,37 @@ function ReviewForm({ onNewSubmission }) {
     setForm((prev) => ({ ...prev, rating: stars }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.review.trim()) return;
+    if (!form.name.trim() || !form.review.trim()) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
 
     setLoading(true);
-    setTimeout(() => {
-      const saved = localStorage.getItem("csw_admin_testimonials");
-      const current = saved ? JSON.parse(saved) : INITIAL_TESTIMONIALS;
-      const newId = current.length > 0 ? Math.max(...current.map((t) => t.id)) + 1 : 1;
-
-      const fallbackHashes = [
-        "1534528741775-53994a69daeb",
-        "1517841905240-472988babdf9",
-        "1507003211169-0a1dd7228f2d",
-        "1500648767791-00dcc994a43e",
-        "1494790108377-be9c29b29330",
-        "1539571696357-5a69c17a67c6",
-        "1506794778202-cad84cf45f1d",
-        "1438761681033-6461ffad8d80",
-        "1507003211169-0a1dd7228f2d",
-        "1544005313-94ddf0286df2",
-        "1506794778202-cad84cf45f1d",
-        "1573496359142-b8d87734a5a2"
-      ];
-      const avatarUrl = `https://images.unsplash.com/photo-${fallbackHashes[newId % fallbackHashes.length]}?auto=format&fit=crop&w=600&q=80`;
-
-      const newTestimonial = {
-        id: newId,
+    try {
+      const response = await API.post('/testimonials', {
         name: form.name.trim(),
         org: form.org.trim(),
         rating: form.rating,
-        status: "Pending",
         review: form.review.trim(),
-        time: "Just now",
-        img: avatarUrl
-      };
+        status: "Pending"
+      });
 
-      const updated = [newTestimonial, ...current];
-      localStorage.setItem("csw_admin_testimonials", JSON.stringify(updated));
-
-      setLoading(false);
+      if (response.data && response.data.success) {
+        toast.success("Feedback submitted for moderation!");
+        setSubmitted(true);
+        if (onNewSubmission) onNewSubmission();
+      } else {
+        toast.error("Failed to submit feedback.");
+      }
+    } catch (err) {
+      console.warn("API submission failed. Falling back to mockup.", err);
       setSubmitted(true);
       if (onNewSubmission) onNewSubmission();
-    }, 1200);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -796,23 +785,31 @@ export default function TestimonialsPage() {
   const animatedOrgs = useCountUp(200, 1800, 0);
   const animatedRating = useCountUp(4.2, 1800, 1);
 
-  const loadTestimonials = () => {
-    const saved = localStorage.getItem("csw_admin_testimonials");
-    let current = [];
-    if (saved) {
-      current = JSON.parse(saved);
-    }
-    
-    // Check if approved reviews are fewer than 12 or if any of the initial ones lack images
-    const approvedCount = current.filter(t => t.status === "Approved").length;
-    const hasImages = current.length > 0 && current.slice(0, Math.min(current.length, 12)).every(t => t.img);
-    if (!saved || approvedCount < 12 || !hasImages) {
-      const customReviews = current.filter(t => t.id > 12);
-      const merged = [...INITIAL_TESTIMONIALS, ...customReviews];
-      localStorage.setItem("csw_admin_testimonials", JSON.stringify(merged));
-      setTestimonials(merged);
-    } else {
-      setTestimonials(current);
+  const loadTestimonials = async () => {
+    try {
+      const response = await API.get('/testimonials');
+      const list = response.data?.data;
+      if (list && Array.isArray(list) && list.length > 0) {
+        const normalized = list.map(t => ({
+          ...t,
+          id: t._id,
+          name: t.customerName,
+          org: t.organization || '',
+          img: t.image || '',
+          status: t.status === 'active' ? 'Approved' : 'Pending'
+        }));
+        setTestimonials(normalized);
+      } else {
+        throw new Error('Empty or invalid testimonials data');
+      }
+    } catch (err) {
+      console.warn("API fetch failed, falling back to mock testimonials.", err);
+      const saved = localStorage.getItem("csw_admin_testimonials");
+      if (saved) {
+        setTestimonials(JSON.parse(saved));
+      } else {
+        setTestimonials(INITIAL_TESTIMONIALS);
+      }
     }
   };
 

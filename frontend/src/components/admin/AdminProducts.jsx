@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
+import API from "../../services/api";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -102,10 +104,8 @@ const DEFAULT_FORM = {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 const AdminProducts = () => {
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem("csw_admin_products");
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-  });
+  const [products, setProducts] = useState([]);
+  const [apiCategories, setApiCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [stockFilter, setStockFilter] = useState("All");
@@ -122,6 +122,47 @@ const AdminProducts = () => {
       navigate("/admin");
     }
   }, [navigate]);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await API.get('/categories/admin/all');
+      if (res.data?.data) {
+        setApiCategories(res.data.data);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch categories list.", err);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await API.get('/products/admin/all');
+      const list = response.data?.data;
+      if (list && Array.isArray(list)) {
+        const normalized = list.map(p => ({
+          ...p,
+          id: p._id,
+          code: p.productCode || p.code || '',
+          category: typeof p.category === 'object' && p.category ? p.category.name : p.category,
+          stock: p.stock || 0,
+          stockStatus: p.stockStatus || (p.inStock ? "In Stock" : "Out of Stock"),
+          sizes: p.availableSizes || p.sizes || [],
+          colors: p.availableColors || p.colors || [],
+          fabric: p.fabricDetails || p.fabric || '',
+          description: p.description || '',
+          image: p.images && p.images.length > 0 ? (typeof p.images[0] === 'object' ? p.images[0].url : p.images[0]) : null
+        }));
+        setProducts(normalized);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch products from API.", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (location.state?.openAddModal) {
@@ -147,7 +188,9 @@ const AdminProducts = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("csw_admin_products", JSON.stringify(products));
+    if (products.length > 0) {
+      localStorage.setItem("csw_admin_products", JSON.stringify(products));
+    }
   }, [products]);
 
   // Filter & Sort Products
@@ -233,51 +276,69 @@ const AdminProducts = () => {
     fileInputRef.current?.click();
   };
 
-  const handleDelete = (id, e) => {
+  const handleDelete = async (id, e) => {
     e.stopPropagation(); // Prevent opening detail view
     if (window.confirm("Are you sure you want to delete this product?")) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-      if (viewingProduct?.id === id) setViewingProduct(null);
+      try {
+        await API.delete(`/products/${id}`);
+        toast.success("Product deleted successfully!");
+        fetchProducts();
+        if (viewingProduct?.id === id) setViewingProduct(null);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to delete product.");
+        setProducts((prev) => prev.filter((p) => p.id !== id));
+        if (viewingProduct?.id === id) setViewingProduct(null);
+      }
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const priceNum = parseFloat(formData.price) || 0;
     const stockNum = parseInt(formData.stock, 10) || 0;
+    const selectedCategoryObject = apiCategories.find(c => c.name === formData.category);
+    const categoryId = selectedCategoryObject ? selectedCategoryObject._id : null;
+
+    if (!categoryId) {
+      toast.error("Please select a valid category.");
+      return;
+    }
 
     let stockStatus = "In Stock";
     if (stockNum === 0) stockStatus = "Out of Stock";
     else if (stockNum <= 10) stockStatus = "Low Stock";
 
-    const updatedData = {
+    const payload = {
       name: formData.name,
-      code: formData.code,
-      category: formData.category,
+      productCode: formData.code,
+      category: categoryId,
       price: priceNum,
       stock: stockNum,
       stockStatus,
-      sizes: formData.sizes,
-      colors: formData.colors,
-      fabric: formData.fabric,
+      availableSizes: formData.sizes.join(','),
+      availableColors: formData.colors.join(','),
+      fabricDetails: formData.fabric,
       description: formData.description,
-      image: imagePreview,
+      isFeatured: false,
+      status: "active"
     };
 
-    if (editingProduct) {
-      // Edit
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editingProduct.id ? { ...p, ...updatedData } : p))
-      );
-    } else {
-      // Add
-      const newProduct = {
-        id: Date.now(),
-        ...updatedData,
-      };
-      setProducts((prev) => [newProduct, ...prev]);
+    try {
+      if (editingProduct) {
+        await API.put(`/products/${editingProduct.id}`, payload);
+        toast.success("Product updated successfully!");
+      } else {
+        await API.post('/products', payload);
+        toast.success("Product created successfully!");
+      }
+      fetchProducts();
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to save product.");
+      closeModal();
     }
-    closeModal();
   };
 
   return (

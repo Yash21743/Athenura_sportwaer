@@ -53,7 +53,11 @@ exports.getAdminProducts = async (req, res, next) => {
 
 exports.getProduct = async (req, res, next) => {
   try {
-    const product = await Product.findOne({ slug: req.params.slug, status: 'active' }).populate('category', 'name slug');
+    const query = isValidObjectId(req.params.slug)
+      ? { _id: req.params.slug, status: 'active' }
+      : { slug: req.params.slug, status: 'active' };
+
+    const product = await Product.findOne(query).populate('category', 'name slug');
 
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });

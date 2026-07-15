@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/images/ath.logo.jpeg";
+import API from "../../services/api";
 
 
 const AdminLogin = () => {
@@ -21,13 +22,23 @@ const AdminLogin = () => {
     return () => clearTimeout(timer);
   }, [navigate]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email.toLowerCase() === "admin@comfysportwear.com" && password === "admin123") {
-      sessionStorage.setItem("csw_admin_session", "true");
-      navigate("/admin/dashboard");
-    } else {
-      setError("Invalid email address or password.");
+    try {
+      setError("");
+      const response = await API.post("/auth/login", { email, password });
+      if (response.data && response.data.token) {
+        sessionStorage.setItem("csw_admin_token", response.data.token);
+        sessionStorage.setItem("csw_admin_session", "true");
+        navigate("/admin/dashboard");
+      } else {
+        setError("Invalid credentials format returned from server.");
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        "Invalid email address or password."
+      );
     }
   };
 

@@ -5,11 +5,24 @@ const { buildFilter, buildPagination, paginationMeta } = require('../utils/helpe
 
 exports.createBulkOrder = async (req, res, next) => {
   try {
-    const {
-      fullName, organizationName, phoneNumber, emailAddress,
-      productCategory, quantityRequired, customPrinting,
-      preferredDeliveryDate, additionalRequirements,
-    } = req.body;
+    const fullName = req.body.fullName;
+    const organizationName = req.body.organizationName || req.body.orgName;
+    const phoneNumber = req.body.phoneNumber || req.body.phone;
+    const emailAddress = req.body.emailAddress || req.body.email;
+    const productCategory = req.body.productCategory || req.body.category;
+    const quantityRequired = req.body.quantityRequired || req.body.quantity;
+    const preferredDeliveryDate = req.body.preferredDeliveryDate || req.body.deliveryDate;
+    const additionalRequirements = req.body.additionalRequirements || req.body.requirements;
+
+    let customPrinting = false;
+    const customPrintingRaw = req.body.customPrinting;
+    if (customPrintingRaw !== undefined && customPrintingRaw !== null) {
+      if (typeof customPrintingRaw === 'boolean') {
+        customPrinting = customPrintingRaw;
+      } else if (typeof customPrintingRaw === 'string') {
+        customPrinting = customPrintingRaw.toLowerCase().includes('yes') || customPrintingRaw === 'true';
+      }
+    }
 
     if (!fullName || !phoneNumber || !emailAddress || !productCategory || !quantityRequired) {
       return res.status(400).json({
@@ -25,7 +38,7 @@ exports.createBulkOrder = async (req, res, next) => {
       emailAddress: emailAddress.trim().toLowerCase(),
       productCategory,
       quantityRequired: parseInt(quantityRequired),
-      customPrinting: customPrinting === 'true' || customPrinting === true,
+      customPrinting,
       preferredDeliveryDate: preferredDeliveryDate || undefined,
       additionalRequirements: additionalRequirements ? additionalRequirements.trim() : '',
       status: 'pending',

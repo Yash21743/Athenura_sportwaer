@@ -1,120 +1,79 @@
+const Product = require('../models/Product');
+const Category = require('../models/Category');
+const Inquiry = require('../models/Inquiry');
+const BulkOrder = require('../models/BulkOrder');
+const Testimonial = require('../models/Testimonial');
 
-const Contact = require('../models/Contact');
-const { sendContactNotification, sendContactAckToUser } = require('../utils/emailService');
-const { buildFilter, buildPagination, paginationMeta } = require('../utils/helpers');
-
-exports.createContact = async (req, res, next) => {
+exports.getDashboardStats = async (req, res, next) => {
   try {
-    const { name, email, phone, subject, message } = req.body;
-
-    if (!name || !email || !message) {
-      return res.status(400).json({ success: false, message: 'Name, email, and message are required' });
-    }
-
-    const contact = await Contact.create({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone ? phone.trim() : '',
-      subject: subject ? subject.trim() : '',
-      message: message.trim(),
-      status: 'unread',
-    });
-
-    try {
-      await sendContactNotification(contact);
-      await sendContactAckToUser(contact);
-    } catch (emailError) {
-      console.error('Email notification failed:', emailError.message);
-    }
-
-    res.status(201).json({
-      success: true,
-      message: 'Your message has been sent successfully. We will get back to you soon!',
-      data: contact,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.getContacts = async (req, res, next) => {
-  try {
-    const allowedFields = ['search', 'status'];
-    const filter = buildFilter(req.query, allowedFields);
-    const { page, limit, skip } = buildPagination(req.query.page, req.query.limit);
-
-    const [contacts, total] = await Promise.all([
-      Contact.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
-      Contact.countDocuments(filter),
+    const [totalProducts, activeCategories, newLeads, monthlyInquiries] = await Promise.all([
+      Product.countDocuments(),
+      Category.countDocuments({ status: 'active' }),
+      Inquiry.countDocuments({ status: 'new' }),
+      Inquiry.countDocuments()
     ]);
 
     res.status(200).json({
       success: true,
-      count: contacts.length,
-      pagination: paginationMeta(total, page, limit),
-      data: contacts,
+      data: {
+        products: totalProducts,
+        categories: activeCategories,
+        leads: newLeads,
+        inquiries: monthlyInquiries
+      }
     });
   } catch (error) {
     next(error);
   }
 };
 
-exports.getContact = async (req, res, next) => {
+exports.getRecentActivities = async (req, res, next) => {
   try {
-    const contact = await Contact.findById(req.params.id);
-    if (!contact) {
-      return res.status(404).json({ success: false, message: 'Contact message not found' });
-    }
-    if (contact.status === 'unread') {
-      contact.status = 'read';
-      await contact.save();
-    }
-    res.status(200).json({ success: true, data: contact });
-  } catch (error) {
-    next(error);
-  }
-};
+    const [inquiries, orders] = await Promise.all([
+      Inquiry.find().sort({ createdAt: -1 }).limit(3).populate('product', 'name'),
+      BulkOrder.find().sort({ createdAt: -1 }).limit(2)
+    ]);
 
-exports.updateContact = async (req, res, next) => {
-  try {
-    const { status, adminNotes } = req.body;
-
-    let contact = await Contact.findById(req.params.id);
-    if (!contact) {
-      return res.status(404).json({ success: false, message: 'Contact message not found' });
-    }
-
-    const validStatuses = ['unread', 'read', 'replied', 'closed', 'spam'];
-    if (status && !validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
+    const activities = [];
+    inquiries.forEach(i => {
+      activities.push({
+        id: i._id,
+        icon: "🆕",
+        color: "#3B82F6",
+        text: `New lead from ${i.name}`,
+        time: i.createdAt
       });
-    }
+    });
+    orders.forEach(o => {
+      activities.push({
+        id: o._id,
+        icon: "✅",
+        color: "#10B981",
+        text: `Bulk order from ${o.fullName || o.organizationName}`,
+        time: o.createdAt
+      });
+    });
 
-    contact = await Contact.findByIdAndUpdate(
-      req.params.id,
-      {
-        status: status || contact.status,
-        adminNotes: adminNotes !== undefined ? adminNotes : contact.adminNotes,
-      },
-      { new: true, runValidators: true }
-    );
+    activities.sort((a, b) => new Date(b.time) - new Date(a.time));
 
-    res.status(200).json({ success: true, data: contact });
+    res.status(200).json({
+      success: true,
+      data: activities.slice(0, 5)
+    });
   } catch (error) {
     next(error);
   }
 };
 
-exports.deleteContact = async (req, res, next) => {
+exports.getInquiryTrend = async (req, res, next) => {
   try {
-    const contact = await Contact.findById(req.params.id);
-    if (!contact) {
-      return res.status(404).json({ success: false, message: 'Contact message not found' });
-    }
-    await contact.deleteOne();
-    res.status(200).json({ success: true, message: 'Contact message deleted successfully' });
+    const data = [
+      { m: "Jan", v: 38 }, { m: "Feb", v: 52 }, { m: "Mar", v: 45 },
+      { m: "Apr", v: 70 }, { m: "May", v: 88 }, { m: "Jun", v: 65 },
+      { m: "Jul", v: 94 }, { m: "Aug", v: 110 }, { m: "Sep", v: 78 },
+      { m: "Oct", v: 130 }, { m: "Nov", v: 115 }, { m: "Dec", v: 142 }
+    ];
+    res.status(200).json({ success: true, data });
   } catch (error) {
     next(error);
   }

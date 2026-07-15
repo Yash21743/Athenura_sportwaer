@@ -45,13 +45,23 @@ const ProductDetail = () => {
         setLoading(true);
         setError(null);
         const response = await API.get(`/products/${id}`);
-        if (response.data && response.data._id) {
-          setProduct(response.data);
-          if (response.data.images && response.data.images.length > 0) {
-            setActiveImage(response.data.images[0]);
+        const apiData = response.data?.data;
+        if (apiData && apiData._id) {
+          // Normalize backend fields to frontend expectations
+          const normalizedProduct = {
+            ...apiData,
+            code: apiData.productCode || apiData.code,
+            sizes: apiData.availableSizes || apiData.sizes || [],
+            colors: apiData.availableColors || apiData.colors || [],
+            fabric: apiData.fabricDetails || apiData.fabric || '',
+            images: (apiData.images || []).map(img => typeof img === 'object' ? img.url : img),
+          };
+          setProduct(normalizedProduct);
+          if (normalizedProduct.images.length > 0) {
+            setActiveImage(normalizedProduct.images[0]);
           }
-          if (response.data.sizes && response.data.sizes.length > 0) {
-            setSelectedSize(response.data.sizes[0]);
+          if (normalizedProduct.sizes.length > 0) {
+            setSelectedSize(normalizedProduct.sizes[0]);
           }
         } else {
           throw new Error('Product not found in database');
@@ -83,7 +93,7 @@ const ProductDetail = () => {
   const handleInquirySubmit = async (e) => {
     e.preventDefault();
     if (!inquiryName || !inquiryEmail || !inquiryPhone) {
-      alert('Please fill in all required fields.');
+      toast.error('Please fill in all required fields.');
       return;
     }
 
@@ -104,20 +114,21 @@ const ProductDetail = () => {
       };
 
       try {
-        await API.post('/leads', inquiryPayload);
+        const response = await API.post('/leads', inquiryPayload);
+        if (response.data && response.data.success) {
+          toast.success(response.data.message || 'Inquiry submitted successfully!');
+        }
       } catch (apiErr) {
-        console.log('Sending inquiry through mock response flow.', apiErr);
+        console.warn('Sending inquiry through mock response flow.', apiErr);
       }
 
-      setTimeout(() => {
-        setInquirySubmitting(false);
-        setInquirySuccess(true);
-        setInquiryMsg('');
-      }, 1000);
+      setInquirySubmitting(false);
+      setInquirySuccess(true);
+      setInquiryMsg('');
 
     } catch (err) {
       setInquirySubmitting(false);
-      alert('There was a problem submitting your inquiry. Please try again.');
+      toast.error('There was a problem submitting your inquiry. Please try again.');
     }
   };
 

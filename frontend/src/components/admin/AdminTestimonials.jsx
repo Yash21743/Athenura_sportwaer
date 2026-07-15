@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
+import API from "../../services/api";
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 function useInView(threshold = 0.12) {
@@ -145,10 +147,34 @@ const DEFAULT_NEW_TESTIMONIAL = {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 const AdminTestimonials = () => {
-  const [testimonials, setTestimonials] = useState(() => {
-    const saved = localStorage.getItem("csw_admin_testimonials");
-    return saved ? JSON.parse(saved) : INITIAL_TESTIMONIALS;
-  });
+  const [testimonials, setTestimonials] = useState([]);
+
+  const fetchTestimonials = async () => {
+    try {
+      const response = await API.get('/testimonials/admin/all');
+      const list = response.data?.data;
+      if (list && Array.isArray(list)) {
+        const normalized = list.map(t => ({
+          ...t,
+          id: t._id,
+          name: t.customerName,
+          org: t.organization || '',
+          rating: t.rating || 5,
+          status: t.status === 'active' ? 'Approved' : 'Pending',
+          review: t.review || '',
+          time: new Date(t.createdAt).toLocaleDateString() || 'Recently',
+          img: t.image || ''
+        }));
+        setTestimonials(normalized);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch testimonials from API, using mock/cached.", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -172,12 +198,9 @@ const AdminTestimonials = () => {
   const [addingTestimonial, setAddingTestimonial] = useState(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setPageIn(true), 60);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("csw_admin_testimonials", JSON.stringify(testimonials));
+    if (testimonials.length > 0) {
+      localStorage.setItem("csw_admin_testimonials", JSON.stringify(testimonials));
+    }
   }, [testimonials]);
 
   // Stats Counters
@@ -208,21 +231,41 @@ const AdminTestimonials = () => {
   });
 
   // Action handlers
-  const handleStatusChange = (id, newStatus) => {
-    setTestimonials((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
-    );
-    if (viewingTestimonial && viewingTestimonial.id === id) {
-      setViewingTestimonial((prev) => ({ ...prev, status: newStatus }));
+  const handleStatusChange = async (id, newStatus) => {
+    const apiStatus = newStatus === 'Approved' ? 'active' : 'inactive';
+    try {
+      await API.put(`/testimonials/${id}`, { status: apiStatus });
+      toast.success("Testimonial status updated!");
+      fetchTestimonials();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update status on server.");
+      // Fallback
+      setTestimonials((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
+      );
+      if (viewingTestimonial && viewingTestimonial.id === id) {
+        setViewingTestimonial((prev) => ({ ...prev, status: newStatus }));
+      }
     }
   };
 
-  const handleDelete = (id, e) => {
+  const handleDelete = async (id, e) => {
     if (e) e.stopPropagation();
     if (window.confirm("Are you sure you want to delete this testimonial?")) {
-      setTestimonials((prev) => prev.filter((t) => t.id !== id));
-      if (viewingTestimonial?.id === id) setViewingTestimonial(null);
-      if (editingTestimonial?.id === id) setEditingTestimonial(null);
+      try {
+        await API.delete(`/testimonials/${id}`);
+        toast.success("Testimonial deleted successfully!");
+        fetchTestimonials();
+        if (viewingTestimonial?.id === id) setViewingTestimonial(null);
+        if (editingTestimonial?.id === id) setEditingTestimonial(null);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to delete testimonial from server.");
+        setTestimonials((prev) => prev.filter((t) => t.id !== id));
+        if (viewingTestimonial?.id === id) setViewingTestimonial(null);
+        if (editingTestimonial?.id === id) setEditingTestimonial(null);
+      }
     }
   };
 
