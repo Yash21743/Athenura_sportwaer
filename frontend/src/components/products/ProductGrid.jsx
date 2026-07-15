@@ -18,21 +18,21 @@ const ProductGrid = ({ products, viewMode = 'grid', onResetFilters }) => {
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.01)', textAlign: 'center' }}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', borderRadius: '16px', border: '1px dashed rgba(0,0,0,0.1)', background: 'rgba(255,255,255,0.01)', textAlign: 'center' }}
       >
-        <div style={{ width: '56px', height: '56px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', background: 'rgba(255,59,48,0.08)', border: '1px solid rgba(255,59,48,0.15)' }}>
-          <ArchiveX size={24} style={{ color: '#FF3B30', opacity: 0.7 }} />
+        <div style={{ width: '56px', height: '56px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', background: 'rgba(10,127,110,0.08)', border: '1px solid rgba(10,127,110,0.15)' }}>
+          <ArchiveX size={24} style={{ color: '#0A7F6E', opacity: 0.7 }} />
         </div>
-        <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#fff', fontFamily: 'Montserrat, sans-serif', marginBottom: '8px' }}>No Products Found</h3>
+        <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#111111', fontFamily: 'Montserrat, sans-serif', marginBottom: '8px' }}>No Products Found</h3>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', maxWidth: '280px', marginBottom: '20px', fontWeight: 300, lineHeight: 1.6 }}>
           Try adjusting your filters or search term.
         </p>
         {onResetFilters && (
           <button
             onClick={onResetFilters}
-            style={{ padding: '9px 22px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', background: 'rgba(255,59,48,0.12)', border: '1px solid rgba(255,59,48,0.3)', color: '#FF3B30', transition: 'all 0.2s' }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#FF3B30'; e.currentTarget.style.color = '#fff'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,59,48,0.12)'; e.currentTarget.style.color = '#FF3B30'; }}
+            style={{ padding: '9px 22px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', background: 'rgba(10,127,110,0.12)', border: '1px solid rgba(10,127,110,0.3)', color: '#0A7F6E', transition: 'all 0.2s' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#0A7F6E'; e.currentTarget.style.color = '#111111'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(10,127,110,0.12)'; e.currentTarget.style.color = '#0A7F6E'; }}
           >
             Clear All Filters
           </button>

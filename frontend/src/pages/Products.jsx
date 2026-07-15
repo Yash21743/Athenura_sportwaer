@@ -109,7 +109,7 @@ const Products = () => {
 
 
   return (
-    <div className="min-h-screen font-['Poppins']" style={{ background: '#ffffff', color: '#111111' }}>
+    <div className="min-h-screen font-['Poppins']" style={{ background: '#DDDFD2', color: '#111111' }}>
 
       {/* ══════════════════════════════
           HERO BANNER
@@ -124,32 +124,32 @@ const Products = () => {
           backgroundRepeat: 'no-repeat',
         }} />
 
-        {/* Black overlay */}
+        {/* Gradient overlay just to fade the bottom into the page */}
         <div className="absolute inset-0" style={{
-          background: 'linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.68) 50%, rgba(0,0,0,0.92) 100%)',
+          background: 'linear-gradient(180deg, transparent 0%, transparent 60%, #DDDFD2 100%)',
         }} />
 
         {/* Red radial glow */}
         <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255,59,48,0.12) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(10,127,110,0.12) 0%, transparent 70%)',
         }} />
 
         {/* Decorative red lines – left */}
         <svg className="absolute top-0 left-0 w-40 h-40 opacity-40" viewBox="0 0 200 200" fill="none">
-          <line x1="0" y1="50" x2="150" y2="0" stroke="#FF3B30" strokeWidth="1" />
-          <line x1="0" y1="80" x2="120" y2="0" stroke="#FF3B30" strokeWidth="0.6" />
-          <line x1="0" y1="110" x2="90" y2="0" stroke="#FF3B30" strokeWidth="0.3" />
+          <line x1="0" y1="50" x2="150" y2="0" stroke="#0A7F6E" strokeWidth="1" />
+          <line x1="0" y1="80" x2="120" y2="0" stroke="#0A7F6E" strokeWidth="0.6" />
+          <line x1="0" y1="110" x2="90" y2="0" stroke="#0A7F6E" strokeWidth="0.3" />
         </svg>
         {/* Decorative red lines – right */}
         <svg className="absolute top-0 right-0 w-40 h-40 opacity-40" viewBox="0 0 200 200" fill="none">
-          <line x1="200" y1="50" x2="50" y2="0" stroke="#FF3B30" strokeWidth="1" />
-          <line x1="200" y1="80" x2="80" y2="0" stroke="#FF3B30" strokeWidth="0.6" />
-          <line x1="200" y1="110" x2="110" y2="0" stroke="#FF3B30" strokeWidth="0.3" />
+          <line x1="200" y1="50" x2="50" y2="0" stroke="#0A7F6E" strokeWidth="1" />
+          <line x1="200" y1="80" x2="80" y2="0" stroke="#0A7F6E" strokeWidth="0.6" />
+          <line x1="200" y1="110" x2="110" y2="0" stroke="#0A7F6E" strokeWidth="0.3" />
         </svg>
 
         {/* Bottom border */}
         <div className="absolute bottom-0 inset-x-0 h-px" style={{
-          background: 'linear-gradient(90deg, transparent, #FF3B30 30%, #FF3B30 70%, transparent)',
+          background: 'linear-gradient(90deg, transparent, #0A7F6E 30%, #0A7F6E 70%, transparent)',
         }} />
 
         {/* Content */}
@@ -160,11 +160,11 @@ const Products = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: 1, marginBottom: '8px', fontSize: 'clamp(30px, 5vw, 60px)', color: '#FFFFFF', textShadow: '0 0 60px rgba(255,59,48,0.2)' }}
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: 1, marginBottom: '8px', fontSize: 'clamp(30px, 5vw, 60px)', color: '#DDDFD2', textShadow: '0 0 60px rgba(10,127,110,0.2)' }}
           >
             Comfy sportswear
             <br />
-            <span style={{ color: '#FF3B30' }}>Collection</span>
+            <span style={{ color: '#0A7F6E' }}>Collection</span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -172,7 +172,7 @@ const Products = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.15 }}
-            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 'clamp(12px, 2vw, 18px)', color: 'rgba(255,255,255,0.6)', marginBottom: '12px' }}
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', fontSize: 'clamp(12px, 2vw, 18px)', color: 'rgba(221,223,210,0.8)', marginBottom: '12px' }}
           >
             Athletic Performance Catalog
           </motion.p>
@@ -217,7 +217,7 @@ const Products = () => {
           <div className="flex flex-col items-center justify-center" style={{ padding: '120px 0', gap: '16px' }}>
             <div style={{ position: 'relative', width: '48px', height: '48px' }}>
               <div style={{ position: 'absolute', inset: 0, border: '2px solid rgba(255,255,255,0.06)', borderRadius: '50%' }} />
-              <div style={{ position: 'absolute', inset: 0, border: '2px solid transparent', borderTopColor: '#FF3B30', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              <div style={{ position: 'absolute', inset: 0, border: '2px solid transparent', borderTopColor: '#0A7F6E', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
             </div>
             <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '13px' }}>Loading collection...</p>
           </div>
@@ -234,9 +234,9 @@ const Products = () => {
                     if (firstNewCard) scrollTargetId.current = firstNewCard._id;
                     setVisibleCount((prev) => prev + 10);
                   }}
-                  style={{ padding: '14px 32px', background: 'transparent', color: '#FF3B30', border: '1px solid rgba(255,59,48,0.5)', borderRadius: '12px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', transition: 'all 0.3s' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#FF3B30'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#FF3B30'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#FF3B30'; e.currentTarget.style.borderColor = 'rgba(255,59,48,0.5)'; }}
+                  style={{ padding: '14px 32px', background: 'transparent', color: '#0A7F6E', border: '1px solid rgba(10,127,110,0.5)', borderRadius: '12px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', transition: 'all 0.3s' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#0A7F6E'; e.currentTarget.style.color = '#111111'; e.currentTarget.style.borderColor = '#0A7F6E'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#0A7F6E'; e.currentTarget.style.borderColor = 'rgba(10,127,110,0.5)'; }}
                 >
                   Load More Products
                 </button>
