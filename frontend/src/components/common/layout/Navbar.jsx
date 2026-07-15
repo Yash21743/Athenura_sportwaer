@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Menu, ShoppingBag, User, X, LogIn, Heart, Package, Settings } from "lucide-react"
 import { Link, NavLink as RouterNavLink } from "react-router-dom"
+import logo from "../../../assets/images/comfy_logo3.png"
 
 const styles = `
 .nav-root {
@@ -19,6 +20,11 @@ const styles = `
   width: 100%;
 }
 
+.nav-root--fixed {
+  position: fixed !important;
+}
+
+
 .nav-shell {
   position: relative;
   display: flex;
@@ -26,16 +32,16 @@ const styles = `
   justify-content: space-between;
   gap: 1.5rem;
   height: var(--nav-h);
-  padding: 0 clamp(1rem, 4vw, 3rem);
-  background: #000000;
+ padding: 0 clamp(1rem, 4vw, 3rem);
+  background: #d6d7cb;
   border-bottom: none;
   box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
   transition: background 0.35s ease, box-shadow 0.35s ease;
 }
 
 .nav-shell[data-scrolled='true'] {
-  background: #222228;
-  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light), 0 6px 25px rgba(200, 0, 0, 0.15);
+  background: #d6d7cb;
+  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light), 0 6px 25px rgba(20, 168, 137, 0.15);
 }
 
 .nav-links {
@@ -56,17 +62,17 @@ const styles = `
   font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 0.01em;
-  color: rgba(255, 255, 255, 0.7);
+ color: rgba(0, 0, 0, 0.7);
   text-decoration: none;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
 }
 
 .nav-link:hover,
 .nav-link.active {
   color: #ffffff;
-  background: linear-gradient(135deg, #3d0000, #800000, #3d0000);
+  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
   background-size: 200% 200%;
   animation: redShift 1.5s ease infinite;
   box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
@@ -90,12 +96,12 @@ const styles = `
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: white;
+  color: #000000;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .nav-logo__text span {
-  color: #e60000;
+  color: #14a889;
 }
 
 .nav-actions {
@@ -110,10 +116,10 @@ const styles = `
   place-items: center;
   width: 44px;
   height: 44px;
-  background: var(--bg-3d);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(0, 0, 0, 0.8);
   cursor: pointer;
   box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
   transition: all 0.2s ease;
@@ -121,7 +127,7 @@ const styles = `
 
 .icon-btn:hover {
   color: #ffffff;
-  background: linear-gradient(135deg, #3d0000, #800000, #3d0000);
+  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
   background-size: 200% 200%;
   animation: redShift 1.5s ease infinite;
   box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
@@ -140,10 +146,10 @@ const styles = `
   font-weight: 700;
   line-height: 1;
   color: #ffffff;
-  background: #e60000;
+  background: #14a889;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 12px rgba(230, 0, 0, 0.6);
+  box-shadow: 0 0 12px rgba(20, 168, 137, 0.6);
 }
 
 .account-wrap {
@@ -213,8 +219,8 @@ const styles = `
   left: 0;
   right: 0;
   overflow: hidden;
-  background: #222227;
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  background: #d6d7cb;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
   z-index: 49;
 }
@@ -233,18 +239,26 @@ const styles = `
   padding: 0.85rem 1rem;
   font-size: 1rem;
   font-weight: 500;
-  color: #ffffff;
+  color: #000000;
   text-decoration: none;
   border-radius: 12px;
-  background: #1e1e22;
+  background: #ffffff;
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), -3px -3px 6px rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.02);
   transition: all 0.2s ease;
 }
 
 .mobile-link:hover {
-  background: #222227;
+  background: #111115;
   box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5), inset -2px -2px 4px rgba(255, 255, 255, 0.03);
+}
+
+.mobile-link.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
+  background-size: 200% 200%;
+  animation: redShift 1.5s ease infinite;
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
 }
 
 .mobile-overlay {
@@ -272,11 +286,38 @@ const NAV_LINKS = [
   { label: "Contact", href: "/contact" },
 ]
 
-export default function Navbar({ cartCount = 3 }) {
+export default function Navbar({ cartCount }) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
+  const [cartItemsCount, setCartItemsCount] = useState(0)
   const accountRef = useRef(null)
+
+  const updateCartCount = () => {
+    try {
+      const stored = localStorage.getItem('csw_cart_items');
+      if (stored) {
+        const items = JSON.parse(stored);
+        const count = items.reduce((acc, item) => acc + item.quantity, 0);
+        setCartItemsCount(count);
+      } else {
+        setCartItemsCount(0);
+      }
+    } catch (err) {
+      console.error('Error calculating cart count:', err);
+      setCartItemsCount(0);
+    }
+  };
+
+  useEffect(() => {
+    updateCartCount();
+    window.addEventListener('cartUpdated', updateCartCount);
+    window.addEventListener('storage', updateCartCount);
+    return () => {
+      window.removeEventListener('cartUpdated', updateCartCount);
+      window.removeEventListener('storage', updateCartCount);
+    };
+  }, []);
 
   useEffect(() => {
     const styleTag = document.createElement("style")
@@ -310,7 +351,7 @@ export default function Navbar({ cartCount = 3 }) {
   }, [mobileOpen])
 
   return (
-    <header className="nav-root">
+   <header className={`nav-root ${mobileOpen ? "nav-root--fixed" : ""}`}>
       <motion.nav
         className="nav-shell"
         data-scrolled={scrolled}
@@ -318,14 +359,18 @@ export default function Navbar({ cartCount = 3 }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Link to="/" className="nav-logo">
-          <motion.span
-            className="nav-logo__text"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            COMFY SPORT WEAR
-          </motion.span>
+        <Link to="/" className="nav-logo" style={{ display: 'flex', alignItems: 'center' }}>
+          <motion.img
+            src={logo}
+            alt="Comfy Sport Logo"
+            style={{
+              height: '72px',
+              width: 'auto',
+              objectFit: 'contain'
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          />
         </Link>
 
         <motion.ul
@@ -352,6 +397,29 @@ export default function Navbar({ cartCount = 3 }) {
         </motion.ul>
 
         <div className="nav-actions">
+          <Link to="/cart" style={{ textDecoration: 'none' }}>
+            <motion.button
+              type="button"
+              className="icon-btn"
+              aria-label={`Cart, ${cartItemsCount} items`}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ShoppingBag size={20} />
+              {cartItemsCount > 0 && (
+                <motion.span
+                  className="cart-badge"
+                  key={cartItemsCount}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 18 }}
+                >
+                  {cartItemsCount}
+                </motion.span>
+              )}
+            </motion.button>
+          </Link>
+
           <button
             type="button"
             className="icon-btn nav-burger"
@@ -372,71 +440,6 @@ export default function Navbar({ cartCount = 3 }) {
               </motion.span>
             </AnimatePresence>
           </button>
-          <motion.button
-            type="button"
-            className="icon-btn"
-            aria-label={`Cart, ${cartCount} items`}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ShoppingBag size={20} />
-            {cartCount > 0 && (
-              <motion.span
-                className="cart-badge"
-                key={cartCount}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 500, damping: 18 }}
-              >
-                {cartCount}
-              </motion.span>
-            )}
-          </motion.button>
-
-          <div className="account-wrap" ref={accountRef}>
-            <motion.button
-              type="button"
-              className="icon-btn"
-              aria-label="Account menu"
-              aria-haspopup="menu"
-              aria-expanded={accountOpen}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setAccountOpen((v) => !v)}
-            >
-              <User size={20} />
-            </motion.button>
-
-            <AnimatePresence>
-              {accountOpen && (
-                <motion.div
-                  className="account-menu"
-                  role="menu"
-                  initial={{ opacity: 0, scale: 0.92, y: -8 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.92, y: -8 }}
-                  transition={{ duration: 0.18, ease: "easeOut" }}
-                >
-                  <div className="account-menu__head">
-                    <strong>Hello, Guest</strong>
-                    <small>Sign in for a faster checkout</small>
-                  </div>
-                  <button className="account-item" role="menuitem">
-                    <LogIn size={16} /> Sign in
-                  </button>
-                  <button className="account-item" role="menuitem">
-                    <Package size={16} /> My Orders
-                  </button>
-                  <button className="account-item" role="menuitem">
-                    <Heart size={16} /> Wishlist
-                  </button>
-                  <button className="account-item" role="menuitem">
-                    <Settings size={16} /> Settings
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
       </motion.nav>
 
@@ -474,14 +477,15 @@ export default function Navbar({ cartCount = 3 }) {
                       show: { opacity: 1, x: 0 },
                     }}
                   >
-                    <Link
+                    <RouterNavLink
                       to={link.href}
-                      className="mobile-link"
+                      end={link.href === "/"}
+                      className={({ isActive }) => `mobile-link${isActive ? " active" : ""}`}
                       onClick={() => setMobileOpen(false)}
                     >
                       {link.label}
                       <span aria-hidden="true">&rarr;</span>
-                    </Link>
+                    </RouterNavLink>
                   </motion.div>
                 ))}
               </motion.div>
@@ -497,6 +501,7 @@ function NavLink({ href, label }) {
   return (
     <RouterNavLink
       to={href}
+      end={href === "/"}
       className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}
     >
       {label}

@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import {
@@ -17,6 +17,7 @@ import {
   FlaskConical,
   Flag,
   Check,
+  ChevronRight,
 } from "lucide-react";
 
 const styles = `
@@ -31,11 +32,13 @@ const styles = `
   --muted-dark: #9b9b9f;
   --muted-light: #6b6b70;
   --radius: 1rem;
+  --teal-primary: #14a889;
+  --teal-dark: #0a3d33;
+  --teal-light: #72d4c6;
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--white);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
 .au-root * { box-sizing: border-box; }
@@ -55,7 +58,7 @@ const styles = `
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.8rem;
-  color: var(--red);
+  color: var(--teal-primary);
   margin: 0 0 1rem;
 }
 
@@ -64,7 +67,7 @@ const styles = `
 }
 
 @keyframes au-blink {
-  0%, 100% { color: var(--red); }
+  0%, 100% { color: var(--teal-primary); }
   50%       { color: #000000; }
 }
 
@@ -87,7 +90,8 @@ const styles = `
 }
 .au-pill-red { background: var(--red); color: var(--white); }
 .au-pill-surface { background: var(--surface); color: var(--white); border: 1px solid #2a2a2a; }
-.au-pill-outline { background: transparent; color: var(--red); border: 1px solid var(--red); }
+.au-pill-outline { background: transparent; color: var(--teal-primary); border: 1px solid var(--teal-primary); }
+.au-pill-teal-outline { background: transparent; color: var(--teal-primary); border: 1px solid var(--teal-primary); }
 
 .au-btn {
   display: inline-flex;
@@ -110,85 +114,602 @@ const styles = `
 
 .au-hero {
   position: relative;
-  padding: 7rem 1.5rem 6rem;
+  width: 100%;
+  height: calc(100vh - 76px);
+  min-height: calc(100vh - 76px);
+  padding: 0 1.5rem;
   overflow: hidden;
-  background: var(--bg);
+  background: linear-gradient(120deg, #06251f, #0a3d33, #051612);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
 }
-.au-hero-glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    600px circle at var(--mx, 50%) var(--my, 30%),
-    rgba(255, 59, 48, 0.18),
-    transparent 60%
-  );
-  transition: background 0.1s ease;
+
+.au-hero-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1320px;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  overflow: visible;
 }
-.au-hero-inner { position: relative; max-width: 1120px; margin: 0 auto; text-align: center; }
-.au-hero h1 { font-size: clamp(2.6rem, 7vw, 5.2rem); margin: 1.25rem 0 1.25rem; }
-.au-hero h1 .au-accent {
-  background: linear-gradient(180deg, #ff6b61 0%, #ff3b30 35%, #c81f16 70%, #7a0f0a 100%);
-  background-size: 100% 200%;
+
+.au-hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.au-hero-heading {
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0;
+  color: var(--white);
+}
+
+.au-hero-heading-row {
+  display: inline;
+  white-space: normal;
+}
+
+.au-hero-heading-line-2 {
+  background: linear-gradient(135deg, #14a889 0%, #72d4c6 50%, #14a889 100%);
+  background-size: 200% 200%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.25), 0 4px 12px rgba(255,59,48,0.45), 0 10px 25px rgba(0,0,0,0.5);
-  animation: au-gradient-shift 5s ease infinite;
+  animation: au-gradient-glow 3s ease infinite;
+  text-shadow: 0 0 20px rgba(20, 168, 137, 0.5);
 }
 
-.au-shock {
+@keyframes au-gradient-glow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.au-hero-desc {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  line-height: 1.7;
+  margin: 0;
+  max-width: 520px;
+}
+
+.au-hero-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 2rem;
+  border-radius: 999px;
+  background: #11846d;
+  color: var(--white);
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  width: fit-content;
+  box-shadow: 0 10px 30px rgba(17, 132, 109, 0.35);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.au-hero-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-20deg);
+  z-index: -1;
+  transition: left 0.6s ease;
+}
+
+.au-hero-cta:hover {
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 15px 40px rgba(17, 132, 109, 0.5);
+  background: #14a889;
+}
+
+.au-hero-cta:hover::before {
+  left: 125%;
+}
+
+.au-hero-cta:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.au-hero-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.au-hero-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.au-hero-feature-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--teal-primary);
+  color: var(--teal-primary);
+  background: rgba(20, 168, 137, 0.1);
+  box-shadow: 0 0 20px rgba(20, 168, 137, 0.25);
+  transition: all 0.3s ease;
+}
+
+.au-hero-feature:hover .au-hero-feature-icon {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(20, 168, 137, 0.4);
+}
+
+.au-hero-feature-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--teal-primary);
+}
+
+.au-hero-image-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  overflow: visible;
+}
+
+.au-hero-image-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.au-hero-parallelogram {
+  position: absolute;
+  top: 0;
+  right: -5%;
+  width: 95%;
+  height: 100%;
+  background: rgba(20, 168, 137, 0.16);
+  border-radius: 32px;
+  clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%);
+  z-index: 1;
+}
+
+.au-hero-image-wrapper {
+  position: relative;
+  z-index: 2;
+  max-width: 420px;
+  width: 100%;
+}
+
+.au-hero-image {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.5));
+  z-index: 3;
+  transform: scale(1.15);
+}
+
+.au-hero-ghost-text {
+  position: absolute;
+  top: 45%;
+  right: -6%;
+  transform: translateY(-50%);
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(2rem, 6.5vw, 4.5rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  text-align: right;
+  line-height: 1.08;
+  pointer-events: none;
+  z-index: 1;
+  white-space: normal;
+  width: 50%;
+}
+
+@media (min-width: 961px) and (max-width: 1150px) {
+  .au-hero-ghost-text {
+    right: 2%;
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    width: 42%;
+  }
+}
+
+.au-ghost-letter {
   display: inline-block;
-  animation: au-shock 3s ease-in-out infinite, au-glitch 3s ease-in-out infinite;
-  transform-origin: center;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(114, 212, 198, 0.35);
+  text-stroke: 1.5px rgba(114, 212, 198, 0.35);
+  transition: color 0.6s ease, -webkit-text-stroke 0.6s ease, text-shadow 0.6s ease;
 }
 
-@keyframes au-shock {
-  0%   { transform: skewX(0deg) skewY(0deg) scale(1);     filter: brightness(1); }
-  8%   { transform: skewX(-8deg) skewY(2deg) scale(1.04); filter: brightness(1.8) saturate(2); }
-  6%   { transform: skewX(10deg) skewY(-3deg) scale(0.97); filter: brightness(2.5) saturate(3) blur(1px); }
-  7%   { transform: skewX(-6deg) skewY(1deg) scale(1.06); filter: brightness(2) saturate(2.5); }
-  8%   { transform: skewX(4deg) skewY(-1deg) scale(1.02); filter: brightness(1.5); }
-  9%   { transform: skewX(0deg) skewY(0deg) scale(1);     filter: brightness(1); }
-  10%  { transform: translateX(-3px); filter: brightness(1.4); }
-  11%  { transform: translateX(3px);  filter: brightness(1.4); }
-  12%  { transform: translateX(0px);  filter: brightness(1); }
-  100% { transform: skewX(0deg) skewY(0deg) scale(1);     filter: brightness(1); }
+.au-ghost-letter-filled {
+  color: rgba(114, 212, 198, 0.45);
+  -webkit-text-stroke: 1.5px rgba(114, 212, 198, 0.7);
+  text-stroke: 1.5px rgba(114, 212, 198, 0.7);
+  text-shadow: 0 0 18px rgba(20, 168, 137, 0.5);
 }
 
-@keyframes au-glitch {
-  0%, 4%  { clip-path: none; text-shadow: 0 1px 0 rgba(255,255,255,0.25), 0 4px 12px rgba(255,59,48,0.45); }
-  5%      { clip-path: inset(10% 0 80% 0); text-shadow: -4px 0 #00ffff, 4px 0 #ff003c; }
-  5.5%    { clip-path: inset(60% 0 20% 0); text-shadow: 4px 0 #00ffff, -4px 0 #ff003c; }
-  6%      { clip-path: inset(30% 0 50% 0); text-shadow: -3px 0 #ff003c, 3px 0 #00ffff; }
-  6.5%    { clip-path: inset(80% 0 5% 0);  text-shadow: 5px 0 #00ffff, -4px 0 #ff003c; }
-  7%      { clip-path: none; text-shadow: 0 1px 0 rgba(255,255,255,0.25), 0 4px 12px rgba(255,59,48,0.45); }
-  100%    { clip-path: none; text-shadow: 0 1px 0 rgba(255,255,255,0.25), 0 4px 12px rgba(255,59,48,0.45); }
+@media (prefers-reduced-motion: reduce) {
+  .au-ghost-letter {
+    transition: none;
+  }
 }
 
-@keyframes au-gradient-shift {
-  0%, 100% { background-position: 0% 0%; }
-  50% { background-position: 0% 100%; }
+.au-hero-glow-effect {
+  position: absolute;
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 120px;
+  background: radial-gradient(ellipse at center, rgba(20, 168, 137, 0.4), transparent 70%);
+  filter: blur(40px);
+  z-index: 1;
 }
-.au-hero p {
-  max-width: 640px;
-  margin: 0 auto 2rem;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: var(--muted-dark);
+
+.au-hero-fog-layer {
+  position: absolute;
+  left: -25%;
+  right: -25%;
+  bottom: -8%;
+  height: 70%;
+  z-index: 3;
+  pointer-events: none;
+  mix-blend-mode: screen;
 }
-.au-hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+.au-hero-fog-layer-1 {
+  background:
+    radial-gradient(ellipse 45% 60% at 15% 85%, rgba(220,235,232,0.30), transparent 70%),
+    radial-gradient(ellipse 55% 50% at 45% 70%, rgba(220,235,232,0.22), transparent 70%),
+    radial-gradient(ellipse 40% 55% at 75% 90%, rgba(220,235,232,0.26), transparent 70%),
+    radial-gradient(ellipse 50% 45% at 95% 65%, rgba(220,235,232,0.20), transparent 70%);
+  filter: blur(22px);
+  opacity: 0.9;
+  animation: au-fog-drift-1 16s ease-in-out infinite;
+}
+
+.au-hero-fog-layer-2 {
+  background:
+    radial-gradient(ellipse 35% 50% at 30% 95%, rgba(200,225,220,0.24), transparent 70%),
+    radial-gradient(ellipse 45% 40% at 60% 80%, rgba(200,225,220,0.18), transparent 70%),
+    radial-gradient(ellipse 30% 45% at 85% 100%, rgba(200,225,220,0.22), transparent 70%);
+  filter: blur(16px);
+  opacity: 0.75;
+  animation: au-fog-drift-2 22s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+.au-hero-fog-layer-3 {
+  background:
+    radial-gradient(ellipse 60% 35% at 50% 100%, rgba(180,210,205,0.20), transparent 75%),
+    radial-gradient(ellipse 40% 30% at 10% 90%, rgba(180,210,205,0.16), transparent 75%),
+    radial-gradient(ellipse 40% 30% at 90% 90%, rgba(180,210,205,0.16), transparent 75%);
+  filter: blur(28px);
+  opacity: 0.7;
+  animation: au-fog-drift-3 26s ease-in-out infinite;
+  animation-delay: -14s;
+}
+
+@keyframes au-fog-drift-1 {
+  0%   { transform: translateX(-5%) translateY(0%) scale(1); }
+  50%  { transform: translateX(5%) translateY(-4%) scale(1.1); }
+  100% { transform: translateX(-5%) translateY(0%) scale(1); }
+}
+
+@keyframes au-fog-drift-2 {
+  0%   { transform: translateX(6%) translateY(2%) scale(1.05); }
+  50%  { transform: translateX(-6%) translateY(-3%) scale(0.98); }
+  100% { transform: translateX(6%) translateY(2%) scale(1.05); }
+}
+
+@keyframes au-fog-drift-3 {
+  0%   { transform: translateX(-3%) translateY(1%) scale(1); }
+  50%  { transform: translateX(4%) translateY(-2%) scale(1.06); }
+  100% { transform: translateX(-3%) translateY(1%) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-hero-fog-layer-1,
+  .au-hero-fog-layer-2,
+  .au-hero-fog-layer-3 {
+    animation: none;
+  }
+}
+
+.au-hero-accent-bars {
+  position: absolute;
+  bottom: 20px;
+  right: 40px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.au-hero-accent-bar {
+  width: 4px;
+  height: 40px;
+  background: var(--teal-primary);
+  transform: skewY(-15deg);
+  opacity: 0.6;
+  animation: au-bar-pulse 1.5s ease-in-out infinite;
+}
+
+.au-hero-accent-bar:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.au-hero-accent-bar:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes au-bar-pulse {
+  0%, 100% { opacity: 0.3; transform: skewY(-15deg) scaleY(1); }
+  50% { opacity: 0.8; transform: skewY(-15deg) scaleY(1.2); }
+}
+
+.au-hero-dot-grid {
+  position: absolute;
+  top: 10%;
+  right: 10%;
+  width: 150px;
+  height: 150px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 13px;
+  z-index: 1;
+}
+
+.au-hero-dot {
+  width: 3px;
+  height: 3px;
+  background: var(--teal-primary);
+  border-radius: 50%;
+  opacity: 0.3;
+  transition: opacity 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.au-hero-dot-lit {
+  opacity: 1;
+  background: var(--teal-light);
+  box-shadow:
+    0 0 10px rgba(20, 168, 137, 1),
+    0 0 22px rgba(20, 168, 137, 0.85),
+    0 0 40px rgba(114, 212, 198, 0.6),
+    0 0 60px rgba(114, 212, 198, 0.35);
+  animation: au-dot-blink-in 0.5s ease, au-dot-pulse-glow 1.8s ease-in-out 0.5s infinite;
+}
+
+@keyframes au-dot-blink-in {
+  0%   { opacity: 0; transform: scale(0.3); box-shadow: 0 0 0 rgba(20, 168, 137, 0); }
+  40%  { opacity: 1; transform: scale(2.3); }
+  100% { opacity: 1; transform: scale(1.9); }
+}
+
+@keyframes au-dot-pulse-glow {
+  0%, 100% {
+    transform: scale(1.9);
+    box-shadow:
+      0 0 10px rgba(20, 168, 137, 1),
+      0 0 22px rgba(20, 168, 137, 0.85),
+      0 0 40px rgba(114, 212, 198, 0.6),
+      0 0 60px rgba(114, 212, 198, 0.35);
+  }
+  50% {
+    transform: scale(2.2);
+    box-shadow:
+      0 0 16px rgba(20, 168, 137, 1),
+      0 0 32px rgba(20, 168, 137, 1),
+      0 0 55px rgba(114, 212, 198, 0.8),
+      0 0 80px rgba(114, 212, 198, 0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-hero-dot-lit {
+    animation: none;
+  }
+}
+
+@media (max-height: 700px) and (min-width: 961px) {
+  .au-hero {
+    height: auto;
+    min-height: auto;
+    padding: 3rem 1.5rem 2.5rem;
+  }
+
+  .au-hero-image-container {
+    min-height: 320px;
+  }
+
+  .au-hero-heading {
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+  }
+}
+
+@media (max-width: 960px) {
+  .au-hero {
+    height: auto;
+    min-height: 100vh;
+    padding: 2rem 1.5rem;
+  }
+
+  .au-hero-container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    height: auto;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .au-hero-content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .au-hero-desc {
+    max-width: 600px;
+  }
+
+  .au-hero-image-container {
+    min-height: 350px;
+    max-height: 500px;
+    order: -1;
+  }
+
+  .au-hero-features {
+    justify-content: center;
+  }
+
+  .au-hero-ghost-text {
+    top: auto;
+    bottom: 32%;
+    right: 2%;
+    transform: none;
+    font-size: clamp(2.6rem, 7vw, 4rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .au-hero {
+    padding: 1.5rem 1.25rem;
+    min-height: calc(100svh - 76px);
+  }
+
+  .au-hero-heading {
+    font-size: clamp(2.4rem, 8vw, 3.5rem);
+  }
+
+  .au-hero-desc {
+    font-size: clamp(0.9rem, 3vw, 1rem);
+  }
+
+  .au-hero-cta {
+    font-size: 0.9rem;
+    padding: 0.85rem 1.8rem;
+  }
+
+  .au-hero-image-container {
+    min-height: 280px;
+  }
+
+  .au-hero-ghost-text {
+    display: none;
+  }
+
+  .au-hero-parallelogram {
+    width: 90%;
+    right: 0;
+    clip-path: polygon(10% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+
+  .au-hero-accent-bars {
+    bottom: 10px;
+    right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .au-hero {
+    padding: 1.25rem 1rem;
+  }
+
+  .au-hero-container {
+    gap: 2rem;
+  }
+
+  .au-hero-heading {
+    font-size: clamp(2rem, 10vw, 2.8rem);
+  }
+
+  .au-hero-desc {
+    font-size: 0.92rem;
+  }
+
+  .au-hero-cta {
+    padding: 0.8rem 1.5rem;
+  }
+
+  .au-hero-features {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .au-hero-feature-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .au-hero-image-container {
+    min-height: 250px;
+  }
+
+  .au-hero-accent-bars {
+    display: none;
+  }
+
+  .au-hero-dot-grid {
+    display: none;
+  }
+}
 
 .au-story { display: grid; grid-template-columns: 1.1fr 1fr; gap: 3rem; align-items: center; }
 .au-story-media-frame {
   padding: 1.1rem;
   border-radius: calc(var(--radius) + 0.75rem);
-  background: linear-gradient(145deg, #ff4d42, #e6291d);
+  background: linear-gradient(120deg, #072a23, #14a889, #72d4c6, #0a3d33, #14a889, #072a23);
+  background-size: 300% 300%;
+  animation: au-story-frame-glow 12s ease infinite;
   box-shadow:
-    8px 8px 18px rgba(124, 15, 10, 0.45),
-    -8px -8px 18px rgba(255, 130, 120, 0.5),
-    inset 1px 1px 3px rgba(255, 180, 170, 0.5),
+    8px 8px 18px rgba(6, 37, 31, 0.45),
+    -8px -8px 18px rgba(114, 212, 198, 0.5),
+    inset 1px 1px 3px rgba(180, 240, 230, 0.5),
     inset -1px -1px 3px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes au-story-frame-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-story-media-frame {
+    animation: none;
+  }
 }
 
 .au-story-media {
@@ -211,7 +732,7 @@ const styles = `
 .au-section-head { text-align: center; max-width: 640px; margin: 0 auto 3rem; }
 
 .au-gradient-text {
-  background: linear-gradient(120deg, #ff3b30, #c81f16, #ff6b61, #ff3b30);
+  background: linear-gradient(120deg, #14a889, #0a3d33, #72d4c6, #14a889);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -220,7 +741,7 @@ const styles = `
 }
 
 .au-gradient-text-move {
-  background: linear-gradient(90deg, #ff3b30, #ff6b61, #c81f16, #ff3b30, #ff6b61);
+  background: linear-gradient(90deg, #14a889, #72d4c6, #0a3d33, #14a889, #72d4c6);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -229,7 +750,7 @@ const styles = `
 }
 
 .au-team-gradient {
-  background: linear-gradient(120deg, #ff3b30, #ff6b61, #c81f16, #ff3b30, #ff6b61);
+  background: linear-gradient(120deg, #14a889, #72d4c6, #0a3d33, #14a889, #72d4c6);
   background-size: 300% 300%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -241,21 +762,21 @@ const styles = `
 @keyframes au-team-glow {
   0% {
     background-position: 0% 50%;
-    filter: drop-shadow(0 0 20px rgba(255, 59, 48, 0.3));
+    filter: drop-shadow(0 0 20px rgba(20, 168, 137, 0.3));
   }
   25% {
-    filter: drop-shadow(0 0 40px rgba(255, 59, 48, 0.6));
+    filter: drop-shadow(0 0 40px rgba(20, 168, 137, 0.6));
   }
   50% {
     background-position: 100% 50%;
-    filter: drop-shadow(0 0 20px rgba(255, 59, 48, 0.3));
+    filter: drop-shadow(0 0 20px rgba(20, 168, 137, 0.3));
   }
   75% {
-    filter: drop-shadow(0 0 40px rgba(255, 59, 48, 0.6));
+    filter: drop-shadow(0 0 40px rgba(20, 168, 137, 0.6));
   }
   100% {
     background-position: 0% 50%;
-    filter: drop-shadow(0 0 20px rgba(255, 59, 48, 0.3));
+    filter: drop-shadow(0 0 20px rgba(20, 168, 137, 0.3));
   }
 }
 
@@ -298,7 +819,7 @@ const styles = `
 .au-card-header {
   height: 85px;
   flex-shrink: 0;
-  background: linear-gradient(120deg, #c81f16, #ff3b30, #7a0f0a, #ff3b30, #c81f16);
+  background: linear-gradient(120deg, #0a3d33, #14a889, #072a23, #14a889, #0a3d33);
   background-size: 300% 300%;
   animation: au-card-header-glow 6s ease-in-out infinite;
   display: flex;
@@ -318,13 +839,13 @@ const styles = `
   height: 58px;
   border-radius: 12px;
   background: #414141;
-  color: var(--red);
+  color: var(--teal-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
-.au-card-icon svg { color: #ff5858; }
+.au-card-icon svg { color: #72d4c6; }
 .au-card-meta { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
 .au-card-name-bar {
   background: transparent;
@@ -387,7 +908,7 @@ const styles = `
 }
 
 .au-card:hover .au-card-body {
-  background: #ff5858;
+  background: #14a889;
   animation: none;
 }
 
@@ -422,7 +943,7 @@ const styles = `
   font-family: 'Oswald', sans-serif;
   font-weight: 700;
   font-size: clamp(2.2rem, 4vw, 3.2rem);
-  color: var(--red);
+  color: var(--teal-primary);
   line-height: 1;
 }
 .au-stat-label {
@@ -435,7 +956,7 @@ const styles = `
 }
 
 .au-eyebrow-shine {
-  background: linear-gradient(90deg, #ff6b61, #ffb3ae, #ff3b30, #ffb3ae, #ff6b61);
+  background: linear-gradient(90deg, #72d4c6, #b8ede4, #14a889, #b8ede4, #72d4c6);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -450,31 +971,31 @@ const styles = `
 
 .au-tl-section {
   --tl-line: #d1d5db;
-  --tl-active: #ef4444;
-  --tl-node-bg: rgba(239, 68, 68, 0.08);
-  --tl-node-border: #ef4444;
-  --tl-year: #ef4444;
+  --tl-active: #14a889;
+  --tl-node-bg: rgba(20, 168, 137, 0.08);
+  --tl-node-border: #14a889;
+  --tl-year: #14a889;
   --tl-title: #111827;
   --tl-desc: #6b7280;
   background: #ffffff;
 }
 
 .au-tl-path-glow {
-  filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.25));
+  filter: drop-shadow(0 0 20px rgba(20, 168, 137, 0.25));
 }
 
 @keyframes au-pulseNode {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35);
+    box-shadow: 0 0 0 0 rgba(20, 168, 137, 0.35);
   }
   50% {
     transform: scale(1.12);
-    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 10px rgba(20, 168, 137, 0);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 0 rgba(20, 168, 137, 0);
   }
 }
 
@@ -483,7 +1004,7 @@ const styles = `
 }
 
 .au-tl-node-complete {
-  background: linear-gradient(120deg, #c81f16, #ff3b30, #7a0f0a, #ff3b30, #c81f16) !important;
+  background: linear-gradient(120deg, #072a23, #14a889, #0a3d33, #14a889, #072a23) !important;
   background-size: 300% 300% !important;
   animation: au-tl-node-glow 5s ease-in-out infinite !important;
   border-color: var(--tl-active) !important;
@@ -503,11 +1024,11 @@ const styles = `
 }
 
 .au-tl-node-active-glow {
-  background: linear-gradient(120deg, rgba(255,59,48,0.15), rgba(200,31,22,0.25), rgba(255,59,48,0.15)) !important;
+  background: linear-gradient(120deg, rgba(20,168,137,0.15), rgba(10,61,51,0.25), rgba(20,168,137,0.15)) !important;
   background-size: 300% 300% !important;
   animation: au-tl-node-pulse 1.8s ease-in-out infinite, au-tl-active-glow 3s ease-in-out infinite !important;
-  border-color: #ef4444 !important;
-  color: #ef4444 !important;
+  border-color: #14a889 !important;
+  color: #14a889 !important;
 }
 
 @keyframes au-tl-active-glow {
@@ -545,12 +1066,12 @@ const styles = `
 }
 
 .au-team-card:hover {
-  background: linear-gradient(120deg, #c81f16, #ff3b30, #7a0f0a, #ff3b30, #c81f16);
+  background: linear-gradient(120deg, #072a23, #14a889, #0a3d33, #14a889, #072a23);
   background-size: 300% 300%;
   animation: au-team-card-glow-red 5s ease-in-out infinite;
-  border-color: #ff3b30;
+  border-color: #14a889;
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(255, 59, 48, 0.3);
+  box-shadow: 0 20px 40px rgba(20, 168, 137, 0.3);
 }
 
 @keyframes au-team-card-glow-red {
@@ -589,7 +1110,7 @@ const styles = `
   font-size: 1.6rem;
   color: var(--white);
   background: #232323;
-  border: 3px solid var(--red);
+  border: 3px solid var(--teal-primary);
   overflow: hidden;
 }
 .au-team-card h3 {
@@ -599,7 +1120,7 @@ const styles = `
   font-size: 1.1rem;
   margin: 0 0 0.3rem;
 }
-.au-team-role { color: var(--red); font-size: 0.82rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 0.75rem; }
+.au-team-role { color: var(--teal-primary); font-size: 0.82rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 0.75rem; }
 .au-team-card p { color: var(--muted-dark); font-size: 0.9rem; line-height: 1.55; margin: 0; }
 
 .au-quote-card {
@@ -625,34 +1146,64 @@ const styles = `
 .au-quote-meta { color: var(--muted-light); font-size: 0.82rem; }
 .au-stars { display: flex; gap: 2px; color: var(--red); }
 
+#cta {
+  padding: 30px 1.5rem 25px;
+}
+
 .au-cta-box {
-  border-radius: var(--radius);
-  padding: 3.5rem 2rem;
+  border-radius: 20px;
+  padding: 80px 40px;
   text-align: center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(to right,
-    rgba(255,59,48,0.90) 0%,
-    rgba(42,12,10,0.90) 25%,
-    rgba(22,22,22,0.96) 50%,
-    rgba(42,12,10,0.90) 75%,
-    rgba(255,59,48,0.90) 100%);
-  background-size: 200% 100%;
-  animation: au-ctaGlowMove 6s ease-in-out infinite alternate;
+  background: linear-gradient(135deg, #14a889 0%, #0a3d33 50%, #051612 100%);
+  box-shadow: 0 16px 44px rgba(20, 168, 137, 0.22);
 }
-@keyframes au-ctaGlowMove {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 100% 0%; }
+.au-cta-bg-wrap {
+  position: absolute; inset: 0;
+  z-index: 0;
+  overflow: hidden;
 }
-.au-cta-box h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); color: var(--white); margin-bottom: 1rem; }
-.au-cta-box p { color: rgba(255,255,255,0.9); max-width: 520px; margin: 0 auto 2rem; line-height: 1.6; font-size: 1.05rem; }
+.au-cta-bg-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.3;
+  transform: scale(1.1);
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.36, 1);
+}
+.au-cta-box:hover .au-cta-bg-img {
+  transform: scale(1);
+}
+.au-cta-box h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); color: var(--white); margin-bottom: 1.5rem; font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; }
+.au-cta-box p { color: rgba(255,255,255,0.9); max-width: 580px; margin: 0 auto 2.5rem; line-height: 1.75; font-size: 1.05rem; }
 .au-cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-.au-btn-white { background: var(--white); color: #111113; }
-.au-btn-white:hover { background: #f0f0f0; }
-.au-btn-dark { background: rgba(13,13,13,0.85); color: var(--white); border: 1px solid rgba(255,255,255,0.25); }
-.au-btn-dark:hover { background: var(--bg); }
+.au-btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #0a3d33;
+  border: none;
+  border-radius: 6px;
+  padding: 14px 34px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+}
+.au-btn-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  background: #f8f9fa;
+  color: #14a889;
+}
 
-/* Responsive Styles */
 @media (max-width: 1024px) {
   .au-grid-4 { 
     grid-template-columns: repeat(2, 1fr); 
@@ -661,7 +1212,6 @@ const styles = `
 
 @media (max-width: 768px) {
   .au-section { padding: 3.5rem 1.25rem; }
-  .au-hero { padding: 5rem 1.25rem 4rem; }
   .au-story { grid-template-columns: 1fr; gap: 2rem; }
   .au-story > div:last-child { text-align: center; }
   .au-grid-4, .au-grid-3 { 
@@ -745,6 +1295,13 @@ const TEAM = [
   { name: "Leena Rishi", role: "Community Lead", initials: "LR", bio: "Fosters a strong community of athletes, fitness enthusiasts, and creators who inspire each other to push beyond their limits.", image: "/team/leena.jpg" },
 ];
 
+const FEATURES = [
+  { icon: ShieldCheck, label: "Premium Quality" },
+  { icon: Zap, label: "Performance Driven" },
+  { icon: Heart, label: "Built for Champions" },
+  { icon: Target, label: "Beyond Limits" },
+];
+
 function AnimatedCounter({ target, suffix = "+" }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -799,7 +1356,7 @@ function TimelinePath({ fromSide = "left", active, onComplete, height = 120 }) {
       {active && (
         <motion.path
           d={d}
-          stroke="#ef4444"
+          stroke="#14a889"
           strokeWidth="3"
           fill="none"
           strokeLinecap="round"
@@ -837,7 +1394,7 @@ function TimelineCard({ milestone, active, complete, onRevealComplete }) {
         >
           <motion.p
             style={{
-              color: "#ef4444",
+              color: "#14a889",
               fontFamily: "'Oswald', sans-serif",
               fontWeight: 700,
               fontSize: "clamp(1.6rem, 3vw, 2rem)",
@@ -952,7 +1509,7 @@ function TimelineJourneySection() {
     >
       <div className="au-inner">
         <div className="au-section-head">
-          <p className="au-eyebrow" style={{ color: "#ef4444" }}>The Road So Far</p>
+          <p className="au-eyebrow" style={{ color: "#14a889" }}>The Road So Far</p>
           <h2
             className="au-heading"
             id="company-journey-title"
@@ -1003,7 +1560,7 @@ function TimelineJourneySection() {
               className="au-tl-progress-pill"
               style={
                 completedSteps.has(index)
-                  ? { background: "#ef4444", borderColor: "#ef4444", color: "#ffffff" }
+                  ? { background: "#14a889", borderColor: "#14a889", color: "#ffffff" }
                   : { background: "transparent", borderColor: "#d1d5db", color: "#9ca3af" }
               }
             >
@@ -1016,7 +1573,7 @@ function TimelineJourneySection() {
           <div style={{ display: "flex", justifyContent: "center", marginTop: "2.5rem" }} aria-hidden="true">
             <div
               className="au-tl-node-pulse"
-              style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444" }}
+              style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#14a889" }}
             />
           </div>
         )}
@@ -1085,10 +1642,158 @@ function TimelineJourneySection() {
   );
 }
 
-const BRAND = "Comfy Sport Wear";
+const DOT_LETTERS = ["C", "O", "M", "F", "Y"];
+
+const LETTER_PATTERNS = {
+  C: [
+    "0111110",
+    "1000001",
+    "1000000",
+    "1000000",
+    "1000000",
+    "1000001",
+    "0111110",
+  ],
+  O: [
+    "0111110",
+    "1000001",
+    "1000001",
+    "1000001",
+    "1000001",
+    "1000001",
+    "0111110",
+  ],
+  M: [
+    "1000001",
+    "1100011",
+    "1010101",
+    "1001001",
+    "1000001",
+    "1000001",
+    "1000001",
+  ],
+  F: [
+    "1111111",
+    "1000000",
+    "1111110",
+    "1000000",
+    "1000000",
+    "1000000",
+    "1000000",
+  ],
+  Y: [
+    "1000001",
+    "0100010",
+    "0010100",
+    "0001000",
+    "0001000",
+    "0001000",
+    "0001000",
+  ],
+};
+
+function getLitDots(letter) {
+  const pattern = LETTER_PATTERNS[letter] || [];
+  const lit = new Set();
+  pattern.forEach((rowStr, r) => {
+    rowStr.split("").forEach((ch, c) => {
+      if (ch === "1") lit.add(r * 7 + c);
+    });
+  });
+  return lit;
+}
+
+function HeroDotMatrix() {
+  const [litDots, setLitDots] = useState(() => new Set());
+  const letterIdxRef = useRef(0);
+
+  useEffect(() => {
+    let holdTimer;
+    let blinkTimer;
+
+    const showNextLetter = () => {
+      setLitDots(new Set());
+      blinkTimer = setTimeout(() => {
+        const letter = DOT_LETTERS[letterIdxRef.current % DOT_LETTERS.length];
+        setLitDots(getLitDots(letter));
+        letterIdxRef.current += 1;
+        holdTimer = setTimeout(showNextLetter, 2000);
+      }, 350);
+    };
+
+    showNextLetter();
+
+    return () => {
+      clearTimeout(holdTimer);
+      clearTimeout(blinkTimer);
+    };
+  }, []);
+
+  return (
+    <div className="au-hero-dot-grid">
+      {Array.from({ length: 49 }).map((_, i) => (
+        <div
+          key={i}
+          className={`au-hero-dot ${litDots.has(i) ? "au-hero-dot-lit" : ""}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+const GHOST_WORD_1 = "NEVER";
+const GHOST_WORD_2 = "SETTLE";
+
+function GhostTextFill() {
+  const totalLetters = GHOST_WORD_1.length + GHOST_WORD_2.length;
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % totalLetters);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [totalLetters]);
+
+  let globalIdx = -1;
+
+  return (
+    <div className="au-hero-ghost-text" aria-hidden="true">
+      <div>
+        {GHOST_WORD_1.split("").map((ch) => {
+          globalIdx += 1;
+          const idx = globalIdx;
+          return (
+            <span
+              key={idx}
+              className={`au-ghost-letter ${activeIndex === idx ? "au-ghost-letter-filled" : ""}`}
+            >
+              {ch}
+            </span>
+          );
+        })}
+      </div>
+      <div>
+        {GHOST_WORD_2.split("").map((ch) => {
+          globalIdx += 1;
+          const idx = globalIdx;
+          return (
+            <span
+              key={idx}
+              className={`au-ghost-letter ${activeIndex === idx ? "au-ghost-letter-filled" : ""}`}
+            >
+              {ch}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+const BRAND = "Athenura Sportswear";
 
 export default function AboutUs() {
-  const [glow, setGlow] = useState({ x: 50, y: 30 });
   const heroRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -1099,20 +1804,6 @@ export default function AboutUs() {
     videoRef.current?.pause();
   };
 
-  const handleMouseMove = (e) => {
-    const rect = heroRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    setGlow({
-      x: ((e.clientX - rect.left) / rect.width) * 100,
-      y: ((e.clientY - rect.top) / rect.height) * 100,
-    });
-  };
-
-  const glowStyle = useMemo(
-    () => ({ "--mx": `${glow.x}%`, "--my": `${glow.y}%` }),
-    [glow],
-  );
-
   return (
     <div className="au-root">
       <style>{styles}</style>
@@ -1120,29 +1811,87 @@ export default function AboutUs() {
       <header
         ref={heroRef}
         className="au-hero"
-        onMouseMove={handleMouseMove}
         aria-label="About hero"
       >
-        <div className="au-hero-glow" style={glowStyle} aria-hidden="true" />
-        <div className="au-hero-inner">
-          <h1 className="au-heading">
-            Built to Compete.<br />
-            <span className="au-accent au-shock au-glitch" style={{ display: 'inline-block' }}>Born to Conquer.</span>
-          </h1>
-          <p>
-            {BRAND} was built for the ones who never settle. The ones who wake up before the world does. The ones who see every workout as a war against their own limits.
-          </p>
-          <div className="au-hero-actions">
-            <a href="#story" className="au-btn au-btn-red">
-              Our Journey <ArrowRight size={18} aria-hidden="true" />
-            </a>
+        <motion.div 
+          className="au-hero-container"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="au-hero-content">
+            <motion.h1
+              className="au-hero-heading"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+            >
+              Built to Compete.
+              <br />
+              <span className="au-hero-heading-line-2">Born to Conquer.</span>
+            </motion.h1>
+
+            <motion.p
+              className="au-hero-desc"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+            >
+              {BRAND} was built for the ones who never settle. The ones who wake up before the world does. The ones who see every workout as a war against their own limits.
+            </motion.p>
+
+            <motion.a
+              href="#story"
+              className="au-hero-cta"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
+            >
+              Our Journey
+              <ArrowRight size={18} strokeWidth={2} />
+            </motion.a>
           </div>
-        </div>
+
+          <motion.div
+            className="au-hero-image-container"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          >
+            <div className="au-hero-parallelogram" aria-hidden="true" />
+
+            <HeroDotMatrix />
+
+            <GhostTextFill />
+
+            <img
+              src="https://i.ibb.co/vx7cGDkZ/Chat-GPT-Image-Jul-14-2026-09-52-06-PM.png"
+              alt="Athletic runner in motion"
+              className="au-hero-image"
+            />
+
+            <div className="au-hero-fog-layer au-hero-fog-layer-3" aria-hidden="true" />
+            <div className="au-hero-fog-layer au-hero-fog-layer-1" aria-hidden="true" />
+            <div className="au-hero-fog-layer au-hero-fog-layer-2" aria-hidden="true" />
+
+            <div className="au-hero-accent-bars">
+              <div className="au-hero-accent-bar" />
+              <div className="au-hero-accent-bar" />
+              <div className="au-hero-accent-bar" />
+            </div>
+          </motion.div>
+        </motion.div>
       </header>
 
       <section className="au-section au-light" id="story" aria-labelledby="story-title">
         <div className="au-inner au-story">
-          <div className="au-story-media-frame">
+          <motion.div 
+            className="au-story-media-frame"
+            initial={{ opacity: 0, scale: 0.94, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.85, ease: "easeOut" }}
+          >
             <div
               className="au-story-media"
               onMouseEnter={handleVideoEnter}
@@ -1157,8 +1906,13 @@ export default function AboutUs() {
                 style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               />
             </div>
-          </div>
-          <div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 45 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.85, ease: "easeOut" }}
+          >
             <p className="au-eyebrow au-eyebrow-blink">Where It Started</p>
             <h2 className="au-heading" id="story-title">
               Forged In Sweat, Built To Last
@@ -1176,22 +1930,35 @@ export default function AboutUs() {
             <span className="au-pill au-pill-outline" style={{ marginTop: "0.5rem" }}>
               Est. 2014
             </span>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section className="au-section au-light" aria-labelledby="values-title">
         <div className="au-inner">
-          <div className="au-section-head">
+          <motion.div 
+            className="au-section-head"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.8 }}
+          >
             <p className="au-eyebrow">What Drives Us</p>
             <h2 className="au-heading au-gradient-text" id="values-title">Our Core Values</h2>
             <p>The principles stitched into everything we design, build, and stand for.</p>
-          </div>
+          </motion.div>
           <div className="au-grid au-grid-4">
-            {VALUES.map((v) => {
+            {VALUES.map((v, idx) => {
               const Icon = v.icon;
               return (
-                <article className="au-card" key={v.title}>
+                <motion.article 
+                  className="au-card" 
+                  key={v.title}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.65, delay: idx * 0.15, ease: "easeOut" }}
+                >
                   <div className="au-card-header">
                     <div className="au-card-icon">
                       <Icon size={24} aria-hidden="true" />
@@ -1203,7 +1970,7 @@ export default function AboutUs() {
                   <div className="au-card-body">
                     <p>{v.text}</p>
                   </div>
-                </article>
+                </motion.article>
               );
             })}
           </div>
@@ -1212,20 +1979,33 @@ export default function AboutUs() {
 
       <section className="au-section au-dark" aria-labelledby="stats-title">
         <div className="au-inner">
-          <div className="au-section-head">
+          <motion.div 
+            className="au-section-head"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.8 }}
+          >
             <p className="au-eyebrow au-eyebrow-shine">By The Numbers</p>
             <h2 className="au-heading au-gradient-text-move" id="stats-title">
               Milestones That Matter
             </h2>
-          </div>
+          </motion.div>
           <div className="au-stats-strip">
-            {STATS.map((s) => (
-              <div className="au-stat" key={s.label}>
+            {STATS.map((s, idx) => (
+              <motion.div 
+                className="au-stat" 
+                key={s.label}
+                initial={{ opacity: 0, scale: 0.88 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.55, delay: idx * 0.1, ease: "easeOut" }}
+              >
                 <div className="au-stat-num">
                   <AnimatedCounter target={s.target} suffix={s.suffix || "+"} />
                 </div>
                 <div className="au-stat-label">{s.label}</div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -1235,15 +2015,28 @@ export default function AboutUs() {
 
       <section className="au-section au-dark" aria-labelledby="team-title">
         <div className="au-inner">
-          <div className="au-section-head">
+          <motion.div 
+            className="au-section-head"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.8 }}
+          >
             <p className="au-eyebrow">The People Behind It</p>
             <h2 className="au-heading au-team-gradient" id="team-title">
               Meet The Team
             </h2>
-          </div>
+          </motion.div>
           <div className="au-grid au-grid-4">
-            {TEAM.map((m) => (
-              <article className="au-team-card" key={m.name}>
+            {TEAM.map((m, idx) => (
+              <motion.article 
+                className="au-team-card" 
+                key={m.name}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.65, delay: idx * 0.15, ease: "easeOut" }}
+              >
                 <div className="au-avatar" aria-label={`${m.name} avatar`}>
                   <img
                     src={m.image}
@@ -1259,7 +2052,7 @@ export default function AboutUs() {
                 <h3>{m.name}</h3>
                 <p className="au-team-role">{m.role}</p>
                 <p>{m.bio}</p>
-              </article>
+              </motion.article>
             ))}
           </div>
         </div>
@@ -1267,17 +2060,31 @@ export default function AboutUs() {
 
       <section className="au-section au-light" id="cta" aria-labelledby="cta-title">
         <div className="au-inner">
-          <div className="au-cta-box">
-            <h2 className="au-heading" id="cta-title">Ready to Elevate Your Game?</h2>
-            <p>
+          <motion.div 
+            className="au-cta-box"
+            initial={{ opacity: 0, scale: 0.94, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.85, ease: "easeOut" }}
+          >
+            <div className="au-cta-bg-wrap">
+              <img
+                className="au-cta-bg-img"
+                src="https://images.unsplash.com/photo-1649520937981-763d6a14de7d?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Athletes Custom Sportswear Background"
+              />
+            </div>
+
+            <h2 className="au-heading" id="cta-title" style={{ position: 'relative', zIndex: 2 }}>Ready to Elevate Your Game?</h2>
+            <p style={{ position: 'relative', zIndex: 2 }}>
               Push your limits with sportswear built for performance, comfort, and confidence. Whether you're training or competing, we're here to help you perform at your best.
             </p>
-            <div className="au-cta-actions">
-              <Link to="/contact" className="au-btn au-btn-dark">
+            <div className="au-cta-actions" style={{ position: 'relative', zIndex: 2 }}>
+              <Link to="/contact" className="au-btn-cta">
                 <Mail size={18} aria-hidden="true" /> Contact Us
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>
