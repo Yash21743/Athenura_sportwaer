@@ -57,37 +57,7 @@ const AddToBag = () => {
     };
   }, []);
 
-  
-  useEffect(() => {
-   
-    let viewportMeta = document.querySelector('meta[name="viewport"]');
-    if (!viewportMeta) {
-      viewportMeta = document.createElement('meta');
-      viewportMeta.name = 'viewport';
-      document.head.appendChild(viewportMeta);
-    }
-    const prevViewportContent = viewportMeta.content;
-    viewportMeta.content = 'width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover';
 
-    
-    const prevHtmlOverflow = document.documentElement.style.overflowX;
-    const prevBodyOverflow = document.body.style.overflowX;
-    const prevBodyMaxWidth = document.body.style.maxWidth;
-    const prevBodyMargin = document.body.style.margin;
-
-    document.documentElement.style.overflowX = 'hidden';
-    document.body.style.overflowX = 'hidden';
-    document.body.style.maxWidth = '100%';
-    document.body.style.margin = '0';
-
-    return () => {
-      viewportMeta.content = prevViewportContent;
-      document.documentElement.style.overflowX = prevHtmlOverflow;
-      document.body.style.overflowX = prevBodyOverflow;
-      document.body.style.maxWidth = prevBodyMaxWidth;
-      document.body.style.margin = prevBodyMargin;
-    };
-  }, []);
 
   const saveCart = (items) => {
     setCartItems(items);
@@ -298,7 +268,7 @@ const AddToBag = () => {
         
         {/* Header & Breadcrumb */}
         <div className="cart-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 600, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', fontSize: '11px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 600, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
             <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>HOME</Link>
             <ChevronRight size={12} />
             <Link to="/products" style={{ color: 'inherit', textDecoration: 'none' }}>PRODUCTS</Link>
@@ -306,7 +276,7 @@ const AddToBag = () => {
             <span style={{ color: '#0A7F6E', fontWeight: 800 }}>SHOPPING BAG</span>
           </div>
           
-          <h1 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 900, fontSize: 'clamp(28px, 4vw, 42px)', textTransform: 'uppercase', letterSpacing: '0.02em', color: '#0A7F6E', marginBottom: '8px' }}>
+          <h1 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 900, fontSize: 'clamp(20px, 4vw, 42px)', textTransform: 'uppercase', letterSpacing: '0.02em', color: '#0A7F6E', marginBottom: '8px', wordBreak: 'break-word' }}>
             {checkoutStep === 'success' ? 'Order Confirmed' : checkoutStep === 'shipping' ? 'Shipping Details' : 'Your Shopping Bag'}
           </h1>
           {checkoutStep === 'cart' && cartItems.length > 0 && (
