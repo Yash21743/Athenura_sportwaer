@@ -1244,10 +1244,10 @@ const VALUES = [
 ];
 
 const STATS = [
-  { num: "10+", label: "Years Strong", target: 10 },
-  { num: "2M+", label: "Customers", target: 2, suffix: "M+" },
-  { num: "30+", label: "Countries", target: 30 },
-  { num: "500+", label: "Products", target: 500 },
+  { num: "5+", label: "Years Strong", target: 5 },
+  { num: "150+", label: "Customers", target: 150 },
+  { num: "25+", label: "Countries", target: 25 },
+  { num: "100+", label: "Products", target: 100 },
 ];
 
 const TIMELINE_JOURNEY = [

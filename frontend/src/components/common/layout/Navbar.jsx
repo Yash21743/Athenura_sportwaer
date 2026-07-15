@@ -1,6 +1,4 @@
-﻿"use client"
-
-import { useEffect, useRef, useState } from "react"
+﻿import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Menu, ShoppingBag, User, X, LogIn, Heart, Package, Settings } from "lucide-react"
 import { Link, NavLink as RouterNavLink } from "react-router-dom"

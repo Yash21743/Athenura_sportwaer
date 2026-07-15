@@ -7,7 +7,7 @@ const styles = `
 .bo-root {
   --bg: #0d0d0d;
   --surface: #1a1a1a;
-  --red: #ff3b30;
+  --red: #14a889;
   --light: #f4f4f5;
   --white: #ffffff;
   --muted-dark: #9b9b9f;
@@ -26,7 +26,7 @@ const styles = `
   position: relative;
   padding: 7rem 1.5rem 6rem;
   overflow: hidden;
-  background: var(--bg);
+  background: linear-gradient(120deg, #06251f, #0a3d33, #051612);
   text-align: center;
 }
 .bo-hero-glow {
@@ -34,7 +34,7 @@ const styles = `
   pointer-events: none;
   background: radial-gradient(
     600px circle at var(--mx, 50%) var(--my, 30%),
-    rgba(255,59,48,0.18), transparent 60%
+    rgba(20,168,137,0.18), transparent 60%
   );
   transition: background 0.1s ease;
 }
@@ -53,10 +53,10 @@ const styles = `
 }
 .bo-hero-h1 { font-size: clamp(2.8rem, 7vw, 5.2rem); margin-bottom: 1.25rem; }
 .bo-hero-accent {
-  background: linear-gradient(180deg, #ff6b61 0%, #ff3b30 35%, #c81f16 70%, #7a0f0a 100%);
+  background: linear-gradient(180deg, #72d4c6 0%, #14a889 35%, #0f6e5c 70%, #051612 100%);
   background-size: 100% 200%; -webkit-background-clip: text; background-clip: text;
   color: transparent;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 4px 12px rgba(255,59,48,0.45);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 4px 12px rgba(20,168,137,0.45);
   animation: bo-grad-shift 5s ease infinite;
 }
 @keyframes bo-grad-shift { 0%,100%{background-position:0% 0%;} 50%{background-position:0% 100%;} }
@@ -91,7 +91,7 @@ const styles = `
 }
 .bo-pill:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
 .bo-pill-red { background: var(--red); border-color: var(--red); }
-.bo-pill-red:hover { background: #ff5249; border-color: #ff5249; }
+.bo-pill-red:hover { background: #18c39f; border-color: #18c39f; }
 
 /* ── Sections ── */
 .bo-section { padding: 5rem 1.5rem; position: relative; }
@@ -128,20 +128,20 @@ const styles = `
   transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
 }
 .bo-benefit-card:hover {
-  border-color: rgba(255,59,48,0.4); transform: translateY(-4px);
-  box-shadow: 0 14px 34px rgba(255,59,48,0.14);
+  border-color: rgba(20,168,137,0.4); transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(20,168,137,0.14);
 }
 .bo-benefit-icon {
   width: 56px; height: 56px; border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, rgba(255,59,48,0.22), rgba(255,59,48,0.08));
-  border: 1px solid rgba(255,59,48,0.25);
+  background: radial-gradient(circle at 32% 28%, rgba(20,168,137,0.22), rgba(20,168,137,0.08));
+  border: 1px solid rgba(20,168,137,0.25);
   color: var(--red);
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), background 0.25s;
 }
 .bo-benefit-card:hover .bo-benefit-icon {
   transform: rotate(-12deg) scale(1.1);
-  background: radial-gradient(circle at 32% 28%, rgba(255,59,48,0.35), rgba(255,59,48,0.12));
+  background: radial-gradient(circle at 32% 28%, rgba(20,168,137,0.35), rgba(20,168,137,0.12));
 }
 .bo-benefit-title {
   font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 1.05rem;
@@ -154,7 +154,7 @@ const styles = `
 .bo-steps-line {
   position: absolute;
   top: 30px; left: 10%; right: 10%; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255,59,48,0.55), transparent);
+  background: linear-gradient(90deg, transparent, rgba(20,168,137,0.55), transparent);
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 1.2s cubic-bezier(0.22,1,0.36,1);
@@ -180,12 +180,12 @@ const styles = `
 }
 .bo-step-num {
   width: 60px; height: 60px; border-radius: 50%;
-  background: #1f0f0e; border: 2px solid rgba(255,59,48,0.45);
+  background: #0d211d; border: 2px solid rgba(20,168,137,0.45);
   color: var(--red); font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 1.4rem;
   display: flex; align-items: center; justify-content: center;
   position: relative; z-index: 1; transition: background 0.3s, border-color 0.3s;
 }
-.bo-step:hover .bo-step-num { background: #34130f; border-color: var(--red); }
+.bo-step:hover .bo-step-num { background: #123a30; border-color: var(--red); }
 .bo-step-title {
   font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase;
   font-size: 0.95rem; letter-spacing: 0.04em;
@@ -245,13 +245,13 @@ const styles = `
 .bo-form-card {
   background: #ffffff; border-radius: calc(var(--radius) + 4px);
   padding: 2.5rem; box-shadow: 0 8px 40px rgba(0,0,0,0.10);
-  border: 1.5px solid rgba(255,59,48,0.35);
+  border: 1.5px solid rgba(20,168,137,0.35);
   height: 100%;
 }
 .bo-contact-card {
   background: #ffffff; border-radius: calc(var(--radius) + 4px);
   padding: 2.2rem 2rem; box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-  border: 1.5px solid rgba(255,59,48,0.35);
+  border: 1.5px solid rgba(20,168,137,0.35);
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -289,7 +289,7 @@ const styles = `
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .bo-input:focus, .bo-textarea:focus, .bo-select:focus {
-  border-color: #ff3b30; box-shadow: 0 0 0 3px rgba(255,59,48,0.12); background: #fff;
+  border-color: #14a889; box-shadow: 0 0 0 3px rgba(20,168,137,0.12); background: #fff;
 }
 .bo-textarea { resize: vertical; min-height: 110px; }
 .bo-select {
@@ -308,7 +308,7 @@ const styles = `
   user-select: none;
 }
 .bo-radio-label input { display: none; }
-.bo-radio-label.selected { border-color: var(--red); background: rgba(255,59,48,0.07); color: var(--red); font-weight: 600; }
+.bo-radio-label.selected { border-color: var(--red); background: rgba(20,168,137,0.07); color: var(--red); font-weight: 600; }
 
 /* date input */
 .bo-input[type="date"] { cursor: pointer; }
@@ -321,9 +321,9 @@ const styles = `
   font-size: 0.9rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
   border: none; cursor: pointer; width: 100%;
   transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 16px rgba(255,59,48,0.30);
+  box-shadow: 0 4px 16px rgba(20,168,137,0.30);
 }
-.bo-submit-btn:hover { transform: translateY(-2px); background: #ff5249; box-shadow: 0 8px 24px rgba(255,59,48,0.35); }
+.bo-submit-btn:hover { transform: translateY(-2px); background: #18c39f; box-shadow: 0 8px 24px rgba(20,168,137,0.35); }
 .bo-submit-btn:active { transform: translateY(0); }
 .bo-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
@@ -338,7 +338,7 @@ const styles = `
 }
 .bo-success-icon {
   width: 72px; height: 72px; border-radius: 50%;
-  background: rgba(255,59,48,0.08);
+  background: rgba(20,168,137,0.08);
   display: flex; align-items: center; justify-content: center; color: var(--red);
 }
 .bo-success h3 {
@@ -353,8 +353,8 @@ const styles = `
 .bo-cta-box {
   max-width: 1120px; margin: 0 auto; position: relative;
   border-radius: 20px; overflow: hidden;
-  background: linear-gradient(135deg, #FF3B30 0%, #b31c15 50%, #800f0a 100%);
-  box-shadow: 0 16px 44px rgba(255, 59, 48, 0.22);
+  background: linear-gradient(135deg, #14a889 0%, #0a3d33 50%, #051612 100%);
+  box-shadow: 0 16px 44px rgba(20, 168, 137, 0.22);
 }
 .bo-cta-bg-wrap {
   position: absolute; inset: 0;
@@ -391,14 +391,14 @@ const styles = `
 .bo-cta-btn-wa {
   display: inline-flex; align-items: center; gap: 0.75rem;
   padding: 14px 34px; border-radius: 6px;
-  background: #ffffff; color: #c92218;
+  background: #ffffff; color: #0a3d33;
   font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   text-decoration: none; flex-shrink: 0;
   transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
   font-family: 'Poppins', sans-serif;
 }
-.bo-cta-btn-wa:hover { transform: translateY(-3px); background: #f8f9fa; color: #e62e22; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
+.bo-cta-btn-wa:hover { transform: translateY(-3px); background: #f8f9fa; color: #14a889; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
 .bo-cta-btn-ghost {
   display: inline-flex; align-items: center; gap: 0.75rem;
   padding: 13px 32px; border-radius: 6px;
@@ -495,14 +495,14 @@ const WAIcon = () => (
 );
 
 /* ─── Contact constants ─── */
-const PHONE_DISPLAY = "+91 98350 51934";
-const PHONE_TEL = "+919835051934";
-const WA_LINK = "https://wa.me/919835051934";
+const PHONE_DISPLAY = "+91 8755578878";
+const PHONE_TEL = "+91 8755578878";
+const WA_LINK = "https://wa.me/918755578878";
 const EMAIL = "official@athenura.in";
 
 /* ─── Data ─── */
 const STATS = [
-  { end: 500, suffix: "+", label: "B2B Clients" },
+  { end: 150, suffix: "+", label: "B2B Clients" },
   { end: 50, suffix: "", label: "MOQ Units" },
   { end: 24, suffix: "h", label: "Quote Time" },
   { end: 100, suffix: "%", label: "Custom Print" },
