@@ -33,7 +33,21 @@ exports.getTestimonial = async (req, res, next) => {
 
 exports.createTestimonial = async (req, res, next) => {
   try {
-    const { customerName, rating, review, organization, designation, image, sortOrder, status } = req.body;
+    const customerName = req.body.customerName || req.body.name;
+    const rating = req.body.rating;
+    const review = req.body.review;
+    const organization = req.body.organization || req.body.org;
+    const designation = req.body.designation;
+    const image = req.body.image || req.body.img;
+    const sortOrder = req.body.sortOrder;
+    const statusRaw = req.body.status;
+
+    let status = 'active'; // default
+    if (statusRaw) {
+      if (statusRaw.toLowerCase() === 'pending' || statusRaw.toLowerCase() === 'inactive') {
+        status = 'inactive';
+      }
+    }
 
     if (!customerName || !review || !rating) {
       return res.status(400).json({ success: false, message: 'Customer name, review, and rating are required' });
@@ -51,7 +65,7 @@ exports.createTestimonial = async (req, res, next) => {
       designation: designation ? designation.trim() : '',
       image: image || '',
       sortOrder: sortOrder || 0,
-      status: status || 'active',
+      status,
     });
 
     res.status(201).json({ success: true, data: testimonial });
@@ -62,7 +76,19 @@ exports.createTestimonial = async (req, res, next) => {
 
 exports.updateTestimonial = async (req, res, next) => {
   try {
-    const { customerName, rating, review, organization, designation, image, sortOrder, status } = req.body;
+    const customerName = req.body.customerName || req.body.name;
+    const rating = req.body.rating;
+    const review = req.body.review;
+    const organization = req.body.organization || req.body.org;
+    const designation = req.body.designation;
+    const image = req.body.image || req.body.img;
+    const sortOrder = req.body.sortOrder;
+    const statusRaw = req.body.status;
+
+    let status = undefined;
+    if (statusRaw !== undefined) {
+      status = (statusRaw.toLowerCase() === 'approved' || statusRaw.toLowerCase() === 'active') ? 'active' : 'inactive';
+    }
 
     let testimonial = await Testimonial.findById(req.params.id);
     if (!testimonial) {

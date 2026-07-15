@@ -6,7 +6,9 @@ const { buildFilter, buildPagination, paginationMeta, isValidObjectId } = requir
 
 exports.createInquiry = async (req, res, next) => {
   try {
-    const { name, mobileNumber, email, productName, productId, quantity, message } = req.body;
+    const { name, email, productName, quantity, message } = req.body;
+    const mobileNumber = req.body.mobileNumber || req.body.phone;
+    const productId = req.body.productId || req.body.product;
 
     if (!name || !mobileNumber || !email) {
       return res.status(400).json({ success: false, message: 'Name, mobile number, and email are required' });

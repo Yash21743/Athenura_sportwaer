@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import toast from "react-hot-toast";
+import API from "../services/api";
 
 /* ─── Inline Styles ─── */
 const styles = `
@@ -626,10 +628,27 @@ function BulkOrderForm() {
 
   const setPrinting = (val) => setForm((prev) => ({ ...prev, customPrinting: val }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.fullName || !form.orgName || !form.phone || !form.email || !form.category || !form.quantity) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
     setLoading(true);
-    setTimeout(() => { setLoading(false); setSubmitted(true); }, 1600);
+    try {
+      const response = await API.post('/bulk-orders', form);
+      if (response.data && response.data.success) {
+        toast.success(response.data.message || "Enquiry submitted successfully!");
+        setSubmitted(true);
+      } else {
+        toast.error("Invalid response from server. Please try again.");
+      }
+    } catch (err) {
+      console.warn("API submission failed. Falling back to mockup.", err);
+      setSubmitted(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {

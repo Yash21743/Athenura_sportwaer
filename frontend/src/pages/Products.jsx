@@ -24,13 +24,14 @@ const Products = () => {
       try {
         setLoading(true);
         const response = await API.get('/products');
+        const list = response.data?.data || response.data;
         if (
-          response.data &&
-          Array.isArray(response.data) &&
-          response.data.length > 0 &&
-          response.data[0]._id
+          list &&
+          Array.isArray(list) &&
+          list.length > 0 &&
+          list[0]._id
         ) {
-          setProducts(response.data.filter((p) => p.isActive !== false));
+          setProducts(list.filter((p) => p.status !== 'inactive'));
         } else throw new Error('Empty or invalid response');
       } catch {
         setProducts(mockProducts);
@@ -52,7 +53,10 @@ const Products = () => {
 
   const productCounts = useMemo(() => {
     const counts = { All: products.length };
-    products.forEach((p) => { counts[p.category] = (counts[p.category] || 0) + 1; });
+    products.forEach((p) => {
+      const cat = typeof p.category === 'object' && p.category ? p.category.name : p.category;
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
     return counts;
   }, [products]);
 
@@ -61,13 +65,19 @@ const Products = () => {
       .filter((p) => {
         if (searchTerm.trim()) {
           const term = searchTerm.toLowerCase();
-          if (!p.name.toLowerCase().includes(term) && !p.code.toLowerCase().includes(term) &&
+          const pCode = p.code || p.productCode || '';
+          if (!p.name.toLowerCase().includes(term) && !pCode.toLowerCase().includes(term) &&
             !(p.tags && p.tags.some((t) => t.toLowerCase().includes(term)))) return false;
         }
-        if (selectedCategory !== 'All' && p.category !== selectedCategory) return false;
+        if (selectedCategory !== 'All') {
+          const cat = typeof p.category === 'object' && p.category ? p.category.name : p.category;
+          if (cat !== selectedCategory) return false;
+        }
         if (p.price > priceRange) return false;
-        if (selectedSizes.length > 0 && !p.sizes.some((s) => selectedSizes.includes(s))) return false;
-        if (selectedStockStatuses.length > 0 && !selectedStockStatuses.includes(p.stockStatus)) return false;
+        const pSizes = p.sizes || p.availableSizes || [];
+        if (selectedSizes.length > 0 && !pSizes.some((s) => selectedSizes.includes(s))) return false;
+        const pStockStatus = p.stockStatus || (p.inStock ? "In Stock" : "Out of Stock");
+        if (selectedStockStatuses.length > 0 && !selectedStockStatuses.includes(pStockStatus)) return false;
         return true;
       })
       .sort((a, b) => {

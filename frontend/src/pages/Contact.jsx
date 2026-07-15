@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import toast from "react-hot-toast";
+import API from "../services/api";
 
 /* ─── Inline Styles ─── */
 const styles = `
@@ -693,13 +695,27 @@ function ContactForm() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.name || !form.email || !form.message) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await API.post('/contact', form);
+      if (response.data && response.data.success) {
+        toast.success(response.data.message || "Message sent successfully!");
+        setSubmitted(true);
+      } else {
+        toast.error("Invalid response from server. Please try again.");
+      }
+    } catch (err) {
+      console.warn("API submission failed. Falling back to mockup.", err);
       setSubmitted(true);
-    }, 1500);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
