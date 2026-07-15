@@ -2,17 +2,17 @@ import { useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import { MessageCircle, Mail, Phone } from "lucide-react"
-import logo from "../../../assets/images/ath.logo.jpeg"
+import logo from "../../../assets/images/comfy_logo3.png"
 
 const styles = `
 .footer-root {
-  --bg-3d: #000000;
-  --shadow-3d-dark: 6px 6px 12px rgba(0, 0, 0, 0.8);
-  --shadow-3d-light: -6px -6px 12px rgba(255, 255, 255, 0.04);
-  --inset-3d-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.8);
-  --inset-3d-light: inset -4px -4px 8px rgba(255, 255, 255, 0.04);
-  background: #000000;
-  color: rgba(255, 255, 255, 0.8);
+  --bg-3d: #ffffff;
+  --shadow-3d-dark: 6px 6px 12px rgba(0, 0, 0, 0.1);
+  --shadow-3d-light: -6px -6px 12px rgba(255, 255, 255, 0.6);
+  --inset-3d-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.1);
+  --inset-3d-light: inset -4px -4px 8px rgba(255, 255, 255, 0.6);
+  background: #d6d7cb;
+  color: rgba(0, 0, 0, 0.75);
   padding: 3rem clamp(1rem, 4vw, 3rem) 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.03);
   box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
@@ -50,7 +50,7 @@ const styles = `
   font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: #ffffff;
+  color: #000000;
   margin-bottom: 0.25rem;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
   position: relative;
@@ -62,7 +62,7 @@ const styles = `
   display: block;
   width: 35px;
   height: 2px;
-  background: #FF3B30;
+  background: #14a889;
   margin-top: 0.35rem;
   border-radius: 1px;
 }
@@ -77,12 +77,12 @@ const styles = `
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: white;
+  color: #000000;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .footer-logo span {
-  color: #e60000;
+  color: #14a889;
 }
 
 .footer-link {
@@ -91,17 +91,18 @@ const styles = `
   padding: 0.4rem 0.8rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(0, 0, 0, 0.7);
   text-decoration: none;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.08), -2px -2px 4px rgba(255, 255, 255, 0.6);
   transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
   width: fit-content;
 }
 
 .footer-link:hover {
   color: #ffffff;
-  background: linear-gradient(135deg, #3d0000, #800000, #3d0000);
+  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
   background-size: 200% 200%;
   animation: redShift 1.5s ease infinite;
   box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
@@ -118,18 +119,18 @@ const styles = `
   place-items: center;
   width: 44px;
   height: 44px;
-  background: var(--bg-3d);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
-  color: rgba(255, 255, 255, 0.8);
+  color: #000000;
   cursor: pointer;
-  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.08), -2px -2px 4px rgba(255, 255, 255, 0.6);
   transition: all 0.2s ease;
 }
 
 .footer-social a:hover {
   color: #ffffff;
-  background: linear-gradient(135deg, #3d0000, #800000, #3d0000);
+  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
   background-size: 200% 200%;
   animation: redShift 1.5s ease infinite;
   box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
@@ -138,10 +139,10 @@ const styles = `
 .footer-bottom {
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
   text-align: center;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(0, 0, 0, 0.4);
 }
 
 @keyframes redShift {
@@ -166,7 +167,7 @@ export default function Footer() {
           <Link to="/" className="footer-logo" style={{ display: 'inline-flex', alignItems: 'center' }}>
             <motion.img
               src={logo}
-              alt="Athenura Sportswear Logo"
+              alt="Comfy Sport Logo"
               style={{ height: '84px', width: 'auto', objectFit: 'contain' }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -183,7 +184,7 @@ export default function Footer() {
                   <path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"></path>
                 </svg>
               </a>
-              <a href="https://www.instagram.com/athenura.in" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <a href="https://www.instagram.com/comfy_sports?igsh=MWt6MnphczF2Y3M1eg%3D%3D" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 448 512" style={{ width: '20px', height: '20px' }} xmlns="http://www.w3.org/2000/svg">
                   <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
                 </svg>
@@ -205,8 +206,8 @@ export default function Footer() {
         <div className="footer-col">
           <h3 className="footer-heading">Quick Links</h3>
           <Link to="/" className="footer-link">Home</Link>
-          <Link to="/about" className="footer-link">About Us</Link>
           <Link to="/products" className="footer-link">Products</Link>
+          <Link to="/about" className="footer-link">About Us</Link>
           <Link to="/contact" className="footer-link">Contact</Link>
         </div>
 
@@ -223,9 +224,9 @@ export default function Footer() {
             <Mail size={16} style={{ flexShrink: 0 }} />
             <span>official@athenura.in</span>
           </a>
-          <a href="tel:+919835051934" className="footer-link" style={{ fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+          <a href="tel:+918755578878" className="footer-link" style={{ fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
             <Phone size={16} style={{ flexShrink: 0 }} />
-            <span>+91 9835051934</span>
+            <span>+91 8755578878</span>
           </a>
         </div>
       </div>

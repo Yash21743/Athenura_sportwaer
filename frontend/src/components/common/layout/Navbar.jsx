@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Menu, ShoppingBag, User, X, LogIn, Heart, Package, Settings } from "lucide-react"
 import { Link, NavLink as RouterNavLink } from "react-router-dom"
-import logo from "../../../assets/images/ath.logo.jpeg"
+import logo from "../../../assets/images/comfy_logo3.png"
 
 const styles = `
 .nav-root {
@@ -32,16 +32,16 @@ const styles = `
   justify-content: space-between;
   gap: 1.5rem;
   height: var(--nav-h);
-  padding: 0 clamp(1rem, 4vw, 3rem);
-  background: #000000;
+ padding: 0 clamp(1rem, 4vw, 3rem);
+  background: #d6d7cb;
   border-bottom: none;
   box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
   transition: background 0.35s ease, box-shadow 0.35s ease;
 }
 
 .nav-shell[data-scrolled='true'] {
-  background: #000000;
-  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light), 0 6px 25px rgba(200, 0, 0, 0.15);
+  background: #d6d7cb;
+  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light), 0 6px 25px rgba(20, 168, 137, 0.15);
 }
 
 .nav-links {
@@ -62,17 +62,17 @@ const styles = `
   font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 0.01em;
-  color: rgba(255, 255, 255, 0.7);
+ color: rgba(0, 0, 0, 0.7);
   text-decoration: none;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
 }
 
 .nav-link:hover,
 .nav-link.active {
   color: #ffffff;
-  background: linear-gradient(135deg, #3d0000, #800000, #3d0000);
+  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
   background-size: 200% 200%;
   animation: redShift 1.5s ease infinite;
   box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
@@ -96,12 +96,12 @@ const styles = `
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: white;
+  color: #000000;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .nav-logo__text span {
-  color: #e60000;
+  color: #14a889;
 }
 
 .nav-actions {
@@ -116,10 +116,10 @@ const styles = `
   place-items: center;
   width: 44px;
   height: 44px;
-  background: var(--bg-3d);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(0, 0, 0, 0.8);
   cursor: pointer;
   box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
   transition: all 0.2s ease;
@@ -127,7 +127,7 @@ const styles = `
 
 .icon-btn:hover {
   color: #ffffff;
-  background: linear-gradient(135deg, #3d0000, #800000, #3d0000);
+  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
   background-size: 200% 200%;
   animation: redShift 1.5s ease infinite;
   box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
@@ -146,10 +146,10 @@ const styles = `
   font-weight: 700;
   line-height: 1;
   color: #ffffff;
-  background: #e60000;
+  background: #14a889;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 12px rgba(230, 0, 0, 0.6);
+  box-shadow: 0 0 12px rgba(20, 168, 137, 0.6);
 }
 
 .account-wrap {
@@ -219,8 +219,8 @@ const styles = `
   left: 0;
   right: 0;
   overflow: hidden;
-  background: #000000;
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  background: #d6d7cb;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
   z-index: 49;
 }
@@ -239,10 +239,10 @@ const styles = `
   padding: 0.85rem 1rem;
   font-size: 1rem;
   font-weight: 500;
-  color: #ffffff;
+  color: #000000;
   text-decoration: none;
   border-radius: 12px;
-  background: #1e1e22;
+  background: #ffffff;
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), -3px -3px 6px rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.02);
   transition: all 0.2s ease;
@@ -251,6 +251,14 @@ const styles = `
 .mobile-link:hover {
   background: #111115;
   box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5), inset -2px -2px 4px rgba(255, 255, 255, 0.03);
+}
+
+.mobile-link.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
+  background-size: 200% 200%;
+  animation: redShift 1.5s ease infinite;
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
 }
 
 .mobile-overlay {
@@ -354,7 +362,7 @@ export default function Navbar({ cartCount }) {
         <Link to="/" className="nav-logo" style={{ display: 'flex', alignItems: 'center' }}>
           <motion.img
             src={logo}
-            alt="Athenura Sportswear Logo"
+            alt="Comfy Sport Logo"
             style={{
               height: '72px',
               width: 'auto',
@@ -469,14 +477,15 @@ export default function Navbar({ cartCount }) {
                       show: { opacity: 1, x: 0 },
                     }}
                   >
-                    <Link
+                    <RouterNavLink
                       to={link.href}
-                      className="mobile-link"
+                      end={link.href === "/"}
+                      className={({ isActive }) => `mobile-link${isActive ? " active" : ""}`}
                       onClick={() => setMobileOpen(false)}
                     >
                       {link.label}
                       <span aria-hidden="true">&rarr;</span>
-                    </Link>
+                    </RouterNavLink>
                   </motion.div>
                 ))}
               </motion.div>
@@ -492,6 +501,7 @@ function NavLink({ href, label }) {
   return (
     <RouterNavLink
       to={href}
+      end={href === "/"}
       className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}
     >
       {label}

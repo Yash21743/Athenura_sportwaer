@@ -53,7 +53,7 @@ const FAQ_GROUPS = [
 ];
 
 const BADGES = [
-  { icon: <Truck size={24} />, label: "Free Shipping", sub: "On orders over $75" },
+  { icon: <Truck size={24} />, label: "Free Shipping", sub: "On orders over ₹599" },
   { icon: <ShieldCheck size={24} />, label: "Secure Payment", sub: "100% encrypted checkout" },
   { icon: <RotateCcw size={24} />, label: "100% Money Back", sub: "30-day easy returns" },
   { icon: <Headphones size={24} />, label: "Online Support", sub: "We're here 24/7" },
@@ -71,7 +71,7 @@ const styles = `
     --light: #f4f4f5;
     --light-fg: #111111;
     --light-muted: #6b7280;
-    --brand: #ff3b30;
+    --brand: #14a889;
     --brand-fg: #ffffff;
     --muted-fg: #a1a1aa;
     --border: rgba(255,255,255,0.10);
@@ -93,7 +93,7 @@ const styles = `
   .hero {
     position: relative;
     overflow: hidden;
-    background: var(--bg);
+    background: linear-gradient(120deg, #06251f, #0a3d33, #051612);
     padding: 5rem 1.5rem 5rem;
     text-align: center;
   }
@@ -102,7 +102,7 @@ const styles = `
     top: 0; left: 50%;
     transform: translateX(-50%);
     width: 26rem; height: 26rem;
-    background: rgba(255,59,48,0.32);
+    background: rgba(255,255,255,0.28);
     border-radius: 50%;
     filter: blur(90px);
     pointer-events: none;
@@ -157,7 +157,7 @@ const styles = `
     cursor: pointer; transition: all 0.2s; border: 1px solid var(--border);
     background: var(--surface); color: var(--muted-fg);
   }
-  .filter-btn:hover { border-color: rgba(255,59,48,0.5); color: var(--fg); }
+  .filter-btn:hover { border-color: rgba(20,168,137,0.5); color: var(--fg); }
   .filter-btn.active { background: var(--brand); color: var(--brand-fg); border-color: var(--brand); }
 
   .faq-section { background: var(--light); padding: 5rem 2rem; }
@@ -210,7 +210,7 @@ const styles = `
     width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
     font-size: 1.25rem; transition: background 0.2s, color 0.2s;
   }
-  .faq-toggle.open { background: rgba(255,59,48,0.12); color: var(--brand); }
+  .faq-toggle.open { background: rgba(20,168,137,0.12); color: var(--brand); }
   .faq-toggle.closed { background: rgba(0,0,0,0.06); color: var(--card-fg); }
  .faq-answer {
   display: grid;
@@ -232,7 +232,7 @@ const styles = `
   }
   .empty-icon {
     width: 48px; height: 48px; border-radius: 50%;
-    background: rgba(255,59,48,0.1); color: var(--brand);
+    background: rgba(20,168,137,0.1); color: var(--brand);
     display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
   }
   .empty h3 { font-size: 1.25rem; font-weight: 600; color: var(--light-fg); }
@@ -276,8 +276,8 @@ const styles = `
   .cta-box {
     position: relative; max-width: 1200px; margin: 0 auto;
     border-radius: 20px; overflow: hidden;
-    background: linear-gradient(135deg, #FF3B30 0%, #b31c15 50%, #800f0a 100%);
-    box-shadow: 0 16px 44px rgba(255, 59, 48, 0.22);
+    background: linear-gradient(135deg, #14a889 0%, #0a3d33 50%, #051612 100%);
+    box-shadow: 0 16px 44px rgba(20, 168, 137, 0.22);
     border: none;
   }
   .cta-bg-wrap {
@@ -308,14 +308,14 @@ const styles = `
   .cta-btns { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
   .btn-primary {
     display: inline-flex; align-items: center; gap: 10px;
-    background: #ffffff; color: #c92218;
+    background: #ffffff; color: #0a3d33;
     padding: 14px 34px; border-radius: 6px; border: none; cursor: pointer;
     font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); text-decoration: none;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
     font-family: 'Poppins', sans-serif;
   }
-  .btn-primary:hover { transform: translateY(-3px); background: #f8f9fa; color: #e62e22; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
+  .btn-primary:hover { transform: translateY(-3px); background: #f8f9fa; color: #14a889; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
   .btn-secondary {
     display: inline-flex; align-items: center; gap: 10px;
     border: 1.5px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.08);
