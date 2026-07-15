@@ -54,11 +54,11 @@ const styles = `
   .bo-card-inner {
     position: relative;
     border-radius: 20px;
-    background: linear-gradient(135deg, #FF3B30 0%, #b31c15 50%, #800f0a 100%);
+    background: linear-gradient(135deg, #0A7F6E 0%, #05453cff 50%, #053f36 100%);
     padding: 80px 40px;
     overflow: hidden;
     text-align: center;
-    box-shadow: 0 16px 44px rgba(255, 59, 48, 0.22);
+    box-shadow: 0 16px 44px rgba(10, 127, 110, 0.25);
     opacity: 0;
   }
 
@@ -83,7 +83,7 @@ const styles = `
     transform: scale(1);
   }
 
-  .bo-red-overlay {
+  .bo-green-overlay {
     position: absolute; inset: 0;
     
     z-index: 1;
@@ -127,7 +127,7 @@ const styles = `
     align-items: center;
     gap: 10px;
     background: #ffffff;
-    color: #c92218;
+    color: #0A7F6E;
     border: none;
     border-radius: 6px;
     padding: 14px 34px;
@@ -145,7 +145,7 @@ const styles = `
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     background: #f8f9fa;
-    color: #e62e22;
+    color: #086658;
   }
 
   .bo-btn-secondary {
@@ -209,7 +209,7 @@ const BulkOrderCTA = () => {
             />
           </div>
 
-          <div className="bo-red-overlay" />
+          <div className="bo-green-overlay" />
 
           <h2 className="bo-heading">
             Start Today — Get Custom Bulk Pricing!

@@ -24,7 +24,7 @@ const icons = {
     </svg>
   ),
   heartFilled: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="#FF3B30" stroke="#FF3B30" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0A7F6E" stroke="#0A7F6E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
     </svg>
   ),
@@ -65,7 +65,6 @@ const PRODUCTS_DATA = [
     image: amuBl,
     rating: 4.8,
     reviews: 156,
-    badge: 'Best Seller',
     desc: 'Premium AMU edition blue striker jersey. Breathable polyester mesh, moisture-wicking fabric crafted for high performance and style.',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     colors: ['#2563eb', '#000000'],
@@ -79,7 +78,6 @@ const PRODUCTS_DATA = [
     image: hills,
     rating: 4.7,
     reviews: 98,
-    badge: 'New',
     desc: 'Hills FC classic edition jersey. Lightweight and durable — perfect for match days and training sessions.',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     colors: ['#16a34a', '#ffffff'],
@@ -93,7 +91,6 @@ const PRODUCTS_DATA = [
     image: purv,
     rating: 4.6,
     reviews: 210,
-    badge: '30% OFF',
     desc: 'Purvanchal legacy jersey with bold design. A tribute to the spirit of the region — wear it with pride.',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     colors: ['#eab308', '#1e3a8a'],
@@ -107,7 +104,6 @@ const PRODUCTS_DATA = [
     image: rcbred,
     rating: 4.9,
     reviews: 134,
-    badge: 'Hot',
     desc: 'RCB Flame edition — iconic red and black combination. Feel the fire every time you wear it.',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     colors: ['#dc2626', '#000000'],
@@ -188,14 +184,14 @@ const styles = `
     font-family: 'Montserrat', sans-serif;
   }
   .fp-heading span {
-    color: #FF3B30;
+    color: #0A7F6E;
   }
   .fp-heading::after {
     content: '';
     display: block;
     width: 52px;
     height: 3px;
-    background: #FF3B30;
+    background: #0A7F6E;
     border-radius: 2px;
     margin: 8px auto 0;
   }
@@ -224,7 +220,7 @@ const styles = `
     border-radius: 16px;
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 25px 25px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -239,8 +235,8 @@ const styles = `
   }
   .fp-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07);
-    border-color: rgba(255, 59, 48, 0.25);
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
+    border-color: rgba(10, 127, 110, 0.25);
   }
   .fp-wishlist {
     position: absolute;
@@ -256,14 +252,14 @@ const styles = `
     z-index: 3;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s, background-color 0.2s, color 0.2s;
-    color: #8E8E93;
+    color: #8E8E8E;
   }
   .fp-wishlist:hover {
     transform: scale(1.1);
-    color: #FF3B30;
+    color: #0A7F6E;
   }
   .fp-wishlist.active {
-    color: #FF3B30;
+    color: #0A7F6E;
   }
   .fp-badge-wrap {
     position: absolute;
@@ -271,7 +267,7 @@ const styles = `
     z-index: 3;
   }
   .fp-badge {
-    background: #FF3B30;
+    background: #0A7F6E;
     color: #fff;
     font-size: 9px;
     font-weight: 700;
@@ -279,7 +275,7 @@ const styles = `
     letter-spacing: 0.5px;
     padding: 3px 8px;
     border-radius: 3px;
-    box-shadow: 0 3px 8px rgba(255, 59, 48, 0.2);
+    box-shadow: 0 3px 8px rgba(10, 127, 110, 0.2);
   }
   .fp-badge.dark {
     background: #111;
@@ -329,7 +325,7 @@ const styles = `
   }
   .fp-action-btn:hover {
     transform: translateY(-3px);
-    background: #FF3B30;
+    background: #0A7F6E;
     color: #fff;
   }
   .fp-card-info {
@@ -397,8 +393,8 @@ const styles = `
   }
   .fp-direct-add {
     background: transparent;
-    border: 1.5px solid #FF3B30;
-    color: #FF3B30;
+    border: 1.5px solid #0A7F6E;
+    color: #0A7F6E;
     width: 32px; height: 32px;
     border-radius: 8px;
     display: flex;
@@ -408,9 +404,9 @@ const styles = `
     transition: all 0.3s ease;
   }
   .fp-direct-add:hover {
-    background: #FF3B30;
+    background: #0A7F6E;
     color: #fff;
-    box-shadow: 0 4px 10px rgba(255, 59, 48, 0.2);
+    box-shadow: 0 4px 10px rgba(10, 127, 110, 0.2);
   }
   .fp-view-all-wrap {
     text-align: center;
@@ -440,9 +436,9 @@ const styles = `
     font-family: 'Poppins', sans-serif;
   }
   .fp-btn-view-all:hover {
-    background: #FF3B30;
+    background: #0A7F6E;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(255, 59, 48, 0.3);
+    box-shadow: 0 8px 24px rgba(10, 127, 110, 0.3);
   }
   .fp-btn-view-all svg {
     transition: transform 0.25s ease;
@@ -490,7 +486,7 @@ const styles = `
     transition: all 0.25s ease;
   }
   .fp-modal-close:hover {
-    background: #FF3B30;
+    background: #0A7F6E;
     color: #fff;
     transform: rotate(90deg);
   }
@@ -520,7 +516,7 @@ const styles = `
   .fp-modal-cat {
     font-size: 11px;
     font-weight: 700;
-    color: #FF3B30;
+    color: #0A7F6E;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     margin-bottom: 8px;
@@ -550,7 +546,7 @@ const styles = `
   .fp-modal-price {
     font-size: 26px;
     font-weight: 800;
-    color: #FF3B30;
+    color: #0A7F6E;
     font-family: 'Montserrat', sans-serif;
   }
   .fp-modal-price-old {
@@ -599,9 +595,9 @@ const styles = `
     border-color: #111;
   }
   .fp-size-pill.selected {
-    border-color: #FF3B30;
-    background: rgba(255, 59, 48, 0.05);
-    color: #FF3B30;
+    border-color: #0A7F6E;
+    background: rgba(10, 127, 110, 0.05);
+    color: #0A7F6E;
     font-weight: 700;
   }
   .fp-colors-wrap {
@@ -624,7 +620,7 @@ const styles = `
     transform: scale(1.12);
   }
   .fp-color-circle.selected {
-    border-color: #FF3B30;
+    border-color: #0A7F6E;
   }
   .fp-color-inner {
     width: 14px; height: 14px;
@@ -671,7 +667,7 @@ const styles = `
   .fp-modal-buy-btn {
     flex-grow: 1;
     height: 46px;
-    background: #FF3B30;
+    background: #0A7F6E;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -685,12 +681,12 @@ const styles = `
     justify-content: center;
     gap: 8px;
     transition: all 0.3s;
-    box-shadow: 0 4px 14px rgba(255, 59, 48, 0.25);
+    box-shadow: 0 4px 14px rgba(10, 127, 110, 0.25);
     font-family: 'Poppins', sans-serif;
   }
   .fp-modal-buy-btn:hover {
-    background: #cc2e25;
-    box-shadow: 0 6px 20px rgba(255, 59, 48, 0.4);
+    background: #086658;
+    box-shadow: 0 6px 20px rgba(10, 127, 110, 0.4);
     transform: translateY(-1px);
   }
 
@@ -829,7 +825,7 @@ const FeaturedProducts = () => {
       updated = [...wishlist, prod.id];
       toast.success(`${prod.name} added to Wishlist!`, {
         icon: '❤️',
-        style: { borderRadius: '10px', background: '#FF3B30', color: '#fff' },
+        style: { borderRadius: '10px', background: '#0A7F6E', color: '#fff' },
       });
     }
     setWishlist(updated);
@@ -893,7 +889,7 @@ const FeaturedProducts = () => {
             <Link
               to="/cart"
               onClick={() => toast.dismiss(t.id)}
-              style={{ color: '#FF3B30', fontWeight: 800, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+              style={{ color: '#0A7F6E', fontWeight: 800, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.05em' }}
             >
               View Bag
             </Link>

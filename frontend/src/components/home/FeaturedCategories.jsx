@@ -92,24 +92,24 @@ const styles = `
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
   }
-  .fc-heading span { color: #FF3B30; }
+  .fc-heading span { color: #0A7F6E; }
   .fc-heading::after {
     content: '';
     display: block;
     width: 52px; height: 3px;
-    background: #FF3B30;
+    background: #0A7F6E;
     border-radius: 2px;
     margin: 8px auto 0;
   }
   .fc-subtext {
     font-size: 14px;
-    color: #888;
+    color: #444;
     max-width: 480px;
     margin: 14px auto 0;
     line-height: 1.75;
     text-align: center;
   }
-  .fc-subtext strong { color: #333; }
+  .fc-subtext strong { color: #111; }
 
   /* ── DESKTOP GRID ── */
   .fc-main {
@@ -132,7 +132,7 @@ const styles = `
     cursor: pointer;
     transition: transform 0.35s ease, box-shadow 0.35s ease;
   }
-  .fc-card-big:hover { transform: translateY(-5px);  }
+  .fc-card-big:hover { transform: translateY(-5px); }
   .fc-card-big:hover .card-img { transform: scale(1.06); }
 
   .fc-right { flex: 1 1 0; display: flex; flex-direction: column; gap: 12px; }
@@ -148,7 +148,7 @@ const styles = `
     cursor: pointer;
     transition: transform 0.35s ease, box-shadow 0.35s ease;
   }
-  .fc-card-sm:hover { transform: translateY(-5px); box-shadow: 0 14px 36px rgba(0,0,0,0.22); }
+  .fc-card-sm:hover { transform: translateY(-5px); }
   .fc-card-sm:hover .card-img { transform: scale(1.07); }
 
   .fc-card-wide {
@@ -160,7 +160,7 @@ const styles = `
     cursor: pointer;
     transition: transform 0.35s ease, box-shadow 0.35s ease;
   }
-  .fc-card-wide:hover { transform: translateY(-5px); box-shadow: 0 14px 36px rgba(0,0,0,0.22); }
+  .fc-card-wide:hover { transform: translateY(-5px); }
   .fc-card-wide:hover .card-img { transform: scale(1.06); }
 
   .card-img {
@@ -171,25 +171,25 @@ const styles = `
   }
   .card-overlay {
     position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.05) 100%);
+    background: linear-gradient(to top, rgba(4,46,40,0.92) 0%, rgba(4,46,40,0.45) 55%, rgba(4,46,40,0.08) 100%);
     z-index: 1;
   }
   .card-overlay-h {
     position: absolute; inset: 0;
-    background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, transparent 100%);
+    background: linear-gradient(to right, rgba(4,46,40,0.9) 0%, rgba(4,46,40,0.45) 55%, transparent 100%);
     z-index: 1;
   }
   .card-body { position: relative; z-index: 2; padding: 20px 22px; }
 
   .off-badge {
     position: absolute; top: 13px; left: 13px;
-    background: #FF3B30; color: #fff;
+    background: #0A7F6E; color: #fff;
     font-size: 10.5px; font-weight: 700;
     padding: 4px 10px; border-radius: 5px;
     letter-spacing: 0.5px; z-index: 3;
   }
 
-  .card-label { font-size: 10px; color: #FF3B30; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 5px; }
+  .card-label { font-size: 10px; color: #0A7F6E; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 5px; }
   .card-title {
     font-size: clamp(1.1rem, 2vw, 1.55rem);
     font-weight: 900;
@@ -197,18 +197,18 @@ const styles = `
     font-family: 'Montserrat', sans-serif;
     margin: 0 0 4px;
   }
-  .card-title span { color: #FF3B30; }
+  .card-title span { color: #0A7F6E; }
   .card-off { font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 2px; }
 
   .shop-btn-red {
     display: inline-flex; align-items: center; gap: 6px;
-    background: #FF3B30; color: #fff; border: none; border-radius: 7px;
+    background: #0A7F6E; color: #fff; border: none; border-radius: 7px;
     padding: 9px 20px; font-size: 12.5px; font-weight: 700;
     font-family: 'Poppins', sans-serif; cursor: pointer; margin-top: 12px;
     transition: background 0.25s, transform 0.2s;
     letter-spacing: 0.3px;
   }
-  .shop-btn-red:hover { background: #cc2e25; transform: translateY(-1px); }
+  .shop-btn-red:hover { background: #085f52; transform: translateY(-1px); }
 
   .shop-link {
     display: inline-flex; align-items: center; gap: 4px;
@@ -217,7 +217,7 @@ const styles = `
     padding: 0 0 2px; cursor: pointer; font-family: 'Poppins', sans-serif;
     margin-top: 6px; transition: color 0.2s, border-color 0.2s;
   }
-  .shop-link:hover { color: #FF3B30; border-color: #FF3B30; }
+  .shop-link:hover { color: #0A7F6E; border-color: #0A7F6E; }
 
   /* ── TRUST BAR ── */
   .trust-bar {
@@ -231,16 +231,16 @@ const styles = `
     min-width: 0;
     display: flex; align-items: center; gap: 12px;
     padding: 14px 16px;
-    background: #111;
+    background: #08201dff;
     border-radius: 12px;
-    border-bottom: 3px solid #FF3B30;
+    border-bottom: 5px solid #15a092ff;
     box-shadow: 0 4px 18px rgba(0,0,0,0.18);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     cursor: default;
   }
   .trust-item:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 28px rgba(255,59,48,0.18);
+    box-shadow: 0 10px 28px rgba(18, 203, 175, 0.18);
   }
   .trust-item:hover .trust-icon-box svg {
     transform: rotate(15deg);
@@ -360,28 +360,28 @@ const styles = `
 
 const TruckIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <rect x="1" y="3" width="13" height="13" rx="1" stroke="#FF3B30" strokeWidth="1.6" />
-    <path d="M14 8h4.2L21 11.5V16h-7V8z" stroke="#FF3B30" strokeWidth="1.6" strokeLinejoin="round" />
-    <circle cx="5.5" cy="18.5" r="2" stroke="#FF3B30" strokeWidth="1.6" />
-    <circle cx="17.5" cy="18.5" r="2" stroke="#FF3B30" strokeWidth="1.6" />
+    <rect x="1" y="3" width="13" height="13" rx="1" stroke="#0A7F6E" strokeWidth="1.6" />
+    <path d="M14 8h4.2L21 11.5V16h-7V8z" stroke="#0A7F6E" strokeWidth="1.6" strokeLinejoin="round" />
+    <circle cx="5.5" cy="18.5" r="2" stroke="#0A7F6E" strokeWidth="1.6" />
+    <circle cx="17.5" cy="18.5" r="2" stroke="#0A7F6E" strokeWidth="1.6" />
   </svg>
 );
 const LockIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <rect x="3" y="11" width="18" height="11" rx="2" stroke="#FF3B30" strokeWidth="1.6" />
-    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#FF3B30" strokeWidth="1.6" strokeLinecap="round" />
-    <circle cx="12" cy="16" r="1.5" fill="#FF3B30" />
+    <rect x="3" y="11" width="18" height="11" rx="2" stroke="#0A7F6E" strokeWidth="1.6" />
+    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#0A7F6E" strokeWidth="1.6" strokeLinecap="round" />
+    <circle cx="12" cy="16" r="1.5" fill="#0A7F6E" />
   </svg>
 );
 const MoneyIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="9" stroke="#FF3B30" strokeWidth="1.6" />
-    <path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 010 3H11a1.5 1.5 0 000 3H15" stroke="#FF3B30" strokeWidth="1.6" strokeLinecap="round" />
+    <circle cx="12" cy="12" r="9" stroke="#0A7F6E" strokeWidth="1.6" />
+    <path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 010 3H11a1.5 1.5 0 000 3H15" stroke="#0A7F6E" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
 const ChatIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#FF3B30" strokeWidth="1.6" strokeLinejoin="round" />
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#0A7F6E" strokeWidth="1.6" strokeLinejoin="round" />
   </svg>
 );
 const ArrowSm = () => (
@@ -398,8 +398,8 @@ const TRUST = [
 ];
 
 const IMG = {
-  tracksuit: 'https://i.pinimg.com/1200x/9e/75/0a/9e750a109fb5f28a91f5eb4cc6e2ec3a.jpg',
-  jersey: 'https://i.pinimg.com/1200x/da/09/06/da09069367a8036583b8a5ed9354980a.jpg',
+  tracksuit: 'https://i.pinimg.com/1200x/dc/9d/43/dc9d43a46234fe8f2f8ab86588563c21.jpg',
+  jersey: 'https://i.pinimg.com/1200x/eb/58/cf/eb58cf21dd5638275c50183b67c9f451.jpg',
   shorts: 'https://i.pinimg.com/474x/2e/34/8d/2e348d5802ad4e3460c7b23cea45f392.jpg',
   gymBag: 'https://i.pinimg.com/736x/b3/2a/d6/b32ad682c86512bdd77f9159a9dcc291.jpg',
 };
@@ -463,7 +463,7 @@ const FeaturedCategories = () => {
               <div className="card-body">
                 <div className="card-label">New Arrivals</div>
                 <h3 className="card-title">COMFY<br /><span>JERSEY</span></h3>
-                <p className="card-off">Up to <strong style={{ color: '#FF3B30' }}>70% Off</strong></p>
+                <p className="card-off">Up to <strong style={{ color: '#0A7F6E' }}>70% Off</strong></p>
                 <Link to="/products" className="shop-btn-red">Shop Now <ArrowSm /></Link>
               </div>
             </div>
@@ -511,7 +511,7 @@ const FeaturedCategories = () => {
               <div className="card-body">
                 <div className="card-label">Training Wear</div>
                 <h3 className="card-title">GYM<br /><span>TRAINING JERSEY</span></h3>
-                <p className="card-off">Up to <strong style={{ color: '#FF3B30' }}>80% OFF</strong></p>
+                <p className="card-off">Up to <strong style={{ color: '#0A7F6E' }}>80% OFF</strong></p>
                 <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
               </div>
             </div>

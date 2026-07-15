@@ -62,7 +62,7 @@ const styles = `
   }
 
   .wcu-section {
-    background: linear-gradient(145deg, #080808 0%, #0f0f0f 50%, #0a0a0a 100%);
+    background: linear-gradient(145deg, #031411 0%, #072922 50%, #041c17 100%);
     font-family: 'Poppins', sans-serif;
     padding: 25px 0 0;
     margin-top: 48px;
@@ -70,14 +70,7 @@ const styles = `
     position: relative;
   }
 
-  /* BG pattern */
-  .wcu-section::before {
-    content: '';
-    position: absolute; inset: 0;
-    background-image: radial-gradient(rgba(255,59,48,0.05) 1px, transparent 1px);
-    background-size: 42px 42px;
-    pointer-events: none;
-  }
+
 
   /* ── Heading ── */
   .wcu-head-wrap {
@@ -89,7 +82,7 @@ const styles = `
     display: inline-flex; align-items: center; gap: 10px;
     margin-bottom: 14px;
     font-size: 11px; font-weight: 700;
-    color: #FF3B30; letter-spacing: 3.5px;
+    color: #0A7F6E; letter-spacing: 3.5px;
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
   }
@@ -97,7 +90,7 @@ const styles = `
   .wcu-eyebrow::after {
     content: ''; display: block;
     width: 32px; height: 1.5px;
-    background: #FF3B30; border-radius: 1px;
+    background: #0A7F6E; border-radius: 1px;
   }
   .wcu-heading {
     font-size: clamp(1.9rem, 3.5vw, 2.9rem);
@@ -106,19 +99,19 @@ const styles = `
     margin: 0 0 14px;
     font-family: 'Montserrat', sans-serif;
   }
-  .wcu-heading span { color: #FF3B30; }
+  .wcu-heading span { color: #0A7F6E; }
 
   .wcu-heading-line {
     width: 56px;
     height: 3px;
-    background: #FF3B30;
+    background: #0A7F6E;
     border-radius: 2px;
     margin: 0 auto 22px;
   }
   .wcu-an-line { animation: wcu-lineDraw 0.6s ease 0.3s both; }
 
   .wcu-subtext {
-    font-size: 15px; color: #666;
+    font-size: 15px; color: #DFD5C6;
     max-width: 480px; margin: 0 auto;
     line-height: 1.75;
   }
@@ -152,18 +145,18 @@ const styles = `
     content: '';
     position: absolute; bottom: 0; left: 0;
     height: 3px; width: 0;
-    background: linear-gradient(to right, #FF3B30, #ff6b63);
+    background: #DDDFD2;
     border-radius: 0 0 0 16px;
     transition: width 0.4s ease;
   }
   .wcu-card:hover {
     transform: translateY(-6px);
    
-    border-color: rgba(255,59,48,0.25);
-    box-shadow: 0 16px 48px rgba(255,59,48,0.12);
+    border-color: rgba(221, 223, 210, 0.35);
+    box-shadow: 0 10px 10px rgba(221, 223, 210, 0.15);
   }
   .wcu-card:hover::before { width: 100%; }
-  .wcu-card:hover .wcu-icon-box { border-color: rgba(255,59,48,0.5); }
+  .wcu-card:hover .wcu-icon-box { border-color: rgba(221, 223, 210, 0.6); }
   .wcu-card:hover .wcu-icon-box svg { animation: wcu-iconPulse 0.6s ease; }
 
   .wcu-icon-box {
@@ -181,13 +174,13 @@ const styles = `
     font-family: 'Montserrat', sans-serif;
   }
   .wcu-card-desc {
-    font-size: 13px; color: #666;
+    font-size: 13px; color: #DFD5C6;
     line-height: 1.75;
   }
 
   /* ── Stats bar ── */
   .wcu-stats {
-    background: #FF3B30;
+    background: #0A7F6E;
     padding: 36px 24px;
     position: relative; z-index: 1;
   }
@@ -257,39 +250,39 @@ const styles = `
 const icons = {
   quality: (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-      <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" stroke="#FF3B30" strokeWidth="1.7" strokeLinejoin="round"/>
+      <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" stroke="#0A7F6E" strokeWidth="1.7" strokeLinejoin="round"/>
     </svg>
   ),
   delivery: (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-      <rect x="1" y="3" width="13" height="13" rx="1.5" stroke="#FF3B30" strokeWidth="1.7"/>
-      <path d="M14 8h4.5L22 12v4h-8V8z" stroke="#FF3B30" strokeWidth="1.7" strokeLinejoin="round"/>
-      <circle cx="5.5" cy="18.5" r="2" stroke="#FF3B30" strokeWidth="1.7"/>
-      <circle cx="18" cy="18.5" r="2" stroke="#FF3B30" strokeWidth="1.7"/>
+      <rect x="1" y="3" width="13" height="13" rx="1.5" stroke="#0A7F6E" strokeWidth="1.7"/>
+      <path d="M14 8h4.5L22 12v4h-8V8z" stroke="#0A7F6E" strokeWidth="1.7" strokeLinejoin="round"/>
+      <circle cx="5.5" cy="18.5" r="2" stroke="#0A7F6E" strokeWidth="1.7"/>
+      <circle cx="18" cy="18.5" r="2" stroke="#0A7F6E" strokeWidth="1.7"/>
     </svg>
   ),
   design: (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-      <path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z" stroke="#FF3B30" strokeWidth="1.7"/>
-      <path d="M8 12l3 3 5-5" stroke="#FF3B30" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z" stroke="#0A7F6E" strokeWidth="1.7"/>
+      <path d="M8 12l3 3 5-5" stroke="#0A7F6E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
   performance: (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-      <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" stroke="#FF3B30" strokeWidth="1.7" strokeLinejoin="round"/>
+      <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" stroke="#0A7F6E" strokeWidth="1.7" strokeLinejoin="round"/>
     </svg>
   ),
   returns: (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-      <path d="M3 12a9 9 0 109-9H3m0 0l3-3M3 3l3 3" stroke="#FF3B30" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 12a9 9 0 109-9H3m0 0l3-3M3 3l3 3" stroke="#0A7F6E" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
   support: (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="3" stroke="#FF3B30" strokeWidth="1.7"/>
-      <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" stroke="#FF3B30" strokeWidth="1.7"/>
-      <path d="M12 9V7M12 17v-2" stroke="#FF3B30" strokeWidth="1.7" strokeLinecap="round"/>
-      <path d="M9 12H7M17 12h-2" stroke="#FF3B30" strokeWidth="1.7" strokeLinecap="round"/>
+      <circle cx="12" cy="12" r="3" stroke="#0A7F6E" strokeWidth="1.7"/>
+      <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" stroke="#0A7F6E" strokeWidth="1.7"/>
+      <path d="M12 9V7M12 17v-2" stroke="#0A7F6E" strokeWidth="1.7" strokeLinecap="round"/>
+      <path d="M9 12H7M17 12h-2" stroke="#0A7F6E" strokeWidth="1.7" strokeLinecap="round"/>
     </svg>
   ),
 };
@@ -340,10 +333,10 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { value: 10000, suffix: '+', label: 'Happy Customers' },
-  { value: 500,   suffix: '+', label: 'Products Available' },
+  { value: 150, suffix: '+', label: 'Happy Customers' },
+  { value: 100,   suffix: '+', label: 'Products Available' },
   { value: 98,    suffix: '%', label: 'Satisfaction Rate' },
-  { value: 50,    suffix: '+', label: 'Cities Served' },
+  { value: 25,    suffix: '+', label: 'Cities Served' },
 ];
 
 /* ── Stat Item (with counter) ── */

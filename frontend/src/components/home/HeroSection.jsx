@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import amuBl from '../../assets/ath.jersey/amu_bl.jpeg';
+import d2Img from '../../assets/ath.jersey/D2 2.png';
+import designImg from '../../assets/ath.jersey/Design.png';
 
 const styles = `
   @keyframes fadeSlideUp {
@@ -10,7 +13,7 @@ const styles = `
     from { opacity: 0; transform: translateX(50px); }
     to   { opacity: 1; transform: translateX(0); }
   }
-  @keyframes shimmerRed {
+  @keyframes shimmerGreen {
     0%   { background-position: -200% center; }
     100% { background-position:  200% center; }
   }
@@ -41,15 +44,15 @@ const styles = `
     inset: -50%;
     background: conic-gradient(
       from 0deg,
-      #FF3B30 0deg,
-      #FF3B30 40deg,
+      #0A7F6E 0deg,
+      #0A7F6E 40deg,
       #1a1a1a 80deg,
       #0a0a0a 140deg,
-      #FF3B30 180deg,
-      #FF3B30 220deg,
+      #0A7F6E 180deg,
+      #0A7F6E 220deg,
       #1a1a1a 260deg,
       #0a0a0a 320deg,
-      #FF3B30 360deg
+      #0A7F6E 360deg
     );
     animation: rotateBorder 5s linear infinite;
     z-index: 0;
@@ -60,56 +63,67 @@ const styles = `
     margin: 2.5px;
     border-radius: 18px;
     overflow: hidden;
-    background: #111;
+    background: transparent;
   }
 
   .btn-shopnow {
     display: inline-flex; align-items: center; gap: 10px;
-    background: #FF3B30; color: #fff; border: none; border-radius: 6px;
+    background: #0A7F6E; color: #fff; border: 2px solid #DDDFD2; border-radius: 6px;
     padding: 14px 32px; font-size: 0.85rem; font-weight: 700;
     font-family: 'Poppins', sans-serif; letter-spacing: 2px;
     text-transform: uppercase; cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 22px rgba(255,59,48,0.4);
+    box-shadow: 0 4px 22px rgba(10,127,110,0.4);
     white-space: nowrap;
   }
   .btn-shopnow:hover {
-    background: #cc2e25;
-    box-shadow: 0 8px 36px rgba(255,59,48,0.6);
+    background: #085f52;
+    box-shadow: 0 8px 36px rgba(10,127,110,0.6);
     transform: translateY(-2px);
   }
   .btn-explore {
     display: inline-flex; align-items: center; gap: 10px;
-    background: rgba(255,255,255,0.04); color: #fff;
-    border: 1.5px solid rgba(255,255,255,0.25); border-radius: 6px;
+    background: rgba(255,255,255,0.18); color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.6); border-radius: 6px;
     padding: 14px 32px; font-size: 0.85rem; font-weight: 700;
     font-family: 'Poppins', sans-serif; letter-spacing: 2px;
     text-transform: uppercase; cursor: pointer;
     transition: all 0.3s ease; white-space: nowrap;
   }
   .btn-explore:hover {
-    background: rgba(255,255,255,0.09);
+    background: rgba(255,255,255,0.30);
     border-color: #fff; transform: translateY(-2px);
   }
 
   .badge-chip {
     display: flex; align-items: center; gap: 10px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.09);
+    background: #DDDFD2;
+    border: 1px solid rgba(10,127,110,0.25);
     border-radius: 6px; padding: 10px 16px;
     cursor: default; transition: all 0.25s ease;
     flex: 1;
     justify-content: center;
   }
   .badge-chip:hover {
-    background: rgba(255,59,48,0.08);
-    border-color: rgba(255,59,48,0.28);
+    background: #cdd0c4;
+    border-color: #0A7F6E;
+  }
+  .badge-title {
+    color: #053d35;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .badge-sub {
+    color: #3a5c55;
+    font-size: 11px;
+    line-height: 1.2;
   }
 
   .hero-section {
     position: relative;
     min-height: calc(100vh - 76px);
-    background: linear-gradient(135deg, #070707 0%, #101010 55%, #0b0b0b 100%);
+    background: linear-gradient(135deg, #0A7F6E 0%, #0A7F6E 55%, #a8c4bc 80%, #DDDFD2 100%);
     display: flex;
     align-items: center;
     font-family: 'Poppins', sans-serif;
@@ -142,6 +156,7 @@ const styles = `
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: -20px;
   }
 
   .hero-title-main {
@@ -152,6 +167,7 @@ const styles = `
     letter-spacing: -2px;
     text-transform: uppercase;
     margin: 0 0 4px;
+    text-shadow: 0 3px 18px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.6);
   }
 
   .hero-title-sub {
@@ -162,12 +178,12 @@ const styles = `
     text-transform: uppercase;
     white-space: nowrap;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(90deg, #FF3B30 0%, #ff6b63 45%, #FF3B30 100%);
-    background-size: 200% auto;
+    background: linear-gradient(90deg, #053d35 0%, #DDDFD2 40%, #053d35 70%, #DDDFD2 100%);
+    background-size: 250% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: shimmerRed 3.5s linear infinite;
+    animation: shimmerGreen 3.5s linear infinite;
     margin: 0 0 20px;
   }
 
@@ -188,7 +204,7 @@ const styles = `
   }
 
   .hero-desc {
-    color: #888;
+    color: #fff;
     font-size: 0.95rem;
     line-height: 1.85;
     max-width: 440px;
@@ -204,11 +220,13 @@ const styles = `
 
   .hero-img {
     width: 100%;
-    height: 460px;
+    height: auto;
+    aspect-ratio: 3 / 4;
     object-fit: cover;
     object-position: center top;
     display: block;
     animation: imgFadeIn 1.2s ease both;
+    background: transparent;
   }
 
   @media (max-width: 1024px) {
@@ -230,11 +248,15 @@ const styles = `
       text-align: center;
     }
     .hero-right {
-      max-width: 100%;
+      max-width: 400px;
       flex: 1 1 100%;
       width: 100%;
+      margin-top: 0;
     }
-    .hero-img { height: 380px; }
+    .hero-img {
+      height: auto;
+      aspect-ratio: 3 / 4;
+    }
     .hero-title-sub { white-space: normal; }
     .hero-chips { justify-content: center; }
     .hero-btns { justify-content: center; }
@@ -252,50 +274,96 @@ const styles = `
     }
     .hero-title-main { font-size: 2.8rem; letter-spacing: -1px; }
     .hero-title-sub  { font-size: 2rem; white-space: normal; }
-    .hero-img { height: 260px; }
+    .hero-right {
+      max-width: 300px;
+    }
+    .hero-img {
+      height: auto;
+      aspect-ratio: 3 / 4;
+    }
     .btn-shopnow, .btn-explore {
-      padding: 12px 18px;
-      font-size: 0.78rem;
-      letter-spacing: 1.2px;
+      padding: 12px 14px;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
       flex: 1;
       justify-content: center;
     }
-    .badge-chip { padding: 8px 8px; gap: 6px; }
+    .badge-chip { 
+      padding: 8px 10px; 
+      gap: 6px;
+      flex: 1;
+    }
     .hero-btns { gap: 10px; }
-    .hero-chips { gap: 8px; }
+    .hero-chips { gap: 8px; flex-wrap: nowrap; justify-content: space-between; }
+  }
+
+  @media (max-width: 380px) {
+    .hero-btns {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      width: 100%;
+      gap: 6px;
+    }
+    .btn-shopnow, .btn-explore {
+      padding: 10px 4px;
+      font-size: 0.65rem;
+      letter-spacing: 0.5px;
+      flex: 1;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .badge-chip {
+      flex: 1;
+      padding: 6px 4px;
+      gap: 4px;
+      border-radius: 4px;
+    }
+    .badge-title {
+      font-size: 8px;
+    }
+    .badge-sub {
+      font-size: 7px;
+    }
+    .hero-chips {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 4px;
+      flex-wrap: nowrap;
+    }
   }
 `;
 
+
 const SLIDES = [
   {
-    url: 'https://i.pinimg.com/474x/91/81/af/9181af76e06f9221db9d247fe15e91df.jpg',
-    alt: 'Male athlete sportwear',
+    url: amuBl,
+    alt: 'Comfy sportwear jersey',
   },
   {
-    url: 'https://i.pinimg.com/474x/bf/6a/e6/bf6ae60f703b825f7b88793b29a6bd1d.jpg',
-    alt: 'Athlete running',
+    url: d2Img,
+    alt: 'Comfy D2 jersey design',
   },
   {
-    url: 'https://i.pinimg.com/474x/4d/67/1a/4d671a7bddd93040b0ab1b0b8a99ba4c.jpg',
-    alt: 'Premium gym sportwear',
+    url: designImg,
+    alt: 'Comfy custom design jersey',
   },
 ];
 
 const BoltIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="#FF3B30">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="#0A7F6E">
     <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
   </svg>
 );
 const ShieldIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
     <path d="M12 2L4 6v6c0 5.25 3.5 9.74 8 11 4.5-1.26 8-5.75 8-11V6L12 2z"
-      stroke="#FF3B30" strokeWidth="1.8" strokeLinejoin="round" />
-    <path d="M9 12l2 2 4-4" stroke="#FF3B30" strokeWidth="2"
+      stroke="#0A7F6E" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M9 12l2 2 4-4" stroke="#0A7F6E" strokeWidth="2"
       strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 const StarIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="#FF3B30">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="#0A7F6E">
     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
   </svg>
 );
@@ -342,23 +410,7 @@ const HeroSection = () => {
 
       <section className="hero-section">
 
-        <div style={{
-          position: 'absolute', top: -180, right: -80,
-          width: 600, height: 600, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,59,48,0.22) 0%, transparent 65%)',
-          pointerEvents: 'none',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: -120, left: -80,
-          width: 400, height: 400, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,59,48,0.1) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'radial-gradient(rgba(255,59,48,0.06) 1px, transparent 1px)',
-          backgroundSize: '44px 44px', pointerEvents: 'none',
-        }} />
+
 
         {[
           { top: '12%', left: '5%', delay: '0s' },
@@ -369,7 +421,7 @@ const HeroSection = () => {
         ].map((p, i) => (
           <div key={i} style={{
             position: 'absolute', width: 5, height: 5, borderRadius: '50%',
-            background: '#FF3B30',
+            background: '#0A7F6E',
             animation: `particle ${3 + i * 0.4}s ease-in-out infinite`,
             animationDelay: p.delay, pointerEvents: 'none', ...p,
           }} />
@@ -392,15 +444,15 @@ const HeroSection = () => {
             <div className="divider-line" style={{
               animation: loaded ? 'fadeSlideUp 0.6s ease 0.22s both' : 'none',
             }}>
-              <div style={{ flex: 1, height: 1.5, background: 'linear-gradient(to right, transparent, #FF3B30)' }} />
+              <div style={{ flex: 1, height: 1.5, background: 'linear-gradient(to right, transparent, #053d35)' }} />
               <span style={{
-                color: '#555', fontSize: 10.5, letterSpacing: 4,
+                color: '#DDDFD2', fontSize: 10.5, letterSpacing: 4,
                 textTransform: 'uppercase', whiteSpace: 'nowrap',
                 fontFamily: "'Montserrat', sans-serif",
               }}>
                 Wear Your Strength
               </span>
-              <div style={{ flex: 1, height: 1.5, background: 'linear-gradient(to left, transparent, #FF3B30)' }} />
+              <div style={{ flex: 1, height: 1.5, background: 'linear-gradient(to left, transparent, #053d35)' }} />
             </div>
 
             {/* 4. Badges */}
@@ -411,8 +463,8 @@ const HeroSection = () => {
                 <div key={i} className="badge-chip">
                   {c.icon}
                   <div>
-                    <div style={{ color: '#ddd', fontSize: 12, fontWeight: 700, lineHeight: 1.2 }}>{c.text1}</div>
-                    <div style={{ color: '#666', fontSize: 11, lineHeight: 1.2 }}>{c.text2}</div>
+                    <div className="badge-title">{c.text1}</div>
+                    <div className="badge-sub">{c.text2}</div>
                   </div>
                 </div>
               ))}
@@ -446,7 +498,7 @@ const HeroSection = () => {
               <div style={{
                 position: 'absolute', top: '5%', left: '5%',
                 width: '90%', height: '90%', borderRadius: '50%',
-                background: 'radial-gradient(ellipse, rgba(255,59,48,0.22) 0%, transparent 68%)',
+                background: 'radial-gradient(ellipse, rgba(10,127,110,0.22) 0%, transparent 68%)',
                 animation: 'pulseGlow 4s ease-in-out infinite',
                 pointerEvents: 'none', zIndex: 0,
               }} />

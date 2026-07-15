@@ -71,7 +71,7 @@ const icons = {
     </svg>
   ),
   quote: (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255, 59, 48, 0.18)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(10, 127, 110, 0.25)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 21c3 0 7-9 7-14h-3v-3h7v5c0 6.627-5.373 12-11 12zm13 0c3 0 7-9 7-14h-3v-3h7v5c0 6.627-5.373 12-11 12z" />
     </svg>
   ),
@@ -88,18 +88,11 @@ const styles = `
   }
 
   .ts-section {
-    background: #080808;
+    background: linear-gradient(145deg, #031411 0%, #072922 50%, #041c17 100%);
     padding: 25px 0 25px;
     font-family: 'Poppins', sans-serif;
     position: relative;
     overflow: hidden;
-  }
-  .ts-section::before {
-    content: '';
-    position: absolute; inset: 0;
-    background-image: radial-gradient(rgba(255, 59, 48, 0.03) 1px, transparent 1px);
-    background-size: 36px 36px;
-    pointer-events: none;
   }
   .ts-head-wrap {
     text-align: center;
@@ -116,7 +109,7 @@ const styles = `
     gap: 8px;
     font-size: 11px;
     font-weight: 700;
-    color: #FF3B30;
+    color: #0A7F6E;
     letter-spacing: 3px;
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
@@ -128,7 +121,7 @@ const styles = `
     display: block;
     width: 24px;
     height: 1.5px;
-    background: #FF3B30;
+    background: #0A7F6E;
   }
   .ts-heading {
     font-size: clamp(1.9rem, 3.2vw, 2.9rem);
@@ -140,20 +133,20 @@ const styles = `
     font-family: 'Montserrat', sans-serif;
   }
   .ts-heading span {
-    color: #FF3B30;
+    color: #0A7F6E;
   }
   .ts-heading::after {
     content: '';
     display: block;
     width: 52px;
     height: 3px;
-    background: #FF3B30;
+    background: #0A7F6E;
     border-radius: 2px;
     margin: 8px auto 0;
   }
   .ts-subtext {
     font-size: 14.5px;
-    color: #777;
+    color: #DFD5C6;
     max-width: 520px;
     margin: 14px auto 0;
     line-height: 1.7;
@@ -176,11 +169,11 @@ const styles = `
   }
   .ts-marquee-container::before {
     left: 0;
-    background: linear-gradient(to right, #080808 0%, transparent 100%);
+    background: linear-gradient(to right, #031411 0%, transparent 100%);
   }
   .ts-marquee-container::after {
     right: 0;
-    background: linear-gradient(to left, #080808 0%, transparent 100%);
+    background: linear-gradient(to left, #041c17 0%, transparent 100%);
   }
   .ts-marquee-track {
     display: flex;
@@ -192,7 +185,7 @@ const styles = `
     animation-play-state: paused;
   }
   .ts-card {
-    background: #111111;
+    background: #0c1f1b;
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 18px;
     padding: 32px;
@@ -209,8 +202,8 @@ const styles = `
   }
   .ts-card:hover {
     transform: translateY(-6px);
-    border-color: #FF3B30;
-    box-shadow: 0 12px 30px rgba(255, 59, 48, 0.08);
+    border-color: #DDDFD2;
+ 
   }
   .ts-quote-icon {
     position: absolute;
@@ -224,7 +217,7 @@ const styles = `
   .ts-quote-text {
     font-size: 13.5px;
     line-height: 1.75;
-    color: #aeaea2;
+    color: #DFD5C6;
     margin-bottom: 24px;
     font-style: italic;
   }
