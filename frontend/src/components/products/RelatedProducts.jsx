@@ -45,13 +45,13 @@ const RelatedProducts = ({ category, currentProductId }) => {
     <div className="mt-16 pt-10">
       <div className="flex flex-col items-center justify-center mb-12 sm:mb-16" style={{ marginBottom: '64px' }}>
         <div className="flex items-center gap-4 sm:gap-6">
-          <div className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-transparent to-[#FF3B30] opacity-70"></div>
-          <h3 className="text-xl sm:text-3xl font-black text-white font-['Montserrat'] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-center m-0">
-            You May Also <span className="text-[#FF3B30]">Like</span>
+          <div className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-transparent to-[#0A7F6E] opacity-70"></div>
+          <h3 className="text-xl sm:text-3xl font-black text-[#111111] font-['Montserrat'] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-center m-0">
+            You May Also <span className="text-[#0A7F6E]">Like</span>
           </h3>
-          <div className="h-[1px] w-8 sm:w-16 bg-gradient-to-l from-transparent to-[#FF3B30] opacity-70"></div>
+          <div className="h-[1px] w-8 sm:w-16 bg-gradient-to-l from-transparent to-[#0A7F6E] opacity-70"></div>
         </div>
-        <p className="mt-3 text-[10px] sm:text-xs text-white/40 uppercase tracking-widest font-medium">Explore Similar Styles</p>
+        <p className="mt-3 text-[10px] sm:text-xs text-[#111111]/40 uppercase tracking-widest font-medium">Explore Similar Styles</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {related.map((prod) => (

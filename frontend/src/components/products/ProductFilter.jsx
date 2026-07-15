@@ -16,7 +16,7 @@ const DropPanel = ({ open, children }) => (
         transition={{ duration: 0.13 }}
         style={{
           position: 'absolute', top: 'calc(100% + 8px)', left: 0, zIndex: 100,
-          background: '#ffffff', border: '1px solid rgba(0,0,0,0.08)',
+          background: '#DDDFD2', border: '1px solid rgba(0,0,0,0.08)',
           borderRadius: '16px', boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
           overflow: 'hidden',
         }}
@@ -40,10 +40,16 @@ const ProductFilter = ({
 
   useEffect(() => {
     const handler = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) setOpenPanel(null);
+      if (!e.target.closest('.filter-dropdown-wrapper')) {
+        setOpenPanel(null);
+      }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('mousedown', handler, true);
+    document.addEventListener('touchstart', handler, true);
+    return () => {
+      document.removeEventListener('mousedown', handler, true);
+      document.removeEventListener('touchstart', handler, true);
+    };
   }, []);
 
   const togglePanel = (name) => setOpenPanel((p) => (p === name ? null : name));
@@ -61,10 +67,10 @@ const ProductFilter = ({
     border: '1px solid', background: 'transparent', 
     whiteSpace: 'nowrap', flexShrink: 0,
   };
-  const pillInactive = { ...pillBase, borderColor: 'rgba(0,0,0,0.12)', color: 'rgba(0,0,0,0.65)' };
-  const pillActive = { ...pillBase, borderColor: '#000', background: '#000', color: '#fff', fontWeight: 600 };
+  const pillInactive = { ...pillBase, borderColor: 'rgba(10,127,110,0.25)', background: 'rgba(10,127,110,0.04)', color: '#0A7F6E' };
+  const pillActive = { ...pillBase, borderColor: '#0A7F6E', background: '#0A7F6E', color: '#ffffff', fontWeight: 600 };
   const pillCategory = (active) => active
-    ? { ...pillBase, borderColor: '#FF3B30', background: '#FF3B30', color: '#fff', fontWeight: 600 }
+    ? { ...pillBase, borderColor: '#0A7F6E', background: '#0A7F6E', color: '#111111', fontWeight: 600 }
     : { ...pillBase, borderColor: 'rgba(0,0,0,0.12)', color: 'rgba(0,0,0,0.65)' };
 
   return (
@@ -72,7 +78,7 @@ const ProductFilter = ({
 
       {/* Search bar */}
       <div style={{ position: 'relative', marginBottom: '14px' }}>
-        <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(0,0,0,0.4)', display: 'flex' }}>
+        <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#0A7F6E', display: 'flex' }}>
           <Search size={15} />
         </div>
         <input
@@ -82,13 +88,13 @@ const ProductFilter = ({
           placeholder="Search by name, SKU, or tags..."
           style={{
             width: '100%', height: '44px', paddingLeft: '40px', paddingRight: searchTerm ? '40px' : '16px',
-            background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.08)',
+            background: 'rgba(10,127,110,0.03)', border: '1px solid rgba(10,127,110,0.15)',
             borderRadius: '12px', color: '#111', fontSize: '14px', outline: 'none',
             fontFamily: 'Inter, Poppins, sans-serif', transition: 'all 0.2s ease',
             boxSizing: 'border-box'
           }}
-          onFocus={(e) => { e.target.style.borderColor = '#000'; e.target.style.background = 'rgba(0,0,0,0.01)'; }}
-          onBlur={(e) => { e.target.style.borderColor = 'rgba(0,0,0,0.08)'; e.target.style.background = 'rgba(0,0,0,0.04)'; }}
+          onFocus={(e) => { e.target.style.borderColor = '#0A7F6E'; e.target.style.background = 'rgba(10,127,110,0.06)'; }}
+          onBlur={(e) => { e.target.style.borderColor = 'rgba(10,127,110,0.15)'; e.target.style.background = 'rgba(10,127,110,0.03)'; }}
         />
         {searchTerm && (
           <button
@@ -105,11 +111,11 @@ const ProductFilter = ({
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
 
         {/* Price */}
-        <div style={{ position: 'relative' }}>
+        <div className="filter-dropdown-wrapper" style={{ position: 'relative' }}>
           <button 
             onClick={() => togglePanel('price')} 
             style={priceRange < maxPriceLimit ? pillActive : pillInactive}
-            onMouseEnter={(e) => { if(priceRange === maxPriceLimit) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.35)'; e.currentTarget.style.color = '#000'; } }}
+            onMouseEnter={(e) => { if(priceRange === maxPriceLimit) { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.color = '#0A7F6E'; } }}
             onMouseLeave={(e) => { if(priceRange === maxPriceLimit) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'; e.currentTarget.style.color = 'rgba(0,0,0,0.65)'; } }}
           >
             <span>Price{priceRange < maxPriceLimit ? `: ₹${priceRange.toLocaleString()}` : ''}</span>
@@ -119,12 +125,12 @@ const ProductFilter = ({
             <div style={{ width: '260px', padding: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
                 <span style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Max Price</span>
-                <span style={{ fontSize: '14px', fontWeight: 900, color: '#FF3B30' }}>₹{priceRange.toLocaleString()}</span>
+                <span style={{ fontSize: '14px', fontWeight: 900, color: '#0A7F6E' }}>₹{priceRange.toLocaleString()}</span>
               </div>
               <input
                 type="range" min="300" max={maxPriceLimit} step="50" value={priceRange}
                 onChange={(e) => onPriceChange(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#FF3B30', cursor: 'pointer' }}
+                style={{ width: '100%', accentColor: '#0A7F6E', cursor: 'pointer' }}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'rgba(0,0,0,0.45)', marginTop: '8px' }}>
                 <span>₹300</span><span>₹{maxPriceLimit.toLocaleString()}</span>
@@ -134,11 +140,11 @@ const ProductFilter = ({
         </div>
 
         {/* Size */}
-        <div style={{ position: 'relative' }}>
+        <div className="filter-dropdown-wrapper" style={{ position: 'relative' }}>
           <button 
             onClick={() => togglePanel('size')} 
             style={selectedSizes.length > 0 ? pillActive : pillInactive}
-            onMouseEnter={(e) => { if(selectedSizes.length === 0) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.35)'; e.currentTarget.style.color = '#000'; } }}
+            onMouseEnter={(e) => { if(selectedSizes.length === 0) { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.color = '#0A7F6E'; } }}
             onMouseLeave={(e) => { if(selectedSizes.length === 0) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'; e.currentTarget.style.color = 'rgba(0,0,0,0.65)'; } }}
           >
             <span>Size{selectedSizes.length > 0 ? ` · ${selectedSizes.length}` : ''}</span>
@@ -151,7 +157,7 @@ const ProductFilter = ({
                 {SIZES.map((sz) => {
                   const isSel = selectedSizes.includes(sz);
                   return (
-                    <button key={sz} onClick={() => handleSizeToggle(sz)} style={{ height: '38px', borderRadius: '10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', border: '1px solid', transition: 'all 0.15s', background: isSel ? '#FF3B30' : 'rgba(0,0,0,0.03)', borderColor: isSel ? '#FF3B30' : 'rgba(0,0,0,0.1)', color: isSel ? '#fff' : 'rgba(0,0,0,0.6)' }}>
+                    <button key={sz} onClick={() => handleSizeToggle(sz)} style={{ height: '38px', borderRadius: '10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', border: '1px solid', transition: 'all 0.15s', background: isSel ? '#0A7F6E' : 'rgba(0,0,0,0.03)', borderColor: isSel ? '#0A7F6E' : 'rgba(0,0,0,0.1)', color: isSel ? '#111111' : 'rgba(0,0,0,0.6)' }}>
                       {sz}
                     </button>
                   );
@@ -162,11 +168,11 @@ const ProductFilter = ({
         </div>
 
         {/* Availability */}
-        <div style={{ position: 'relative' }}>
+        <div className="filter-dropdown-wrapper" style={{ position: 'relative' }}>
           <button 
             onClick={() => togglePanel('stock')} 
             style={selectedStockStatuses.length > 0 ? pillActive : pillInactive}
-            onMouseEnter={(e) => { if(selectedStockStatuses.length === 0) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.35)'; e.currentTarget.style.color = '#000'; } }}
+            onMouseEnter={(e) => { if(selectedStockStatuses.length === 0) { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.color = '#0A7F6E'; } }}
             onMouseLeave={(e) => { if(selectedStockStatuses.length === 0) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'; e.currentTarget.style.color = 'rgba(0,0,0,0.65)'; } }}
           >
             <span>Availability{selectedStockStatuses.length > 0 ? ` · ${selectedStockStatuses.length}` : ''}</span>
@@ -180,8 +186,8 @@ const ProductFilter = ({
                   const isSel = selectedStockStatuses.includes(status);
                   const dot = status === 'In Stock' ? '#22c55e' : status === 'Limited Stock' ? '#fbbf24' : '#f87171';
                   return (
-                    <button key={status} onClick={() => handleStockToggle(status)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', borderRadius: '10px', cursor: 'pointer', border: 'none', background: isSel ? 'rgba(255,59,48,0.06)' : 'transparent', color: isSel ? '#111' : 'rgba(0,0,0,0.6)', fontSize: '12px', fontWeight: 500, textAlign: 'left', transition: 'all 0.15s' }}>
-                      <div style={{ width: '16px', height: '16px', borderRadius: '5px', border: `1px solid ${isSel ? '#FF3B30' : 'rgba(0,0,0,0.2)'}`, background: isSel ? '#FF3B30' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <button key={status} onClick={() => handleStockToggle(status)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', borderRadius: '10px', cursor: 'pointer', border: 'none', background: isSel ? 'rgba(10,127,110,0.06)' : 'transparent', color: isSel ? '#111' : 'rgba(0,0,0,0.6)', fontSize: '12px', fontWeight: 500, textAlign: 'left', transition: 'all 0.15s' }}>
+                      <div style={{ width: '16px', height: '16px', borderRadius: '5px', border: `1px solid ${isSel ? '#0A7F6E' : 'rgba(0,0,0,0.2)'}`, background: isSel ? '#0A7F6E' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         {isSel && <Check size={10} color="#fff" strokeWidth={3} />}
                       </div>
                       <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: dot, flexShrink: 0 }} />
@@ -199,7 +205,7 @@ const ProductFilter = ({
           {selectedSizes.map((sz) => (
             <motion.button key={sz} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
               onClick={() => handleSizeToggle(sz)}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', height: '28px', padding: '0 10px', borderRadius: '999px', fontSize: '11px', fontWeight: 700, background: 'rgba(255,59,48,0.08)', border: '1px solid rgba(255,59,48,0.25)', color: '#FF3B30', cursor: 'pointer' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', height: '28px', padding: '0 10px', borderRadius: '999px', fontSize: '11px', fontWeight: 700, background: 'rgba(10,127,110,0.08)', border: '1px solid rgba(10,127,110,0.25)', color: '#0A7F6E', cursor: 'pointer' }}
             >
               {sz} <X size={10} />
             </motion.button>
@@ -211,7 +217,7 @@ const ProductFilter = ({
           {isAnyFilterActive && (
             <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={onClearFilters}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', height: '34px', padding: '0 14px', borderRadius: '999px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', marginLeft: 'auto', border: '1px solid rgba(255,59,48,0.25)', background: 'rgba(255,59,48,0.06)', color: '#FF3B30', transition: 'all 0.18s' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', height: '34px', padding: '0 14px', borderRadius: '999px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', marginLeft: 'auto', border: '1px solid rgba(10,127,110,0.25)', background: 'rgba(10,127,110,0.06)', color: '#0A7F6E', transition: 'all 0.18s' }}
             >
               <X size={12} /> Clear all
             </motion.button>
