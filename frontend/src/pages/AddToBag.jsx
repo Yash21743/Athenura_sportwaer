@@ -219,11 +219,12 @@ const AddToBag = () => {
     }
 
   @media (max-width: 600px) {
-  .cart-header { padding: 14px 12px 8px; }
-  .cart-layout { padding: 0 12px; gap: 14px; }
-  .cart-item-card { flex-direction: column; gap: 0; padding: 14px; border-radius: 16px; }
-  .cart-item-img { width: 92%; max-width: 92%; min-width: unset; height: 240px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 10px; margin: 0 auto 12px; display: block; }
-  .summary-card { padding: 16px; border-radius: 16px; }
+  .cart-header { padding: 14px 12px 8px; width: 100%; box-sizing: border-box; }
+  .cart-layout { display: flex; flex-direction: column; padding: 0 12px; gap: 14px; width: 100%; max-width: 100%; box-sizing: border-box; }
+  .cart-list-sec { width: 100%; max-width: 100%; box-sizing: border-box; }
+  .cart-item-card { display: flex; flex-direction: column; gap: 0; padding: 14px; border-radius: 16px; width: 100%; max-width: 100%; box-sizing: border-box; }
+  .cart-item-img { width: 100%; max-width: 100%; min-width: unset; height: 240px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 10px; margin: 0 auto 12px; display: block; }
+  .summary-card { padding: 16px; border-radius: 16px; width: 100%; max-width: 100%; box-sizing: border-box; }
   .checkout-form-grid { display: flex; flex-direction: column; gap: 12px; }
   .form-col-full { grid-column: span 1; }
 }
@@ -232,7 +233,7 @@ const AddToBag = () => {
   .cart-header { padding: 12px 10px 6px; }
   .cart-layout { padding: 0 10px; gap: 10px; }
   .cart-item-card { padding: 12px; border-radius: 14px; }
-  .cart-item-img { width: 92%; max-width: 92%; min-width: unset; height: 220px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 8px; margin: 0 auto 10px; display: block; }
+  .cart-item-img { width: 100%; max-width: 100%; min-width: unset; height: 220px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 8px; margin: 0 auto 10px; display: block; }
   .summary-card { padding: 14px; border-radius: 14px; }
   .qty-btn { width: 26px; height: 26px; }
   .qty-input { width: 26px; font-size: 12px; }
@@ -244,7 +245,7 @@ const AddToBag = () => {
   .cart-header { padding: 10px 8px 6px; }
   .cart-layout { padding: 0 8px; gap: 8px; }
   .cart-item-card { padding: 10px; border-radius: 12px; }
-  .cart-item-img { width: 92%; max-width: 92%; min-width: unset; height: 190px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 8px; margin: 0 auto 8px; display: block; }
+  .cart-item-img { width: 100%; max-width: 100%; min-width: unset; height: 190px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 8px; margin: 0 auto 8px; display: block; }
   .summary-card { padding: 12px; border-radius: 12px; }
   .item-bottom-row { flex-direction: column; align-items: flex-start; gap: 10px; }
   .item-price-block { text-align: left; width: 100%; }
@@ -253,7 +254,7 @@ const AddToBag = () => {
 }
 
 @media (max-width: 316px) {
-  .cart-item-img { width: 90%; max-width: 90%; height: 170px; }
+  .cart-item-img { width: 100%; max-width: 100%; height: 170px; }
   .item-meta-list { flex-direction: column; gap: 4px; }
   .promo-form { flex-direction: column; gap: 8px; }
   .promo-input { width: 100%; padding: 10px 12px; }
