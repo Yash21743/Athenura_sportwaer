@@ -7,7 +7,10 @@ const styles = `
 .ct-root {
   --bg: #0d0d0d;
   --surface: #1a1a1a;
-  --red: #ff3b30;
+  --red: #14a889;
+  --teal-primary: #14a889;
+  --teal-dark: #0a3d33;
+  --teal-light: #72d4c6;
   --light: #f4f4f5;
   --white: #ffffff;
   --muted-dark: #9b9b9f;
@@ -27,7 +30,7 @@ const styles = `
   position: relative;
   padding: 7rem 1.5rem 6rem;
   overflow: hidden;
-  background: var(--bg);
+  background: linear-gradient(120deg, #06251f, #0a3d33, #051612);
   text-align: center;
 }
 .ct-hero-glow {
@@ -36,7 +39,7 @@ const styles = `
   pointer-events: none;
   background: radial-gradient(
     600px circle at var(--mx, 50%) var(--my, 30%),
-    rgba(255,59,48,0.18),
+    rgba(20,168,137,0.18),
     transparent 60%
   );
   transition: background 0.1s ease;
@@ -48,6 +51,32 @@ const styles = `
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+.ct-hero-dots {
+  position: absolute;
+  top: 48px; right: 6%;
+  width: 110px; height: 110px;
+  color: rgba(61,220,151,0.5);
+  pointer-events: none;
+  z-index: 0;
+}
+@media (max-width: 900px) { .ct-hero-dots { display: none; } }
+.ct-hero-side-label {
+  position: absolute;
+  top: 50%; right: 3%;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: right center;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.18);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+}
+@media (max-width: 1024px) { .ct-hero-side-label { display: none; } }
 .ct-hero-inner {
   position: relative;
   max-width: 1120px;
@@ -65,16 +94,17 @@ const styles = `
   line-height: 1.02;
 }
 .ct-hero-h1 {
-  font-size: clamp(2.8rem, 7vw, 5.2rem);
+  font-size: clamp(2.4rem, 6.2vw, 4.6rem);
   margin-bottom: 1.25rem;
 }
+.ct-hero-h1 span.ct-hero-line { display: block; }
 .ct-hero-accent {
-  background: linear-gradient(180deg, #ff6b61 0%, #ff3b30 35%, #c81f16 70%, #7a0f0a 100%);
+  background: linear-gradient(180deg, #72d4c6 0%, #14a889 35%, #0a3d33 70%, #051612 100%);
   background-size: 100% 200%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 4px 12px rgba(255,59,48,0.45);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 4px 12px rgba(20,168,137,0.45);
   animation: ct-gradient-shift 5s ease infinite;
 }
 @keyframes ct-gradient-shift {
@@ -114,7 +144,7 @@ const styles = `
 }
 .ct-pill:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
 .ct-pill-red { background: var(--red); border-color: var(--red); color: var(--white); }
-.ct-pill-red:hover { background: #ff5249; border-color: #ff5249; }
+.ct-pill-red:hover { background: #18c19e; border-color: #18c19e; }
 
 /* ── Sections ── */
 .ct-section { padding: 5rem 1.5rem; position: relative; }
@@ -159,14 +189,14 @@ const styles = `
   cursor: default;
 }
 .ct-info-card:hover {
-  border-color: rgba(255,59,48,0.4);
+  border-color: rgba(20,168,137,0.4);
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(255,59,48,0.12);
+  box-shadow: 0 12px 32px rgba(20,168,137,0.12);
 }
 .ct-info-icon {
   width: 48px; height: 48px;
   border-radius: calc(var(--radius) - 4px);
-  background: rgba(255,59,48,0.10);
+  background: rgba(20,168,137,0.10);
   color: var(--red);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -221,7 +251,7 @@ const styles = `
   border-radius: calc(var(--radius) + 4px);
   padding: 2.5rem;
   box-shadow: 0 4px 40px rgba(0,0,0,0.08);
-  border: 1.5px solid rgba(255,59,48,0.35);
+  border: 1.5px solid rgba(20,168,137,0.35);
   height: 100%;
 }
 .ct-form-title {
@@ -251,8 +281,8 @@ const styles = `
   width: 100%;
 }
 .ct-input:focus, .ct-textarea:focus, .ct-select:focus {
-  border-color: #ff3b30;
-  box-shadow: 0 0 0 3px rgba(255,59,48,0.12);
+  border-color: #14a889;
+  box-shadow: 0 0 0 3px rgba(20,168,137,0.12);
   background: #fff;
 }
 .ct-textarea { resize: vertical; min-height: 130px; }
@@ -266,10 +296,10 @@ const styles = `
   font-size: 0.9rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
   border: none; cursor: pointer;
   transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 16px rgba(255,59,48,0.3);
+  box-shadow: 0 4px 16px rgba(20,168,137,0.3);
   width: 100%;
 }
-.ct-submit-btn:hover { transform: translateY(-2px); background: #ff5249; box-shadow: 0 8px 24px rgba(255,59,48,0.35); }
+.ct-submit-btn:hover { transform: translateY(-2px); background: #18c19e; box-shadow: 0 8px 24px rgba(20,168,137,0.35); }
 .ct-submit-btn:active { transform: translateY(0); }
 .ct-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 .ct-success {
@@ -278,7 +308,7 @@ const styles = `
 }
 .ct-success-icon {
   width: 64px; height: 64px; border-radius: 50%;
-  background: rgba(255,59,48,0.1);
+  background: rgba(20,168,137,0.1);
   display: flex; align-items: center; justify-content: center;
   color: var(--red);
 }
@@ -305,9 +335,9 @@ const styles = `
   text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase;
   transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
   width: fit-content;
-  box-shadow: 0 4px 14px rgba(255,59,48,0.25);
+  box-shadow: 0 4px 14px rgba(20,168,137,0.25);
 }
-.ct-map-direction-btn:hover { background: #ff5249; transform: translateY(-2px); }
+.ct-map-direction-btn:hover { background: #18c19e; transform: translateY(-2px); }
 
 /* ── Map info card (matches form height) ── */
 .ct-map-info-card {
@@ -322,7 +352,7 @@ const styles = `
   border-radius: calc(var(--radius) + 4px);
   padding: 2.25rem 2rem;
   box-shadow: 0 4px 40px rgba(0,0,0,0.08);
-  border: 1.5px solid rgba(255,59,48,0.35);
+  border: 1.5px solid rgba(20,168,137,0.35);
 }
 .ct-map-address { font-size: 1.1rem; font-weight: 700; color: #111; }
 .ct-map-timing { font-size: 0.95rem; color: #666; }
@@ -348,20 +378,20 @@ const styles = `
 }
 .ct-service-card:hover {
   transform: translateY(-5px);
-  border-color: rgba(255,59,48,0.4);
-  box-shadow: 0 14px 34px rgba(255,59,48,0.14);
+  border-color: rgba(20,168,137,0.4);
+  box-shadow: 0 14px 34px rgba(20,168,137,0.14);
 }
 .ct-service-icon {
   width: 56px; height: 56px; border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, rgba(255,59,48,0.28), rgba(255,59,48,0.08));
-  border: 1px solid rgba(255,59,48,0.3);
+  background: radial-gradient(circle at 32% 28%, rgba(20,168,137,0.28), rgba(20,168,137,0.08));
+  border: 1px solid rgba(20,168,137,0.3);
   color: var(--red);
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), background 0.25s;
 }
 .ct-service-card:hover .ct-service-icon {
   transform: rotate(-12deg) scale(1.1);
-  background: radial-gradient(circle at 32% 28%, rgba(255,59,48,0.4), rgba(255,59,48,0.12));
+  background: radial-gradient(circle at 32% 28%, rgba(20,168,137,0.4), rgba(20,168,137,0.12));
 }
 .ct-service-title {
   font-family: 'Oswald', sans-serif; font-weight: 700;
@@ -385,8 +415,8 @@ const styles = `
   max-width: 1120px; margin: 0 auto;
   position: relative; border-radius: 20px;
   overflow: hidden;
-  background: linear-gradient(135deg, #FF3B30 0%, #b31c15 50%, #800f0a 100%);
-  box-shadow: 0 16px 44px rgba(255, 59, 48, 0.22);
+  background: linear-gradient(135deg, #14a889 0%, #0a3d33 50%, #051612 100%);
+  box-shadow: 0 16px 44px rgba(20, 168, 137, 0.22);
 }
 .ct-wa-bg-wrap {
   position: absolute; inset: 0;
@@ -429,14 +459,14 @@ const styles = `
 .ct-wa-btn {
   display: inline-flex; align-items: center; gap: 0.75rem;
   padding: 14px 34px; border-radius: 6px;
-  background: #ffffff; color: #c92218;
+  background: #ffffff; color: #0a3d33;
   font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   text-decoration: none; flex-shrink: 0;
   transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
   font-family: 'Poppins', sans-serif;
 }
-.ct-wa-btn:hover { transform: translateY(-3px); background: #f8f9fa; color: #e62e22; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
+.ct-wa-btn:hover { transform: translateY(-3px); background: #f8f9fa; color: #14a889; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
 .ct-wa-call-btn {
   display: inline-flex; align-items: center; gap: 0.75rem;
   padding: 13px 32px; border-radius: 6px;
@@ -548,9 +578,9 @@ const DirectionIcon = () => (
 );
 
 /* ─── Data ─── */
-const PHONE_DISPLAY = "+91 98350 51934";
-const PHONE_TEL = "+919835051934";
-const WA_LINK = "https://wa.me/919835051934";
+const PHONE_DISPLAY = "+91 8755578878";
+const PHONE_TEL = "+918755578878";
+const WA_LINK = "https://wa.me/918755578878";
 const EMAIL = "official@athenura.in";
 const ADDRESS_LINE = "Sector 62, Noida";
 const ADDRESS_SUB = "Uttar Pradesh, India";
@@ -767,10 +797,20 @@ export default function ContactPage() {
       >
         <div className="ct-hero-glow" style={glowStyle} aria-hidden="true" />
         <div className="ct-hero-noise" aria-hidden="true" />
+        <svg className="ct-hero-dots" viewBox="0 0 120 120" aria-hidden="true">
+          {[0, 20, 40, 60, 80, 100, 120].map((x) => (
+            <circle key={`h${x}`} cx={x} cy="0" r="2" fill="currentColor" />
+          ))}
+          {[0, 20, 40, 60, 80, 100, 120].map((y) => (
+            <circle key={`v${y}`} cx="120" cy={y} r="2" fill="currentColor" />
+          ))}
+        </svg>
+        <div className="ct-hero-side-label" aria-hidden="true">Reach Us</div>
         <div className="ct-hero-inner">
           <FadeUp delay={0}>
             <h1 className="ct-heading ct-hero-h1">
-              Contact <span className="ct-hero-accent">Us</span>
+              <span className="ct-hero-line">Let's Start</span>
+              <span className="ct-hero-line ct-hero-accent">A Conversation.</span>
             </h1>
           </FadeUp>
 

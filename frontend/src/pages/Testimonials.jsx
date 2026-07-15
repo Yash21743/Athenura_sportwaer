@@ -7,7 +7,7 @@ const styles = `
 .tm-root {
   --bg: #0d0d0d;
   --surface: #161616;
-  --red: #ff3b30;
+  --red: #14a889;
   --light: #f4f4f5;
   --white: #ffffff;
   --muted-dark: #9b9b9f;
@@ -26,7 +26,7 @@ const styles = `
   position: relative;
   padding: 8rem 1.5rem 6rem;
   overflow: hidden;
-  background: var(--bg);
+  background: linear-gradient(120deg, #06251f, #0a3d33, #051612);
   text-align: center;
 }
 .tm-hero-glow {
@@ -34,7 +34,7 @@ const styles = `
   pointer-events: none;
   background: radial-gradient(
     600px circle at var(--mx, 50%) var(--my, 30%),
-    rgba(255,59,48,0.15), transparent 60%
+    rgba(20,168,137,0.18), transparent 60%
   );
   transition: background 0.1s ease;
 }
@@ -52,10 +52,10 @@ const styles = `
 }
 .tm-hero-h1 { font-size: clamp(2.8rem, 7vw, 5.2rem); margin-bottom: 1.25rem; }
 .tm-hero-accent {
-  background: linear-gradient(180deg, #ff6b61 0%, #ff3b30 35%, #c81f16 70%, #7a0f0a 100%);
+  background: linear-gradient(180deg, #72d4c6 0%, #14a889 35%, #0f6e5c 70%, #051612 100%);
   background-size: 100% 200%; -webkit-background-clip: text; background-clip: text;
   color: transparent;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 4px 12px rgba(255,59,48,0.45);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 4px 12px rgba(20,168,137,0.45);
   animation: tm-grad-shift 5s ease infinite;
 }
 @keyframes tm-grad-shift { 0%,100%{background-position:0% 0%;} 50%{background-position:0% 100%;} }
@@ -161,7 +161,7 @@ const styles = `
 .tm-tab-btn:hover { background: rgba(255,255,255,0.08); color: var(--white); }
 .tm-tab-btn.active {
   background: var(--red); border-color: var(--red); color: var(--white);
-  box-shadow: 0 4px 14px rgba(255,59,48,0.25);
+  box-shadow: 0 4px 14px rgba(20,168,137,0.25);
 }
 .tm-section-white .tm-tab-btn {
   background: #f5f5f6; border: 1px solid rgba(0,0,0,0.08); color: #666;
@@ -195,8 +195,8 @@ const styles = `
 }
 .tm-card:hover {
   transform: translateY(-6px);
-  border-color: #FF3B30;
-  box-shadow: 0 12px 30px rgba(255, 59, 48, 0.08);
+  border-color: #14a889;
+  box-shadow: 0 12px 30px rgba(20, 168, 137, 0.08);
 }
 .tm-quote-icon {
   position: absolute;
@@ -235,8 +235,8 @@ const styles = `
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(255,59,48,0.15), rgba(255,59,48,0.05));
-  border: 1px solid rgba(255,59,48,0.3); color: var(--red);
+  background: linear-gradient(135deg, rgba(20,168,137,0.15), rgba(20,168,137,0.05));
+  border: 1px solid rgba(20,168,137,0.3); color: var(--red);
   display: flex; align-items: center; justify-content: center;
   font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 1.2rem;
   flex-shrink: 0;
@@ -279,7 +279,7 @@ const styles = `
 .tm-form-card {
   background: #ffffff; border-radius: calc(var(--radius) + 4px);
   padding: 2.5rem; box-shadow: 0 8px 40px rgba(0,0,0,0.08);
-  border: 1.5px solid rgba(255,59,48,0.35);
+  border: 1.5px solid rgba(20,168,137,0.35);
 }
 .tm-form-title {
   font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase;
@@ -302,7 +302,7 @@ const styles = `
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .tm-input:focus, .tm-textarea:focus {
-  border-color: #ff3b30; box-shadow: 0 0 0 3px rgba(255,59,48,0.12); background: #fff;
+  border-color: #14a889; box-shadow: 0 0 0 3px rgba(20,168,137,0.12); background: #fff;
 }
 .tm-textarea { resize: vertical; min-height: 110px; }
 
@@ -320,9 +320,9 @@ const styles = `
   font-size: 0.9rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
   border: none; cursor: pointer; width: 100%;
   transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 16px rgba(255,59,48,0.30);
+  box-shadow: 0 4px 16px rgba(20,168,137,0.30);
 }
-.tm-submit-btn:hover { transform: translateY(-2px); background: #ff5249; box-shadow: 0 8px 24px rgba(255,59,48,0.35); }
+.tm-submit-btn:hover { transform: translateY(-2px); background: #18c39f; box-shadow: 0 8px 24px rgba(20,168,137,0.35); }
 .tm-submit-btn:active { transform: translateY(0); }
 .tm-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
@@ -336,7 +336,7 @@ const styles = `
 }
 .tm-success-icon {
   width: 72px; height: 72px; border-radius: 50%;
-  background: rgba(255,59,48,0.08);
+  background: rgba(20,168,137,0.08);
   display: flex; align-items: center; justify-content: center; color: var(--red);
 }
 .tm-success h3 {
@@ -370,11 +370,11 @@ const styles = `
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 .tm-load-btn:hover {
-  background: #ff3b30;
-  border-color: #ff3b30;
+  background: #14a889;
+  border-color: #14a889;
   color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 59, 48, 0.25);
+  box-shadow: 0 6px 20px rgba(20, 168, 137, 0.25);
 }
 .tm-load-btn:active {
   transform: translateY(0);
@@ -404,8 +404,8 @@ const styles = `
 }
 .tm-guideline-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(255, 59, 48, 0.06);
-  border-color: rgba(255, 59, 48, 0.25);
+  box-shadow: 0 8px 24px rgba(20, 168, 137, 0.06);
+  border-color: rgba(20, 168, 137, 0.25);
 }
 .tm-guideline-icon {
   display: flex;
@@ -414,8 +414,8 @@ const styles = `
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: rgba(255, 59, 48, 0.08);
-  color: #ff3b30;
+  background: rgba(20, 168, 137, 0.08);
+  color: #14a889;
   flex-shrink: 0;
 }
 .tm-guideline-content h4 {
@@ -434,7 +434,7 @@ const styles = `
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #ff3b30;
+  color: #14a889;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -455,7 +455,7 @@ const StarIcon = ({ filled }) => (
   </svg>
 );
 const QuoteIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255, 59, 48, 0.18)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(20, 168, 137, 0.18)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 21c3 0 7-9 7-14h-3v-3h7v5c0 6.627-5.373 12-11 12zm13 0c3 0 7-9 7-14h-3v-3h7v5c0 6.627-5.373 12-11 12z" />
   </svg>
 );
@@ -792,8 +792,8 @@ export default function TestimonialsPage() {
   const [testimonials, setTestimonials] = useState([]);
   const [showAll, setShowAll] = useState(false);
 
-  const animatedAthletes = useCountUp(1200, 1800, 0);
-  const animatedOrgs = useCountUp(450, 1800, 0);
+  const animatedAthletes = useCountUp(150, 1800, 0);
+  const animatedOrgs = useCountUp(200, 1800, 0);
   const animatedRating = useCountUp(4.2, 1800, 1);
 
   const loadTestimonials = () => {
