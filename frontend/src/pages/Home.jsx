@@ -9,9 +9,11 @@ const Home = () => {
   return (
     <>
       <HeroSection />
-      <FeaturedCategories />
+      <FeaturedCategories />   
       <WhyChooseUs />
-      <FeaturedProducts />
+      <div id="featured-products">
+        <FeaturedProducts />
+      </div>
       <TestimonialsSection />
       <BulkOrderCTA />
     </>

@@ -1,14 +1,15 @@
 # 📋 Comfy Sport Wear — Team Work Division
-> **Project:** Athenura Technologies | Comfy Sport Wear Website
+
+**Project:** Athenura Technologies | Comfy Sport Wear Website
 
 ---
 
-##  YASH
+## 🟢 YASH
 
 **Assigned Pages:** Home Page (All Sections)
 
 | Page / Component | File Path |
-|-----------------|-----------|
+|---|---|
 | Home Page (Assembly) | `src/pages/Home.jsx` |
 | Hero Section | `src/components/home/HeroSection.jsx` |
 | Featured Categories | `src/components/home/FeaturedCategories.jsx` |
@@ -16,19 +17,27 @@
 | Featured Products | `src/components/home/FeaturedProducts.jsx` |
 | Testimonials Section | `src/components/home/TestimonialsSection.jsx` |
 | Bulk Order CTA | `src/components/home/BulkOrderCTA.jsx` |
+| Add to beg| 'src/pages/addtocart.jsx' |
 
 ---
 
-## 🎨 VAISHNAVI
+## 🎨 Atharva
 
 **Assigned Pages:** Navbar, Footer, About Us, FAQ
 
 | Page / Component | File Path |
-|-----------------|-----------|
+|---|---|
 | Navbar | `src/components/common/layout/Navbar.jsx` |
 | Footer | `src/components/common/layout/Footer.jsx` |
 | About Us Page | `src/pages/About.jsx` |
 | FAQ Page | `src/pages/FAQ.jsx` |
+
+**Logo Files (Navbar/Footer mein use karo):**
+
+| Asset | File Path |
+|---|---|
+| Comfy Logo (PNG) | `src/assets/images/comfy_logo.png` |
+| Comfy Logo 2 (JPEG) | `src/assets/images/comfy_logo2.jpeg` |
 
 ---
 
@@ -37,7 +46,7 @@
 **Assigned Pages:** Products Page (All Components)
 
 | Page / Component | File Path |
-|-----------------|-----------|
+|---|---|
 | Products Page (Assembly) | `src/pages/Products.jsx` |
 | Product Detail Page | `src/pages/ProductDetail.jsx` |
 | Search Bar | `src/components/products/SearchBar.jsx` |
@@ -49,12 +58,12 @@
 
 ---
 
-## 🔐 ARTHAV
+## 🔐 Vaishnavi
 
 **Assigned Pages:** Admin Panel (All Admin Pages)
 
 | Page / Component | File Path |
-|-----------------|-----------|
+|---|---|
 | Admin Sidebar | `src/components/common/adminlayout/AdminSidebar.jsx` |
 | Admin Login | `src/components/admin/AdminLogin.jsx` |
 | Admin Dashboard | `src/components/admin/AdminDashboard.jsx` |
@@ -66,28 +75,44 @@
 
 ---
 
-## 📋 YOGIRAJ
+## 📝 YOGIRAJ
 
 **Assigned Pages:** Bulk Order, Contact Us, Testimonials
 
 | Page / Component | File Path |
-|-----------------|-----------|
+|---|---|
 | Bulk Order Page | `src/pages/BulkOrder.jsx` |
 | Contact Us Page | `src/pages/Contact.jsx` |
 | Testimonials Page | `src/pages/Testimonials.jsx` |
 
 ---
 
-## ⚠️ YE FILES  CHHONA 
+## 📌 Information
+
+| Detail | Value |
+|---|---|
+| 📞 Contact Number | `8755578878` |
+| 📸 Instagram | [comfy_sports](https://www.instagram.com/comfy_sports?igsh=MWt6MnphczF2Y3M1eg==) |
+
+**Brand Colours:**
+
+| Colour | HEX |
+|---|---|
+| 🟢 Green | `#0A7F6E` |
+| ⬜ Grey | `#DDDFD2` |
+
+---
+
+## ⚠️ YE FILES CHHONA
 
 | File | Reason |
-|------|--------|
+|---|---|
 | `src/App.jsx` | Routing set hai — touch kiya toh sab pages toot jayenge |
 | `src/main.jsx` | Entry point hai — bilkul mat chhona |
-| `src/index.css` | Global CSS — sirf Yash 
+| `src/index.css` | Global CSS — sirf Yash |
 | `src/services/api.js` | Backend API setup — baad mein decide hoga |
-| `vite.config.js` | Vite config 
-| `package.json` | Dependencies 
+| `vite.config.js` | Vite config |
+| `package.json` | Dependencies |
 
 ---
 
@@ -96,21 +121,22 @@
 **Primary Font:** `Poppins`
 **Secondary Font:** `Montserrat`
 
-**Google Fonts URL (already `index.css` mein add hai):**
+**Google Fonts URL** (already added in `index.css`):
+
 ```
 https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800&display=swap
 ```
 
 **CSS mein use karna ho toh:**
+
 ```css
-font-family: 'Poppins', sans-serif;      /* headings, body text */
-font-family: 'Montserrat', sans-serif;   /* subheadings */
+font-family: 'Poppins', sans-serif;     /* headings, body text */
+font-family: 'Montserrat', sans-serif;  /* subheadings */
 ```
 
 **Tailwind mein use karna ho toh:**
+
 ```jsx
 className="font-['Poppins']"
 className="font-['Montserrat']"
 ```
-
-

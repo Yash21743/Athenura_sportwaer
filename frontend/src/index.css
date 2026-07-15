@@ -11,8 +11,14 @@ body {
   font-family: 'Poppins', sans-serif;
   background-color: #ffffff;
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
+}
+
+main {
+  max-width: 100%;
 }
