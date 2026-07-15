@@ -6,9 +6,9 @@ import { motion } from 'framer-motion';
 const stripHtml = (html = '') => html.replace(/<[^>]*>/g, '');
 
 const stockConf = {
-  'In Stock':      { dot: '#4ade80', color: '#4ade80', label: 'In Stock' },
-  'Limited Stock': { dot: '#fbbf24', color: '#fbbf24', label: 'Limited' },
-  'Out of Stock':  { dot: '#f87171', color: '#f87171', label: 'Sold Out' },
+  'In Stock':      { dot: '#16a34a', color: '#16a34a', label: 'In Stock' },
+  'Limited Stock': { dot: '#d97706', color: '#d97706', label: 'Limited' },
+  'Out of Stock':  { dot: '#dc2626', color: '#dc2626', label: 'Sold Out' },
 };
 
 const ProductCard = ({ product, viewMode = 'grid' }) => {
@@ -146,9 +146,9 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
         {/* Gradient */}
         <div style={{ position: 'absolute', inset: '-2px', background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)', pointerEvents: 'none' }} />
         {/* Stock */}
-        <div style={{ position: 'absolute', top: '11px', right: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', alignItems: 'center', gap: '5px', background: 'rgba(255,255,255,0.95)', padding: '4px 8px', borderRadius: '20px', boxShadow: '0 2px 10px rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}>
           <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: stock.dot, display: 'inline-block' }} />
-          <span style={{ fontSize: '10px', fontWeight: 700, color: stock.color }}>{stock.label}</span>
+          <span style={{ fontSize: '9px', fontWeight: 800, color: stock.color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{stock.label}</span>
         </div>
         {/* SKU */}
         <div style={{ position: 'absolute', bottom: '10px', left: '12px' }}>

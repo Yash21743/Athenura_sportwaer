@@ -208,9 +208,9 @@ const ProductDetail = () => {
   }
 
   const stockConf = {
-    'In Stock':      { dot: '#4ade80', color: '#4ade80', label: 'In Stock' },
-    'Limited Stock': { dot: '#fbbf24', color: '#fbbf24', label: 'Limited' },
-    'Out of Stock':  { dot: '#f87171', color: '#f87171', label: 'Sold Out' },
+    'In Stock':      { dot: '#16a34a', color: '#16a34a', label: 'In Stock' },
+    'Limited Stock': { dot: '#d97706', color: '#d97706', label: 'Limited' },
+    'Out of Stock':  { dot: '#dc2626', color: '#dc2626', label: 'Sold Out' },
   };
   const stock = stockConf[product.stockStatus] || { dot: '#888', color: '#888', label: product.stockStatus };
   const cleanDescription = stripHtml(product.description);
@@ -289,7 +289,7 @@ const ProductDetail = () => {
             <div className="pd-img-col">
               <div style={{ position: 'relative', width: '100%', aspectRatio: '1', borderRadius: '16px', overflow: 'hidden', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img src={activeImage} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <span style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(0,0,0,0.8)', color: '#111111', fontSize: '10px', fontFamily: 'monospace', fontWeight: 800, padding: '4px 12px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.15)' }}>
+                <span style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(0,0,0,0.8)', color: '#ffffff', fontSize: '10px', fontFamily: 'monospace', fontWeight: 800, padding: '4px 12px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.15)' }}>
                   {product.code}
                 </span>
               </div>
@@ -377,7 +377,7 @@ const ProductDetail = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} style={{ fill: i < 4 ? '#fbbf24' : '#2a2a2a', color: i < 4 ? '#fbbf24' : '#2a2a2a' }} />
+                        <Star key={i} size={14} style={{ fill: i < 4 ? '#fbbf24' : '#ffffff', color: i < 4 ? '#fbbf24' : '#ffffff' }} />
                       ))}
                     </div>
                     <span style={{ fontSize: '13px', color: '#111111', fontWeight: 700 }}>4.2</span>
