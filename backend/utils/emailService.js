@@ -1,24 +1,38 @@
-
-const brevo = require('@getbrevo/brevo');
-
-const apiInstance = new brevo.TransactionalEmailsApi();
-apiInstance.setApiKey(brevo.ApiClient.authentications['api-key']);
-apiInstance.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+const { BrevoClient } = require('@getbrevo/brevo');
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL;
 const SENDER_NAME = process.env.BREVO_SENDER_NAME || 'Comfy Sport Wear';
 const WEBSITE_URL = process.env.WEBSITE_URL || 'https://comfysportwear.com';
 
-const sendEmail = async (to, subject, htmlContent) => {
-  const sendSmtpEmail = new brevo.SendSmtpEmail();
-  sendSmtpEmail.subject = subject;
-  sendSmtpEmail.htmlContent = htmlContent;
-  sendSmtpEmail.sender = { name: SENDER_NAME, email: SENDER_EMAIL };
-  sendSmtpEmail.to = [{ email: to }];
-  sendSmtpEmail.replyTo = { email: SENDER_EMAIL, name: SENDER_NAME };
+let brevoClient = null;
+if (process.env.BREVO_API_KEY) {
+  try {
+    brevoClient = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
+  } catch (err) {
+    console.error("Failed to initialize Brevo email client:", err.message);
+  }
+} else {
+  console.warn("BREVO_API_KEY is not defined in .env. Email services will run in fallback mock mode.");
+}
 
-  await apiInstance.sendTransacEmail(sendSmtpEmail);
+const sendEmail = async (to, subject, htmlContent) => {
+  if (!brevoClient) {
+    console.log(`[Email Mock Fallback] To: ${to} | Subject: ${subject}`);
+    return;
+  }
+
+  try {
+    await brevoClient.transactionalEmails.sendTransacEmail({
+      subject,
+      htmlContent,
+      sender: { name: SENDER_NAME, email: SENDER_EMAIL },
+      to: [{ email: to }],
+      replyTo: { email: SENDER_EMAIL, name: SENDER_NAME }
+    });
+  } catch (error) {
+    console.error(`Failed to send email to ${to}:`, error.message);
+  }
 };
 
 const sendInquiryNotification = async (inquiry) => {

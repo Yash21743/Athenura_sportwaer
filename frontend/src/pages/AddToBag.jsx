@@ -57,37 +57,7 @@ const AddToBag = () => {
     };
   }, []);
 
-  
-  useEffect(() => {
-   
-    let viewportMeta = document.querySelector('meta[name="viewport"]');
-    if (!viewportMeta) {
-      viewportMeta = document.createElement('meta');
-      viewportMeta.name = 'viewport';
-      document.head.appendChild(viewportMeta);
-    }
-    const prevViewportContent = viewportMeta.content;
-    viewportMeta.content = 'width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover';
 
-    
-    const prevHtmlOverflow = document.documentElement.style.overflowX;
-    const prevBodyOverflow = document.body.style.overflowX;
-    const prevBodyMaxWidth = document.body.style.maxWidth;
-    const prevBodyMargin = document.body.style.margin;
-
-    document.documentElement.style.overflowX = 'hidden';
-    document.body.style.overflowX = 'hidden';
-    document.body.style.maxWidth = '100%';
-    document.body.style.margin = '0';
-
-    return () => {
-      viewportMeta.content = prevViewportContent;
-      document.documentElement.style.overflowX = prevHtmlOverflow;
-      document.body.style.overflowX = prevBodyOverflow;
-      document.body.style.maxWidth = prevBodyMaxWidth;
-      document.body.style.margin = prevBodyMargin;
-    };
-  }, []);
 
   const saveCart = (items) => {
     setCartItems(items);
@@ -249,11 +219,12 @@ const AddToBag = () => {
     }
 
   @media (max-width: 600px) {
-  .cart-header { padding: 14px 12px 8px; }
-  .cart-layout { padding: 0 12px; gap: 14px; }
-  .cart-item-card { flex-direction: column; gap: 0; padding: 14px; border-radius: 16px; }
-  .cart-item-img { width: 92%; max-width: 92%; min-width: unset; height: 240px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 10px; margin: 0 auto 12px; display: block; }
-  .summary-card { padding: 16px; border-radius: 16px; }
+  .cart-header { padding: 14px 12px 8px; width: 100%; box-sizing: border-box; }
+  .cart-layout { display: flex; flex-direction: column; padding: 0 12px; gap: 14px; width: 100%; max-width: 100%; box-sizing: border-box; }
+  .cart-list-sec { width: 100%; max-width: 100%; box-sizing: border-box; }
+  .cart-item-card { display: flex; flex-direction: column; gap: 0; padding: 14px; border-radius: 16px; width: 100%; max-width: 100%; box-sizing: border-box; }
+  .cart-item-img { width: 100%; max-width: 100%; min-width: unset; height: 240px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 10px; margin: 0 auto 12px; display: block; }
+  .summary-card { padding: 16px; border-radius: 16px; width: 100%; max-width: 100%; box-sizing: border-box; }
   .checkout-form-grid { display: flex; flex-direction: column; gap: 12px; }
   .form-col-full { grid-column: span 1; }
 }
@@ -262,7 +233,7 @@ const AddToBag = () => {
   .cart-header { padding: 12px 10px 6px; }
   .cart-layout { padding: 0 10px; gap: 10px; }
   .cart-item-card { padding: 12px; border-radius: 14px; }
-  .cart-item-img { width: 92%; max-width: 92%; min-width: unset; height: 220px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 8px; margin: 0 auto 10px; display: block; }
+  .cart-item-img { width: 100%; max-width: 100%; min-width: unset; height: 220px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 8px; margin: 0 auto 10px; display: block; }
   .summary-card { padding: 14px; border-radius: 14px; }
   .qty-btn { width: 26px; height: 26px; }
   .qty-input { width: 26px; font-size: 12px; }
@@ -274,7 +245,7 @@ const AddToBag = () => {
   .cart-header { padding: 10px 8px 6px; }
   .cart-layout { padding: 0 8px; gap: 8px; }
   .cart-item-card { padding: 10px; border-radius: 12px; }
-  .cart-item-img { width: 92%; max-width: 92%; min-width: unset; height: 190px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 8px; margin: 0 auto 8px; display: block; }
+  .cart-item-img { width: 100%; max-width: 100%; min-width: unset; height: 190px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 8px; margin: 0 auto 8px; display: block; }
   .summary-card { padding: 12px; border-radius: 12px; }
   .item-bottom-row { flex-direction: column; align-items: flex-start; gap: 10px; }
   .item-price-block { text-align: left; width: 100%; }
@@ -283,7 +254,7 @@ const AddToBag = () => {
 }
 
 @media (max-width: 316px) {
-  .cart-item-img { width: 90%; max-width: 90%; height: 170px; }
+  .cart-item-img { width: 100%; max-width: 100%; height: 170px; }
   .item-meta-list { flex-direction: column; gap: 4px; }
   .promo-form { flex-direction: column; gap: 8px; }
   .promo-input { width: 100%; padding: 10px 12px; }
@@ -298,7 +269,7 @@ const AddToBag = () => {
         
         {/* Header & Breadcrumb */}
         <div className="cart-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 600, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', fontSize: '11px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 600, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
             <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>HOME</Link>
             <ChevronRight size={12} />
             <Link to="/products" style={{ color: 'inherit', textDecoration: 'none' }}>PRODUCTS</Link>
@@ -306,7 +277,7 @@ const AddToBag = () => {
             <span style={{ color: '#0A7F6E', fontWeight: 800 }}>SHOPPING BAG</span>
           </div>
           
-          <h1 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 900, fontSize: 'clamp(28px, 4vw, 42px)', textTransform: 'uppercase', letterSpacing: '0.02em', color: '#0A7F6E', marginBottom: '8px' }}>
+          <h1 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 900, fontSize: 'clamp(20px, 4vw, 42px)', textTransform: 'uppercase', letterSpacing: '0.02em', color: '#0A7F6E', marginBottom: '8px', wordBreak: 'break-word' }}>
             {checkoutStep === 'success' ? 'Order Confirmed' : checkoutStep === 'shipping' ? 'Shipping Details' : 'Your Shopping Bag'}
           </h1>
           {checkoutStep === 'cart' && cartItems.length > 0 && (

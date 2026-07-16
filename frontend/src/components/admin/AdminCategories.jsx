@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
+import API from "../../services/api";
 
 // ─── SVG Icon Components for Categories ──────────────────────────────────────
 const CategoryIcon = ({ type, size = 24, color = "currentColor" }) => {
@@ -113,9 +115,28 @@ const AdminCategories = () => {
   const [editingCategory, setEditingCategory] = useState(null);
   const [formData, setFormData] = useState(DEFAULT_FORM);
 
+  const fetchCategories = async () => {
+    try {
+      const response = await API.get('/categories/admin/all');
+      const list = response.data?.data;
+      if (list && Array.isArray(list)) {
+        const normalized = list.map(c => ({
+          ...c,
+          id: c._id,
+          desc: c.description || '',
+          iconType: c.iconType || 'generic',
+          status: c.status === 'active' ? 'Active' : 'Inactive',
+          count: c.productCount || 0
+        }));
+        setCategories(normalized);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch categories from API, using mock/cached.", err);
+    }
+  };
+
   useEffect(() => {
-    const t = setTimeout(() => setPageIn(true), 60);
-    return () => clearTimeout(t);
+    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -163,13 +184,21 @@ const AdminCategories = () => {
     }));
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this category? Products in this category will remain, but will lose their category association.")) {
-      setCategories((prev) => prev.filter((c) => c.id !== id));
+      try {
+        await API.delete(`/categories/${id}`);
+        toast.success("Category deleted successfully!");
+        fetchCategories();
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to delete category.");
+        setCategories((prev) => prev.filter((c) => c.id !== id));
+      }
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const slug = formData.name
       .toLowerCase()
@@ -181,26 +210,44 @@ const AdminCategories = () => {
     const updatedData = {
       name: formData.name,
       slug,
-      desc: formData.desc,
+      description: formData.desc,
       iconType: formData.iconType,
-      status: formData.status,
+      status: formData.status === 'Active' ? 'active' : 'inactive',
     };
 
-    if (editingCategory) {
-      // Edit
-      setCategories((prev) =>
-        prev.map((c) => (c.id === editingCategory.id ? { ...c, ...updatedData } : c))
-      );
-    } else {
-      // Add
-      const newCategory = {
-        id: Date.now(),
-        count: 0,
-        ...updatedData,
+    try {
+      if (editingCategory) {
+        await API.put(`/categories/${editingCategory.id}`, updatedData);
+        toast.success("Category updated successfully!");
+      } else {
+        await API.post('/categories', updatedData);
+        toast.success("Category created successfully!");
+      }
+      fetchCategories();
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to save category.");
+      // Fallback
+      const oldUpdated = {
+        name: formData.name,
+        slug,
+        desc: formData.desc,
+        iconType: formData.iconType,
+        status: formData.status,
       };
-      setCategories((prev) => [newCategory, ...prev]);
+      if (editingCategory) {
+        setCategories((prev) =>
+          prev.map((c) => (c.id === editingCategory.id ? { ...c, ...oldUpdated } : c))
+        );
+      } else {
+        setCategories((prev) => [
+          ...prev,
+          { id: Date.now(), count: 0, ...oldUpdated }
+        ]);
+      }
+      closeModal();
     }
-    closeModal();
   };
 
   return (

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
+import API from "../../services/api";
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 function useInView(threshold = 0.12) {
@@ -152,10 +154,36 @@ const INITIAL_LEADS = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 const AdminLeads = () => {
-  const [leads, setLeads] = useState(() => {
-    const saved = localStorage.getItem("csw_admin_leads");
-    return saved ? JSON.parse(saved) : INITIAL_LEADS;
-  });
+  const [leads, setLeads] = useState([]);
+
+  const fetchLeads = async () => {
+    try {
+      const response = await API.get('/inquiries');
+      const list = response.data?.data;
+      if (list && Array.isArray(list)) {
+        const normalized = list.map(l => ({
+          ...l,
+          id: l._id,
+          name: l.name,
+          org: l.organizationName || l.org || '',
+          email: l.email,
+          phone: l.mobileNumber || l.phone || '',
+          product: typeof l.product === 'object' && l.product ? l.product.name : (l.productName || 'General'),
+          qty: l.quantity || 1,
+          status: l.status === 'new' ? 'New' : (l.status === 'contacted' ? 'Follow Up' : 'Converted'),
+          time: new Date(l.createdAt).toLocaleDateString() || 'Recently',
+          message: l.message || '',
+        }));
+        setLeads(normalized);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch leads from API, using mock/cached.", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeads();
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -184,12 +212,9 @@ const AdminLeads = () => {
   const convertedLeads = leads.filter((l) => l.status === "Converted").length;
 
   useEffect(() => {
-    const t = setTimeout(() => setPageIn(true), 60);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("csw_admin_leads", JSON.stringify(leads));
+    if (leads.length > 0) {
+      localStorage.setItem("csw_admin_leads", JSON.stringify(leads));
+    }
   }, [leads]);
 
   // Filter & Sort Leads
@@ -210,13 +235,25 @@ const AdminLeads = () => {
     return 0;
   });
 
-  // Action handlers
-  const handleStatusChange = (id, newStatus) => {
-    setLeads((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, status: newStatus } : l))
-    );
-    if (viewingLead && viewingLead.id === id) {
-      setViewingLead((prev) => ({ ...prev, status: newStatus }));
+  const handleStatusChange = async (id, newStatus) => {
+    let apiStatus = 'new';
+    if (newStatus === 'Follow Up') apiStatus = 'contacted';
+    else if (newStatus === 'Converted') apiStatus = 'converted';
+
+    try {
+      await API.put(`/inquiries/${id}`, { status: apiStatus });
+      toast.success("Lead status updated!");
+      fetchLeads();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update status on server.");
+      // Fallback
+      setLeads((prev) =>
+        prev.map((l) => (l.id === id ? { ...l, status: newStatus } : l))
+      );
+      if (viewingLead && viewingLead.id === id) {
+        setViewingLead((prev) => ({ ...prev, status: newStatus }));
+      }
     }
   };
 
@@ -233,12 +270,22 @@ const AdminLeads = () => {
     );
   };
 
-  const handleDelete = (id, e) => {
+  const handleDelete = async (id, e) => {
     if (e) e.stopPropagation();
     if (window.confirm("Are you sure you want to delete this lead?")) {
-      setLeads((prev) => prev.filter((l) => l.id !== id));
-      if (viewingLead?.id === id) setViewingLead(null);
-      if (editingLead?.id === id) setEditingLead(null);
+      try {
+        await API.delete(`/inquiries/${id}`);
+        toast.success("Lead deleted successfully!");
+        fetchLeads();
+        if (viewingLead?.id === id) setViewingLead(null);
+        if (editingLead?.id === id) setEditingLead(null);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to delete lead from server.");
+        setLeads((prev) => prev.filter((l) => l.id !== id));
+        if (viewingLead?.id === id) setViewingLead(null);
+        if (editingLead?.id === id) setEditingLead(null);
+      }
     }
   };
 

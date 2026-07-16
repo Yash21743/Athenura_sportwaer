@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
+import API from "../../services/api";
 
 // ─── Sidebar widths ───────────────────────────────────────────────────────────
 const SIDEBAR_EXPANDED  = 260;
@@ -743,59 +744,35 @@ const AdminDashboard = () => {
   const [liveLeads,    setLiveLeads]    = useState([]);
   const [liveProducts, setLiveProducts] = useState([]);
   const [liveActivity, setLiveActivity] = useState([]);
+  const [statsData, setStatsData] = useState({
+    products: 0,
+    categories: 0,
+    leads: 0,
+    inquiries: 0
+  });
+
+  const fetchDashboardData = async () => {
+    try {
+      const statsRes = await API.get('/dashboard/stats');
+      if (statsRes.data?.success) {
+        setStatsData(statsRes.data.data);
+      }
+      const actRes = await API.get('/dashboard/recent-activities');
+      if (actRes.data?.success) {
+        // Map backend activities format to frontend expectation
+        const normalized = actRes.data.data.map(act => ({
+          ...act,
+          time: new Date(act.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }));
+        setLiveActivity(normalized);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch live dashboard stats.", err);
+    }
+  };
 
   useEffect(() => {
-    // Load leads
-    const savedLeads = localStorage.getItem("csw_admin_leads");
-    if (savedLeads) {
-      try {
-        const parsed = JSON.parse(savedLeads);
-        setLiveLeads(parsed.slice(0, 5)); // show latest 5
-      } catch {}
-    }
-    // Load products
-    const savedProds = localStorage.getItem("csw_admin_products");
-    if (savedProds) {
-      try {
-        const parsed = JSON.parse(savedProds);
-        setLiveProducts(parsed.slice(0, 5)); // show latest 5
-      } catch {}
-    }
-    // Build activity feed from real data
-    const activityFeed = [];
-    try {
-      const leads = JSON.parse(localStorage.getItem("csw_admin_leads") || "[]");
-      const prods = JSON.parse(localStorage.getItem("csw_admin_products") || "[]");
-      const orders = JSON.parse(localStorage.getItem("csw_admin_bulk_orders") || "[]");
-      const testimonials = JSON.parse(localStorage.getItem("csw_admin_testimonials") || "[]");
-      leads.slice(0, 2).forEach(l => activityFeed.push({
-        icon: "🆕", color: "#3B82F6",
-        text: `Lead received from ${l.name}${l.org ? ` — ${l.org}` : ""}`,
-        time: l.date || "Recently"
-      }));
-      prods.filter(p => p.stockStatus === "Low Stock" || p.stockStatus === "Out of Stock").slice(0, 1).forEach(p => activityFeed.push({
-        icon: "📦", color: "#F59E0B",
-        text: `Product '${p.name}' is ${p.stockStatus}`,
-        time: "Recently"
-      }));
-      orders.slice(0, 1).forEach(o => activityFeed.push({
-        icon: "✅", color: "#10B981",
-        text: `Bulk order from ${o.name || o.org || "a client"} — ${o.status || "Pending"}`,
-        time: o.deliveryDate || "Recently"
-      }));
-      testimonials.slice(0, 1).forEach(t => activityFeed.push({
-        icon: "💬", color: "#FF3B30",
-        text: `New testimonial by ${t.name} — ${t.rating || 5}★`,
-        time: t.date || "Recently"
-      }));
-    } catch {}
-    // Fallback if no real data yet
-    if (activityFeed.length === 0) {
-      activityFeed.push(
-        { icon: "🆕", color: "#3B82F6", text: "No activity yet — add leads, products or orders to see updates here", time: "" }
-      );
-    }
-    setLiveActivity(activityFeed);
+    fetchDashboardData();
   }, []);
 
   const unreadCount = (() => { try { return buildLiveNotifs().filter(n => !n.read).length; } catch { return 0; } })();
@@ -816,16 +793,11 @@ const AdminDashboard = () => {
 
   const closeAll=()=>{ setShowNotif(false); setShowSearch(false); };
 
-  // Derive live KPI values
-  const totalProductsLive = (() => { try { return JSON.parse(localStorage.getItem("csw_admin_products") || "[]").length; } catch { return 0; } })();
-  const newLeadsLive = (() => { try { return JSON.parse(localStorage.getItem("csw_admin_leads") || "[]").filter(l => l.status === "New").length; } catch { return 0; } })();
-
-  // Live stats (first 2 use real data, last 2 stay as indicators)
   const LIVE_STATS = [
-    { ...STATS[0], value: totalProductsLive || STATS[0].value },
-    { ...STATS[1] },
-    { ...STATS[2], value: newLeadsLive || STATS[2].value },
-    { ...STATS[3] },
+    { ...STATS[0], value: statsData.products || STATS[0].value },
+    { ...STATS[1], value: statsData.categories || STATS[1].value },
+    { ...STATS[2], value: statsData.leads || STATS[2].value },
+    { ...STATS[3], value: statsData.inquiries || STATS[3].value },
   ];
 
   return (

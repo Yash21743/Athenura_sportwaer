@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
+import API from "../../services/api";
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 function useInView(threshold = 0.12) {
@@ -148,10 +150,38 @@ const DEFAULT_NEW_ORDER = {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 const AdminBulkOrders = () => {
-  const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem("csw_admin_bulk_orders");
-    return saved ? JSON.parse(saved) : INITIAL_BULK_ORDERS;
-  });
+  const [orders, setOrders] = useState([]);
+
+  const fetchOrders = async () => {
+    try {
+      const response = await API.get('/bulk-orders');
+      const list = response.data?.data;
+      if (list && Array.isArray(list)) {
+        const normalized = list.map(o => ({
+          ...o,
+          id: o._id,
+          name: o.fullName,
+          org: o.organizationName || '',
+          phone: o.phoneNumber,
+          email: o.emailAddress,
+          category: o.productCategory,
+          qty: o.quantityRequired || 0,
+          printing: o.customPrinting ? 'Yes' : 'No',
+          deliveryDate: o.preferredDeliveryDate ? new Date(o.preferredDeliveryDate).toISOString().split('T')[0] : '',
+          status: o.status === 'pending' ? 'New' : (o.status === 'quoted' ? 'Quoted' : 'Approved'),
+          requirements: o.additionalRequirements || '',
+          time: new Date(o.createdAt).toLocaleDateString() || 'Recently'
+        }));
+        setOrders(normalized);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch bulk orders from API, using mock/cached.", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -174,12 +204,9 @@ const AdminBulkOrders = () => {
   const [addingOrder, setAddingOrder] = useState(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setPageIn(true), 60);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("csw_admin_bulk_orders", JSON.stringify(orders));
+    if (orders.length > 0) {
+      localStorage.setItem("csw_admin_bulk_orders", JSON.stringify(orders));
+    }
   }, [orders]);
 
   // Stats Counters
@@ -208,21 +235,44 @@ const AdminBulkOrders = () => {
   });
 
   // Action handlers
-  const handleStatusChange = (id, newStatus) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o))
-    );
-    if (viewingOrder && viewingOrder.id === id) {
-      setViewingOrder((prev) => ({ ...prev, status: newStatus }));
+  const handleStatusChange = async (id, newStatus) => {
+    let apiStatus = 'pending';
+    if (newStatus === 'Quoted') apiStatus = 'quoted';
+    else if (newStatus === 'Approved') apiStatus = 'confirmed';
+
+    try {
+      await API.put(`/bulk-orders/${id}`, { status: apiStatus });
+      toast.success("Order status updated!");
+      fetchOrders();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update status on server.");
+      // Fallback
+      setOrders((prev) =>
+        prev.map((o) => (o.id === id ? { ...o, status: newStatus } : o))
+      );
+      if (viewingOrder && viewingOrder.id === id) {
+        setViewingOrder((prev) => ({ ...prev, status: newStatus }));
+      }
     }
   };
 
-  const handleDelete = (id, e) => {
+  const handleDelete = async (id, e) => {
     if (e) e.stopPropagation();
     if (window.confirm("Are you sure you want to delete this bulk order request?")) {
-      setOrders((prev) => prev.filter((o) => o.id !== id));
-      if (viewingOrder?.id === id) setViewingOrder(null);
-      if (editingOrder?.id === id) setEditingOrder(null);
+      try {
+        await API.delete(`/bulk-orders/${id}`);
+        toast.success("Bulk order deleted!");
+        fetchOrders();
+        if (viewingOrder?.id === id) setViewingOrder(null);
+        if (editingOrder?.id === id) setEditingOrder(null);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to delete order from server.");
+        setOrders((prev) => prev.filter((o) => o.id !== id));
+        if (viewingOrder?.id === id) setViewingOrder(null);
+        if (editingOrder?.id === id) setEditingOrder(null);
+      }
     }
   };
 

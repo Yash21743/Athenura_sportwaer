@@ -61,7 +61,7 @@ const ProductSorting = ({ totalCount, sortBy, onSortChange, viewMode = 'grid', o
                 transition={{ duration: 0.2 }}
                 style={{
                   position: 'absolute', top: '100%', right: 0, marginTop: '8px',
-                  background: '#ffffff',
+                  background: '#DDDFD2',
                   border: '1px solid rgba(0,0,0,0.08)',
                   borderRadius: '12px',
                   overflow: 'hidden',
@@ -79,13 +79,13 @@ const ProductSorting = ({ totalCount, sortBy, onSortChange, viewMode = 'grid', o
                       setIsOpen(false);
                     }}
                     style={{
-                      background: sortBy === option.value ? 'rgba(255, 59, 48, 0.06)' : 'transparent',
-                      color: sortBy === option.value ? '#FF3B30' : '#111',
+                      background: sortBy === option.value ? 'rgba(10, 127, 110, 0.06)' : 'transparent',
+                      color: sortBy === option.value ? '#0A7F6E' : '#111',
                       border: 'none', padding: '12px 16px', textAlign: 'left',
                       fontSize: '13px', fontWeight: sortBy === option.value ? 600 : 400,
                       cursor: 'pointer', transition: 'all 0.2s',
                       fontFamily: 'Inter, Poppins, sans-serif',
-                      borderLeft: sortBy === option.value ? '2px solid #FF3B30' : '2px solid transparent'
+                      borderLeft: sortBy === option.value ? '2px solid #0A7F6E' : '2px solid transparent'
                     }}
                     onMouseEnter={(e) => {
                       if (sortBy !== option.value) {
