@@ -5,7 +5,7 @@ import AdminSidebar from "../common/adminlayout/AdminSidebar";
 import API from "../../services/api";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const CATEGORIES = [
+const FALLBACK_CATEGORIES = [
   "Sports T-Shirts",
   "Performance Jerseys",
   "Team Uniforms",
@@ -17,83 +17,13 @@ const CATEGORIES = [
   "Accessories",
 ];
 
-const INITIAL_PRODUCTS = [
-  {
-    id: 1,
-    name: "Pro Striker Jersey",
-    code: "CSW-JER-01",
-    category: "Performance Jerseys",
-    price: 799,
-    stock: 148,
-    stockStatus: "In Stock",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Athletic Red", "White", "Black"],
-    fabric: "100% Interlock Dry-Fit Polyester",
-    description: "Premium performance jersey designed for high endurance, extreme comfort, and sweat absorption.",
-    image: null,
-  },
-  {
-    id: 2,
-    name: "FlexFit Track Pants",
-    code: "CSW-TRP-02",
-    category: "Track Pants",
-    price: 1299,
-    stock: 85,
-    stockStatus: "In Stock",
-    sizes: ["M", "L", "XL"],
-    colors: ["Black", "Navy Blue", "Grey"],
-    fabric: "88% Polyester, 12% Spandex Blend",
-    description: "Highly stretchable and comfortable track pants for workouts, running, and outdoor sports.",
-    image: null,
-  },
-  {
-    id: 3,
-    name: "Victory Hoodie",
-    code: "CSW-HUD-03",
-    category: "Hoodies",
-    price: 1899,
-    stock: 8,
-    stockStatus: "Low Stock",
-    sizes: ["M", "L", "XL", "XXL"],
-    colors: ["Black", "Grey", "Royal Blue"],
-    fabric: "Fleece cotton-polyester blend",
-    description: "Warm and cozy fleece hoodie with an athletic fit, perfect for pre-game warmups and cold climates.",
-    image: null,
-  },
-  {
-    id: 4,
-    name: "Sprint Shorts",
-    code: "CSW-SHR-04",
-    category: "Sports Shorts",
-    price: 549,
-    stock: 210,
-    stockStatus: "In Stock",
-    sizes: ["S", "M", "L"],
-    colors: ["Black", "Royal Blue"],
-    fabric: "Lightweight micro-fiber polyester",
-    description: "Ultralight running shorts with zip pockets, elastic waistbands, and breathable mesh panels.",
-    image: null,
-  },
-  {
-    id: 5,
-    name: "Champion Tracksuit",
-    code: "CSW-TRK-05",
-    category: "Tracksuits",
-    price: 2499,
-    stock: 0,
-    stockStatus: "Out of Stock",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Navy Blue", "Black"],
-    fabric: "Tricot knit polyester",
-    description: "Full tracksuit set including zip-up jacket and matching athletic fit pants with premium pocket zippers.",
-    image: null,
-  },
-];
+const GENDERS = ["Men", "Women", "Unisex"];
 
 const DEFAULT_FORM = {
   name: "",
   code: "",
-  category: "Sports T-Shirts",
+  category: "",
+  gender: "Unisex",
   price: "",
   stock: "",
   sizes: [],
@@ -108,6 +38,7 @@ const AdminProducts = () => {
   const [apiCategories, setApiCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
+  const [genderFilter, setGenderFilter] = useState("All");
   const [stockFilter, setStockFilter] = useState("All");
   const [sortBy, setSortBy] = useState("none");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -122,6 +53,11 @@ const AdminProducts = () => {
       navigate("/admin");
     }
   }, [navigate]);
+
+  // Category options: prefer real categories from backend, fallback to static list
+  const categoryOptions = apiCategories.length > 0
+    ? apiCategories.map((c) => c.name)
+    : FALLBACK_CATEGORIES;
 
   const fetchCategories = async () => {
     try {
@@ -144,6 +80,7 @@ const AdminProducts = () => {
           id: p._id,
           code: p.productCode || p.code || '',
           category: typeof p.category === 'object' && p.category ? p.category.name : p.category,
+          gender: p.gender || 'Unisex',
           stock: p.stock || 0,
           stockStatus: p.stockStatus || (p.inStock ? "In Stock" : "Out of Stock"),
           sizes: p.availableSizes || p.sizes || [],
@@ -176,6 +113,8 @@ const AdminProducts = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState(DEFAULT_FORM);
   const [imagePreview, setImagePreview] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef(null);
 
   // Detail View Modal State
@@ -187,20 +126,15 @@ const AdminProducts = () => {
     return () => clearTimeout(t);
   }, []);
 
-  useEffect(() => {
-    if (products.length > 0) {
-      localStorage.setItem("csw_admin_products", JSON.stringify(products));
-    }
-  }, [products]);
-
   // Filter & Sort Products
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.code.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === "All" || p.category === categoryFilter;
+    const matchesGender = genderFilter === "All" || p.gender === genderFilter;
     const matchesStock = stockFilter === "All" || p.stockStatus === stockFilter;
-    return matchesSearch && matchesCategory && matchesStock;
+    return matchesSearch && matchesCategory && matchesGender && matchesStock;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -216,8 +150,9 @@ const AdminProducts = () => {
   // Modal Handlers
   const openAddModal = () => {
     setEditingProduct(null);
-    setFormData(DEFAULT_FORM);
+    setFormData({ ...DEFAULT_FORM, category: categoryOptions[0] || "" });
     setImagePreview(null);
+    setImageFile(null);
     setIsModalOpen(true);
   };
 
@@ -228,6 +163,7 @@ const AdminProducts = () => {
       name: product.name,
       code: product.code,
       category: product.category,
+      gender: product.gender || "Unisex",
       price: product.price,
       stock: product.stock,
       sizes: product.sizes || [],
@@ -236,6 +172,7 @@ const AdminProducts = () => {
       description: product.description || "",
     });
     setImagePreview(product.image);
+    setImageFile(null);
     setIsModalOpen(true);
   };
 
@@ -243,6 +180,7 @@ const AdminProducts = () => {
     setIsModalOpen(false);
     setFormData(DEFAULT_FORM);
     setImagePreview(null);
+    setImageFile(null);
   };
 
   // Form Handlers
@@ -267,6 +205,7 @@ const AdminProducts = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setImageFile(file);
       const url = URL.createObjectURL(file);
       setImagePreview(url);
     }
@@ -287,8 +226,6 @@ const AdminProducts = () => {
       } catch (err) {
         console.error(err);
         toast.error("Failed to delete product.");
-        setProducts((prev) => prev.filter((p) => p.id !== id));
-        if (viewingProduct?.id === id) setViewingProduct(null);
       }
     }
   };
@@ -301,7 +238,11 @@ const AdminProducts = () => {
     const categoryId = selectedCategoryObject ? selectedCategoryObject._id : null;
 
     if (!categoryId) {
-      toast.error("Please select a valid category.");
+      toast.error("Please select a valid category (categories are loaded from the backend).");
+      return;
+    }
+    if (!formData.gender) {
+      toast.error("Please select a gender (Men / Women / Unisex).");
       return;
     }
 
@@ -309,10 +250,11 @@ const AdminProducts = () => {
     if (stockNum === 0) stockStatus = "Out of Stock";
     else if (stockNum <= 10) stockStatus = "Low Stock";
 
-    const payload = {
+    const fields = {
       name: formData.name,
       productCode: formData.code,
       category: categoryId,
+      gender: formData.gender,
       price: priceNum,
       stock: stockNum,
       stockStatus,
@@ -321,23 +263,40 @@ const AdminProducts = () => {
       fabricDetails: formData.fabric,
       description: formData.description,
       isFeatured: false,
-      status: "active"
+      status: "active",
     };
 
+    setSubmitting(true);
     try {
+      let payload;
+      let config = {};
+
+      if (imageFile) {
+        // New image selected -> send as multipart/form-data so backend (multer) receives the file
+        const fd = new FormData();
+        Object.entries(fields).forEach(([key, value]) => fd.append(key, value));
+        fd.append('images', imageFile);
+        payload = fd;
+        config = { headers: { 'Content-Type': 'multipart/form-data' } };
+      } else {
+        // No new image -> plain JSON is enough
+        payload = fields;
+      }
+
       if (editingProduct) {
-        await API.put(`/products/${editingProduct.id}`, payload);
+        await API.put(`/products/${editingProduct.id}`, payload, config);
         toast.success("Product updated successfully!");
       } else {
-        await API.post('/products', payload);
+        await API.post('/products', payload, config);
         toast.success("Product created successfully!");
       }
       fetchProducts();
       closeModal();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to save product.");
-      closeModal();
+      toast.error(err.response?.data?.message || "Failed to save product.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -347,11 +306,11 @@ const AdminProducts = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #050e1a; color: #fff; font-family: 'Poppins', sans-serif; }
+        body { background: #070C0B; color: #DDDFD2; font-family: 'Poppins', sans-serif; }
         
         .csw-topbar {
           position: fixed; top: 0; left: ${sidebarCollapsed ? 72 : 260}px; right: 0; height: 64px;
-          background: rgba(5, 14, 26, 0.92); backdrop-filter: blur(14px);
+          background: rgba(7, 12, 11, 0.92); backdrop-filter: blur(14px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.07);
           display: flex; align-items: center; justify-content: space-between;
           padding: 0 24px; gap: 12px; z-index: 30;
@@ -377,7 +336,7 @@ const AdminProducts = () => {
         }
         .product-card:hover {
           transform: translateY(-4px);
-          border-color: rgba(255, 59, 48, 0.3);
+          border-color: rgba(10, 127, 110, 0.3);
           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
 
@@ -401,7 +360,7 @@ const AdminProducts = () => {
           width: 100%;
         }
         .csw-input:focus, .csw-select:focus, .csw-textarea:focus {
-          border-color: #FF3B30;
+          border-color: #0A7F6E;
         }
 
         /* Explicit Select option dark mode fix */
@@ -436,10 +395,10 @@ const AdminProducts = () => {
         /* Modal custom scroll */
         .modal-body::-webkit-scrollbar { width: 4px; }
         .modal-body::-webkit-scrollbar-track { background: transparent; }
-        .modal-body::-webkit-scrollbar-thumb { background: rgba(255, 59, 48, 0.3); border-radius: 2px; }
+        .modal-body::-webkit-scrollbar-thumb { background: rgba(10, 127, 110, 0.3); border-radius: 2px; }
       `}</style>
 
-      <div style={{ minHeight: "100vh", background: "#050e1a" }}>
+      <div style={{ minHeight: "100vh", background: "#070C0B" }}>
         {/* ── Sidebar ── */}
         <AdminSidebar
           activeKey="products"
@@ -450,7 +409,6 @@ const AdminProducts = () => {
 
         {/* ── Topbar ── */}
         <header className="csw-topbar">
-          {/* Left: Mobile toggle + Page Title */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <button
               className="csw-hamburger"
@@ -481,7 +439,6 @@ const AdminProducts = () => {
             </div>
           </div>
 
-          {/* Right Profile Info */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <span style={{ fontSize: "12.5px", color: "rgba(255,255,255,0.4)" }}>Admin Panel</span>
             <div
@@ -489,7 +446,7 @@ const AdminProducts = () => {
                 width: "36px",
                 height: "36px",
                 borderRadius: "9px",
-                background: "linear-gradient(135deg,#FF3B30,#cc2020)",
+                background: "linear-gradient(135deg,#0A7F6E,#08695C)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -497,7 +454,7 @@ const AdminProducts = () => {
                 fontWeight: 800,
                 fontSize: "14px",
                 color: "#fff",
-                boxShadow: "0 0 10px rgba(255,59,48,0.3)",
+                boxShadow: "0 0 10px rgba(10,127,110,0.3)",
               }}
             >
               A
@@ -527,9 +484,9 @@ const AdminProducts = () => {
                   style={{
                     width: "4px",
                     height: "22px",
-                    background: "#FF3B30",
+                    background: "#0A7F6E",
                     borderRadius: "2px",
-                    boxShadow: "0 0 10px rgba(255,59,48,0.5)",
+                    boxShadow: "0 0 10px rgba(10,127,110,0.5)",
                   }}
                 />
                 <h2 style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: "20px", color: "#fff" }}>
@@ -543,7 +500,7 @@ const AdminProducts = () => {
             <button
               onClick={openAddModal}
               style={{
-                background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                 color: "#fff",
                 border: "none",
                 borderRadius: "10px",
@@ -554,7 +511,7 @@ const AdminProducts = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                boxShadow: "0 4px 16px rgba(255,59,48,0.3)",
+                boxShadow: "0 4px 16px rgba(10,127,110,0.3)",
                 fontFamily: "'Poppins',sans-serif",
                 transition: "transform 0.2s",
               }}
@@ -608,8 +565,23 @@ const AdminProducts = () => {
             </div>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", flex: "1 1 auto", justifyContent: "flex-end" }}>
-              {/* Category Filter */}
-              <div style={{ minWidth: "150px", flex: "1 1 150px", maxWidth: "200px" }}>
+              {/* Gender Filter */}
+              <div style={{ minWidth: "120px", flex: "1 1 120px", maxWidth: "150px" }}>
+                <select
+                  className="csw-select"
+                  style={{ fontSize: "12px" }}
+                  value={genderFilter}
+                  onChange={(e) => setGenderFilter(e.target.value)}
+                >
+                  <option value="All">All Genders</option>
+                  {GENDERS.map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Category Filter Commented Out */}
+              {/* <div style={{ minWidth: "150px", flex: "1 1 150px", maxWidth: "200px" }}>
                 <select
                   className="csw-select"
                   style={{ fontSize: "12px" }}
@@ -617,13 +589,13 @@ const AdminProducts = () => {
                   onChange={(e) => setCategoryFilter(e.target.value)}
                 >
                   <option value="All">All Categories</option>
-                  {CATEGORIES.map((cat) => (
+                  {categoryOptions.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>
                   ))}
                 </select>
-              </div>
+              </div> */}
 
               {/* Stock Status Filter */}
               <div style={{ minWidth: "130px", flex: "1 1 130px", maxWidth: "160px" }}>
@@ -677,6 +649,7 @@ const AdminProducts = () => {
                   <tr>
                     <th>Product</th>
                     <th>Code</th>
+                    <th>Gender</th>
                     <th>Category</th>
                     <th>Price</th>
                     <th>Stock</th>
@@ -693,7 +666,6 @@ const AdminProducts = () => {
                       <tr key={p.id} className="table-row" onClick={() => setViewingProduct(p)}>
                         <td>
                           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                            {/* Product Image Box */}
                             <div
                               style={{
                                 width: "42px",
@@ -727,6 +699,15 @@ const AdminProducts = () => {
                           </div>
                         </td>
                         <td style={{ color: "rgba(255,255,255,0.6)", fontFamily: "monospace", fontSize: "12px" }}>{p.code}</td>
+                        <td>
+                          <span style={{
+                            fontSize: "10px", fontWeight: 700, padding: "3px 9px", borderRadius: "20px",
+                            background: p.gender === "Men" ? "rgba(59,130,246,0.15)" : p.gender === "Women" ? "rgba(236,72,153,0.15)" : "rgba(255,255,255,0.08)",
+                            color: p.gender === "Men" ? "#3b82f6" : p.gender === "Women" ? "#ec4899" : "rgba(255,255,255,0.6)",
+                          }}>
+                            {p.gender || "Unisex"}
+                          </span>
+                        </td>
                         <td style={{ color: "rgba(255,255,255,0.55)" }}>{p.category}</td>
                         <td style={{ fontWeight: 700, fontFamily: "'Montserrat',sans-serif" }}>₹{p.price}</td>
                         <td>
@@ -754,7 +735,7 @@ const AdminProducts = () => {
                                 color: "rgba(255,255,255,0.6)",
                                 transition: "all 0.2s",
                               }}
-                              onMouseEnter={(e) => (e.currentTarget.style.color = "#FF3B30")}
+                              onMouseEnter={(e) => (e.currentTarget.style.color = "#0A7F6E")}
                               onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
                             >
                               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -765,8 +746,8 @@ const AdminProducts = () => {
                             <button
                               onClick={(e) => handleDelete(p.id, e)}
                               style={{
-                                background: "rgba(255,59,48,0.07)",
-                                border: "1px solid rgba(255,59,48,0.2)",
+                                background: "rgba(10,127,110,0.06)",
+                                border: "1px solid rgba(10,127,110,0.15)",
                                 borderRadius: "8px",
                                 width: "32px",
                                 height: "32px",
@@ -774,11 +755,11 @@ const AdminProducts = () => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 cursor: "pointer",
-                                color: "#FF3B30",
+                                color: "#0A7F6E",
                                 transition: "all 0.2s",
                               }}
-                              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,59,48,0.15)")}
-                              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,59,48,0.07)")}
+                              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(10,127,110,0.15)")}
+                              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(10,127,110,0.06)")}
                             >
                               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                                 <polyline points="3 6 5 6 21 6" />
@@ -837,10 +818,10 @@ const AdminProducts = () => {
                           <div>
                             <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#fff", margin: 0 }}>{p.name}</h4>
                             <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>
-                              {p.code}
+                              {p.code} · {p.gender || "Unisex"}
                             </span>
                           </div>
-                          <span style={{ fontSize: "14px", fontWeight: 800, color: "#FF3B30", fontFamily: "'Montserrat',sans-serif" }}>
+                          <span style={{ fontSize: "14px", fontWeight: 800, color: "#0A7F6E", fontFamily: "'Montserrat',sans-serif" }}>
                             ₹{p.price}
                           </span>
                         </div>
@@ -886,8 +867,8 @@ const AdminProducts = () => {
                             <button
                               onClick={(e) => handleDelete(p.id, e)}
                               style={{
-                                background: "rgba(255,59,48,0.06)",
-                                border: "1px solid rgba(255,59,48,0.15)",
+                                background: "rgba(10,127,110,0.06)",
+                                border: "1px solid rgba(10,127,110,0.15)",
                                 borderRadius: "8px",
                                 width: "30px",
                                 height: "30px",
@@ -895,7 +876,7 @@ const AdminProducts = () => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 cursor: "pointer",
-                                color: "#FF3B30",
+                                color: "#0A7F6E",
                               }}
                             >
                               <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -933,7 +914,6 @@ const AdminProducts = () => {
               backdropFilter: "blur(4px)",
             }}
           >
-            {/* Modal Container */}
             <div
               style={{
                 background: "#0a1526",
@@ -946,10 +926,8 @@ const AdminProducts = () => {
                 flexDirection: "column",
                 boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
                 overflow: "hidden",
-                animation: "csw-dropdown 0.22s cubic-bezier(0.4,0,0.2,1) both",
               }}
             >
-              {/* Header */}
               <div
                 style={{
                   padding: "16px 20px",
@@ -980,7 +958,6 @@ const AdminProducts = () => {
                 </button>
               </div>
 
-              {/* Scrollable Form Body */}
               <form
                 onSubmit={handleSubmit}
                 className="modal-body"
@@ -1006,7 +983,6 @@ const AdminProducts = () => {
                       textAlign: "center",
                       cursor: "pointer",
                       background: "rgba(255,255,255,0.01)",
-                      transition: "border-color 0.2s",
                       position: "relative",
                       height: "140px",
                       display: "flex",
@@ -1014,8 +990,6 @@ const AdminProducts = () => {
                       alignItems: "center",
                       justifyContent: "center",
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#FF3B30")}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
                   >
                     <input
                       type="file"
@@ -1036,6 +1010,7 @@ const AdminProducts = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             setImagePreview(null);
+                            setImageFile(null);
                           }}
                           style={{
                             position: "absolute",
@@ -1100,26 +1075,61 @@ const AdminProducts = () => {
                   </div>
                 </div>
 
+                {/* Gender Selection */}
+                <div>
+                  <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "8px" }}>
+                    Gender *
+                  </label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                    {GENDERS.map((g) => {
+                      const active = formData.gender === g;
+                      return (
+                        <button
+                          key={g}
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, gender: g }))}
+                          style={{
+                            border: `1px solid ${active ? "#0A7F6E" : "rgba(255,255,255,0.12)"}`,
+                            background: active ? "rgba(10,127,110,0.12)" : "transparent",
+                            color: active ? "#fff" : "rgba(255,255,255,0.6)",
+                            padding: "8px 18px",
+                            borderRadius: "8px",
+                            fontSize: "12.5px",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            transition: "all 0.15s",
+                          }}
+                        >
+                          {g}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* Category & Fabric */}
                 <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
-                  <div style={{ flex: "1 1 200px" }}>
+                  {/* Category Field Commented Out */}
+                  {/* <div style={{ flex: "1 1 200px" }}>
                     <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
-                      Category
+                      Category *
                     </label>
                     <select
                       className="csw-select"
                       name="category"
+                      required
                       value={formData.category}
                       onChange={handleInputChange}
                     >
-                      {CATEGORIES.map((cat) => (
+                      <option value="" disabled>Select category</option>
+                      {categoryOptions.map((cat) => (
                         <option key={cat} value={cat}>
                           {cat}
                         </option>
                       ))}
                     </select>
-                  </div>
-                  <div style={{ flex: "1 1 160px" }}>
+                  </div> */}
+                  <div style={{ flex: "1 1 100%" }}>
                     <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
                       Fabric Details
                     </label>
@@ -1179,8 +1189,8 @@ const AdminProducts = () => {
                           type="button"
                           onClick={() => handleCheckboxChange("sizes", sz)}
                           style={{
-                            border: `1px solid ${active ? "#FF3B30" : "rgba(255,255,255,0.12)"}`,
-                            background: active ? "rgba(255,59,48,0.12)" : "transparent",
+                            border: `1px solid ${active ? "#0A7F6E" : "rgba(255,255,255,0.12)"}`,
+                            background: active ? "rgba(10,127,110,0.12)" : "transparent",
                             color: active ? "#fff" : "rgba(255,255,255,0.6)",
                             padding: "6px 12px",
                             borderRadius: "8px",
@@ -1211,8 +1221,8 @@ const AdminProducts = () => {
                           type="button"
                           onClick={() => handleCheckboxChange("colors", clr)}
                           style={{
-                            border: `1px solid ${active ? "#FF3B30" : "rgba(255,255,255,0.12)"}`,
-                            background: active ? "rgba(255,59,48,0.12)" : "transparent",
+                            border: `1px solid ${active ? "#0A7F6E" : "rgba(255,255,255,0.12)"}`,
+                            background: active ? "rgba(10,127,110,0.12)" : "transparent",
                             color: active ? "#fff" : "rgba(255,255,255,0.6)",
                             padding: "6px 12px",
                             borderRadius: "8px",
@@ -1273,19 +1283,21 @@ const AdminProducts = () => {
                   </button>
                   <button
                     type="submit"
+                    disabled={submitting}
                     style={{
-                      background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                      background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
                       border: "none",
                       borderRadius: "10px",
                       padding: "10px 20px",
                       fontSize: "13px",
                       fontWeight: 600,
-                      cursor: "pointer",
-                      boxShadow: "0 4px 16px rgba(255,59,48,0.35)",
+                      cursor: submitting ? "not-allowed" : "pointer",
+                      opacity: submitting ? 0.7 : 1,
+                      boxShadow: "0 4px 16px rgba(10,127,110,0.35)",
                     }}
                   >
-                    {editingProduct ? "Save Changes" : "Create Product"}
+                    {submitting ? "Saving..." : editingProduct ? "Save Changes" : "Create Product"}
                   </button>
                 </div>
               </form>
@@ -1308,7 +1320,6 @@ const AdminProducts = () => {
               backdropFilter: "blur(5px)",
             }}
           >
-            {/* Modal Container */}
             <div
               style={{
                 background: "#0a1526",
@@ -1321,10 +1332,8 @@ const AdminProducts = () => {
                 flexDirection: "column",
                 boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
                 overflow: "hidden",
-                animation: "csw-dropdown 0.25s cubic-bezier(0.4,0,0.2,1) both",
               }}
             >
-              {/* Header */}
               <div
                 style={{
                   padding: "18px 24px",
@@ -1335,7 +1344,7 @@ const AdminProducts = () => {
                 }}
               >
                 <div>
-                  <span style={{ fontSize: "10.5px", color: "#FF3B30", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
+                  <span style={{ fontSize: "10.5px", color: "#0A7F6E", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
                     Product Catalog Details
                   </span>
                   <h3 style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: "18px", margin: "2px 0 0" }}>
@@ -1355,10 +1364,7 @@ const AdminProducts = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    transition: "color 0.2s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
                 >
                   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -1367,7 +1373,6 @@ const AdminProducts = () => {
                 </button>
               </div>
 
-              {/* Scrollable Modal Content */}
               <div
                 className="modal-body"
                 style={{
@@ -1378,9 +1383,7 @@ const AdminProducts = () => {
                   gap: "24px",
                 }}
               >
-                {/* Product Core Details Row */}
                 <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
-                  {/* Left Column: Image Box */}
                   <div
                     style={{
                       flex: "1 1 240px",
@@ -1409,11 +1412,14 @@ const AdminProducts = () => {
                     )}
                   </div>
 
-                  {/* Right Column: Spec Lists */}
                   <div style={{ flex: "1.2 1 280px", display: "flex", flexDirection: "column", gap: "12px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Product Code</span>
                       <span style={{ fontWeight: 600, fontFamily: "monospace", fontSize: "13px" }}>{viewingProduct.code}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
+                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Gender</span>
+                      <span style={{ fontWeight: 600, fontSize: "13px" }}>{viewingProduct.gender || "Unisex"}</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Category</span>
@@ -1421,7 +1427,7 @@ const AdminProducts = () => {
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Price</span>
-                      <span style={{ fontWeight: 800, fontSize: "15px", color: "#FF3B30", fontFamily: "'Montserrat',sans-serif" }}>₹{viewingProduct.price}</span>
+                      <span style={{ fontWeight: 800, fontSize: "15px", color: "#0A7F6E", fontFamily: "'Montserrat',sans-serif" }}>₹{viewingProduct.price}</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Inventory</span>
@@ -1434,7 +1440,6 @@ const AdminProducts = () => {
                       <span style={{ fontWeight: 500, fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>{viewingProduct.fabric || "Not specified"}</span>
                     </div>
 
-                    {/* Colors & Sizes display */}
                     <div style={{ marginTop: "4px" }}>
                       <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", marginBottom: "6px", fontWeight: 600, textTransform: "uppercase" }}>Colors</p>
                       <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
@@ -1466,7 +1471,6 @@ const AdminProducts = () => {
                   </div>
                 </div>
 
-                {/* Tabs bar */}
                 <div>
                   <div style={{ display: "flex", borderBottom: "1px solid rgba(255,255,255,0.08)", gap: "16px", marginBottom: "16px" }}>
                     {[
@@ -1483,14 +1487,13 @@ const AdminProducts = () => {
                           style={{
                             background: "none",
                             border: "none",
-                            borderBottom: `2.5px solid ${active ? "#FF3B30" : "transparent"}`,
+                            borderBottom: `2.5px solid ${active ? "#0A7F6E" : "transparent"}`,
                             color: active ? "#fff" : "rgba(255,255,255,0.4)",
                             padding: "8px 4px",
                             cursor: "pointer",
                             fontWeight: 600,
                             fontSize: "12.5px",
                             fontFamily: "'Poppins',sans-serif",
-                            transition: "all 0.15s",
                           }}
                         >
                           {tab.label}
@@ -1499,7 +1502,6 @@ const AdminProducts = () => {
                     })}
                   </div>
 
-                  {/* Tab Contents */}
                   <div style={{ minHeight: "100px", padding: "4px" }}>
                     {activeTab === "desc" && (
                       <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)", lineHeight: "1.6" }}>
@@ -1528,7 +1530,7 @@ const AdminProducts = () => {
                               { s: "XL", c: "44-46", w: "38-40", l: "30" },
                               { s: "XXL", c: "47-49", w: "41-43", l: "31" },
                             ].map((row) => (
-                              <tr key={row.s} style={{ background: viewingProduct.sizes.includes(row.s) ? "rgba(255,59,48,0.05)" : "transparent" }}>
+                              <tr key={row.s} style={{ background: viewingProduct.sizes.includes(row.s) ? "rgba(10,127,110,0.05)" : "transparent" }}>
                                 <td style={{ padding: "8px 12px", border: "1px solid rgba(255,255,255,0.08)", fontWeight: 700 }}>{row.s}</td>
                                 <td style={{ padding: "8px 12px", border: "1px solid rgba(255,255,255,0.08)" }}>{row.c}</td>
                                 <td style={{ padding: "8px 12px", border: "1px solid rgba(255,255,255,0.08)" }}>{row.w}</td>
@@ -1570,7 +1572,6 @@ const AdminProducts = () => {
                   </div>
                 </div>
 
-                {/* Footer buttons inside details */}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "18px" }}>
                   <button
                     onClick={(e) => {
@@ -1578,7 +1579,7 @@ const AdminProducts = () => {
                       openEditModal(viewingProduct, e);
                     }}
                     style={{
-                      background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                      background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
                       border: "none",
                       borderRadius: "10px",
@@ -1596,9 +1597,9 @@ const AdminProducts = () => {
                       handleDelete(viewingProduct.id, e);
                     }}
                     style={{
-                      background: "rgba(255,59,48,0.07)",
-                      border: "1px solid rgba(255,59,48,0.25)",
-                      color: "#FF3B30",
+                      background: "rgba(10,127,110,0.06)",
+                      border: "1px solid rgba(10,127,110,0.15)",
+                      color: "#0A7F6E",
                       borderRadius: "10px",
                       padding: "10px 22px",
                       fontSize: "12.5px",

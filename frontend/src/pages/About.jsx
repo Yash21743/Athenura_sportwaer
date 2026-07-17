@@ -717,7 +717,11 @@ const styles = `
 .au-story-media {
   border-radius: var(--radius);
   overflow: hidden;
+
+  aspect-ratio: 3 / 4;
+
   aspect-ratio: 3 / 3.2;
+
   background: var(--surface);
   border: 1px solid #2a2a2a;
   box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.4), 0 15px 25px rgba(0, 0, 0, 0.15);
