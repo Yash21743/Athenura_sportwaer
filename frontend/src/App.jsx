@@ -26,6 +26,8 @@ import AdminCategories from './components/admin/AdminCategories';
 import AdminLeads from './components/admin/AdminLeads';
 import AdminBulkOrders from './components/admin/AdminBulkOrders';
 import AdminTestimonials from './components/admin/AdminTestimonials';
+import AdminRegister from './components/admin/AdminRegister';
+
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -72,12 +74,14 @@ function App() {
 
         {/* ── Admin Routes (NO Navbar/Footer) ── */}
         <Route path="/admin"                   element={<AdminLogin />} />
+        <Route path="/admin/register"          element={<AdminRegister />} />
         <Route path="/admin/dashboard"         element={<AdminDashboard />} />
         <Route path="/admin/products"          element={<AdminProducts />} />
         <Route path="/admin/categories"        element={<AdminCategories />} />
         <Route path="/admin/leads"             element={<AdminLeads />} />
         <Route path="/admin/bulk-orders"       element={<AdminBulkOrders />} />
         <Route path="/admin/testimonials"      element={<AdminTestimonials />} />
+       
       </Routes>
     </BrowserRouter>
   );

@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import logo from "../../assets/images/ath.logo.jpeg";
+import { useNavigate, Link } from "react-router-dom";
+import logo from "../../assets/images/comfy_logo.png";
 import API from "../../services/api";
-
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [pageIn, setPageIn] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if session is already active
     const activeSession = sessionStorage.getItem("csw_admin_session");
     if (activeSession === "true") {
       navigate("/admin/dashboard");
@@ -22,111 +22,349 @@ const AdminLogin = () => {
     return () => clearTimeout(timer);
   }, [navigate]);
 
+  const validateForm = () => {
+    if (!email.trim()) {
+      setError("Email address is required.");
+      return false;
+    }
+    if (!password) {
+      setError("Password is required.");
+      return false;
+    }
+    return true;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       setError("");
-      const response = await API.post("/auth/login", { email, password });
+      setLoading(true);
+      const response = await API.post("/auth/login", {
+        email: email.toLowerCase().trim(),
+        password,
+      });
+
       if (response.data && response.data.token) {
         sessionStorage.setItem("csw_admin_token", response.data.token);
         sessionStorage.setItem("csw_admin_session", "true");
         navigate("/admin/dashboard");
       } else {
-        setError("Invalid credentials format returned from server.");
+        setError("Invalid response from server. Please try again.");
       }
     } catch (err) {
-      setError(
+      const errorMsg =
         err.response?.data?.message ||
-        "Invalid email address or password."
-      );
+        err.message ||
+        "Invalid email address or password. Please try again.";
+      setError(errorMsg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #050e1a; color: #fff; font-family: 'Poppins', sans-serif; }
-        
-        .login-container {
+        body { background: #050B0A; color: #F4FBF9; font-family: 'Manrope', sans-serif; }
+
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 1; }
+        }
+
+        @keyframes pulseFlow {
+          to { stroke-dashoffset: -160; }
+        }
+
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes dotPulse {
+          0%, 100% { opacity: 0.3; transform: scale(1); }
+          50% { opacity: 0.8; transform: scale(1.4); }
+        }
+
+        .auth-shell {
           min-height: 100vh;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #000000;
+          background: #050B0A;
           position: relative;
           padding: 20px;
           overflow: hidden;
         }
 
-        .login-card {
-          background: rgba(0, 0, 0, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          backdrop-filter: blur(16px);
-          border-radius: 24px;
-          padding: 40px 32px;
+        .auth-card {
+          background: rgba(12, 25, 23, 0.55);
+          border: 1px solid rgba(23, 184, 147, 0.16);
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+          border-radius: 20px;
+          padding: 36px 32px;
           width: 100%;
           max-width: 420px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
           z-index: 10;
-          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-          transform: translateY(24px);
+          transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+          transform: translateY(20px);
           opacity: 0;
+          position: relative;
+          overflow: hidden;
         }
 
-        .login-card.active {
-          transform: translateY(0);
+        .auth-card.active { transform: translateY(0); opacity: 1; }
+
+        .accent-line-top {
+          position: absolute;
+          top: 0;
+          left: 15%;
+          right: 15%;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, #17B893, transparent);
+          border-radius: 0 0 2px 2px;
+          filter: blur(0.5px);
+          animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        .auth-header {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-bottom: 20px;
+          transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
+        }
+
+        .auth-header.visible {
           opacity: 1;
+          transform: translateX(0);
         }
 
-        .login-input {
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          color: #fff;
-          border-radius: 12px;
-          padding: 12px 14px;
-          padding-left: 42px;
+        .auth-header.hidden {
+          opacity: 0;
+          transform: translateX(-12px);
+        }
+
+        .logo-badge {
+          flex-shrink: 0;
+          width: 52px;
+          height: 52px;
+          border-radius: 50%;
+          border: 1.5px solid rgba(23, 184, 147, 0.4);
+          padding: 3px;
+          background: rgba(255, 255, 255, 0.03);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .logo-badge img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 50%;
+        }
+
+        .brand-eyebrow {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 10px;
+          letter-spacing: 1.6px;
+          text-transform: uppercase;
+          color: rgba(23, 184, 147, 0.75);
+          margin-bottom: 3px;
+        }
+
+        .brand-name {
+          font-family: 'Manrope', sans-serif;
+          font-weight: 800;
+          font-size: 17px;
+          letter-spacing: 0.2px;
+          color: #F4FBF9;
+        }
+
+        .pulse-divider {
+          width: 100%;
+          height: 22px;
+          margin-bottom: 22px;
+          display: block;
+          transition: opacity 0.5s ease 0.2s;
+        }
+
+        .pulse-divider.visible { opacity: 1; }
+        .pulse-divider.hidden { opacity: 0; }
+
+        .pulse-path {
+          fill: none;
+          stroke: url(#pulseGradient);
+          stroke-width: 1.6;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          stroke-dasharray: 6 10;
+          animation: pulseFlow 3.2s linear infinite;
+        }
+
+        .field-group {
+          margin-bottom: 15px;
+          transition: opacity 0.45s cubic-bezier(0.4,0,0.2,1), transform 0.45s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .field-group.visible { opacity: 1; transform: translateY(0); }
+        .field-group.hidden { opacity: 0; transform: translateY(14px); }
+
+        .field-label {
+          display: block;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 9.5px;
+          letter-spacing: 1.2px;
+          text-transform: uppercase;
+          color: rgba(244, 251, 249, 0.4);
+          margin-bottom: 6px;
+          transition: color 0.25s ease;
+        }
+
+        .field-label.focused { color: rgba(23, 184, 147, 0.7); }
+
+        .field-wrap { position: relative; }
+
+        .field-icon {
+          position: absolute;
+          left: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          display: flex;
+          color: rgba(244, 251, 249, 0.35);
+          pointer-events: none;
+          transition: color 0.25s ease, transform 0.25s ease;
+        }
+
+        .field-icon.focused {
+          color: #17B893;
+          transform: translateY(-50%) scale(1.1);
+        }
+
+        .auth-input {
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: #F4FBF9;
+          border-radius: 10px;
+          padding: 11px 14px;
+          padding-left: 40px;
           outline: none;
-          transition: border-color 0.2s, box-shadow 0.2s;
-          font-family: 'Poppins', sans-serif;
+          transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+          font-family: 'Manrope', sans-serif;
           width: 100%;
           font-size: 13.5px;
-        }
-        
-        .login-input:focus {
-          border-color: #FF3B30;
-          box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.15);
+          box-sizing: border-box;
         }
 
-        .login-btn {
-          background: linear-gradient(135deg, #FF3B30 0%, #cc2e25 100%);
+        .auth-input::placeholder { color: rgba(244, 251, 249, 0.22); }
+
+        .auth-input:focus {
+          background: rgba(23, 184, 147, 0.04);
+          border-color: #17B893;
+          box-shadow: 0 0 0 3px rgba(23, 184, 147, 0.15);
+        }
+
+        .auth-input:-webkit-autofill,
+        .auth-input:-webkit-autofill:hover,
+        .auth-input:-webkit-autofill:focus {
+          -webkit-text-fill-color: #F4FBF9 !important;
+          -webkit-box-shadow: 0 0 0px 1000px rgba(12, 25, 23, 0.95) inset !important;
+          border-color: #17B893 !important;
+          transition: background-color 5000s ease-in-out 0s !important;
+        }
+
+        .toggle-visibility {
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
           border: none;
-          color: #fff;
-          border-radius: 12px;
-          padding: 12px;
-          font-weight: 600;
-          font-size: 14px;
+          color: rgba(244, 251, 249, 0.4);
           cursor: pointer;
-          transition: transform 0.2s, box-shadow 0.2s;
+          display: flex;
+          padding: 4px;
+          transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .toggle-visibility:hover {
+          color: #17B893;
+          transform: translateY(-50%) scale(1.15);
+        }
+
+        .toggle-visibility.active { color: #17B893; }
+
+        .toggle-visibility:focus-visible {
+          outline: 2px solid #17B893;
+          outline-offset: 2px;
+        }
+
+        .auth-btn {
+          background: linear-gradient(135deg, #17B893 0%, #0B7A63 100%);
+          border: none;
+          color: #05130F;
+          border-radius: 10px;
+          padding: 13px;
+          font-weight: 700;
+          font-size: 12.5px;
+          letter-spacing: 0.6px;
+          text-transform: uppercase;
+          font-family: 'Manrope', sans-serif;
+          cursor: pointer;
+          transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, opacity 0.3s ease;
           width: 100%;
-          box-shadow: 0 4px 16px rgba(255, 59, 48, 0.3);
-          font-family: 'Poppins', sans-serif;
+          box-shadow: 0 4px 16px rgba(23, 184, 147, 0.25);
+          margin-top: 6px;
+          position: relative;
+          overflow: hidden;
         }
 
-        .login-btn:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(255, 59, 48, 0.45);
+        .auth-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 28px rgba(23, 184, 147, 0.45);
         }
 
-        .login-btn:active {
-          transform: translateY(1px);
+        .auth-btn:active:not(:disabled) { transform: translateY(1px); }
+
+        .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .auth-btn:focus-visible {
+          outline: 2px solid #17B893;
+          outline-offset: 2px;
         }
 
-        .login-error {
-          background: rgba(239, 68, 68, 0.12);
+        .auth-btn-shimmer {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+          border-radius: 10px;
+          animation: shimmer 1.8s ease-in-out infinite;
+        }
+
+        .auth-error {
+          background: rgba(239, 68, 68, 0.1);
           border: 1px solid rgba(239, 68, 68, 0.25);
-          color: #EF4444;
+          color: #F87171;
           border-radius: 10px;
           padding: 10px 14px;
           font-size: 12.5px;
@@ -134,75 +372,124 @@ const AdminLogin = () => {
           display: flex;
           align-items: center;
           gap: 8px;
-          animation: slideIn 0.3s ease;
+          animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateY(-8px); }
-          to { opacity: 1; transform: translateY(0); }
+        .footer-tag {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 22px;
+          padding-top: 16px;
+          border-top: 1px dashed rgba(255, 255, 255, 0.08);
+          opacity: 0;
+          transform: translateY(8px);
+          transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .footer-tag.visible { opacity: 1; transform: translateY(0); }
+
+        .footer-tag-text {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 9.5px;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          color: rgba(244, 251, 249, 0.3);
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .secure-dot {
+          width: 4px;
+          height: 4px;
+          border-radius: 50%;
+          background: #17B893;
+          display: inline-block;
+          animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        .secure-dot:nth-child(2) { animation-delay: 0.3s; }
+        .secure-dot:nth-child(3) { animation-delay: 0.6s; }
+
+        .footer-link {
+          font-family: 'Manrope', sans-serif;
+          font-size: 12px;
+          color: rgba(244, 251, 249, 0.5);
+          text-decoration: none;
+          transition: color 0.2s ease, transform 0.2s ease;
+          display: inline-block;
+        }
+
+        .footer-link:hover {
+          color: #17B893;
+          transform: translateX(-2px);
+        }
+
+        .footer-link:focus-visible {
+          outline: 2px solid #17B893;
+          outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
         }
 
         @media (max-width: 480px) {
-          .login-card {
-          background: #000000ff;
-            padding: 32px 20px;
-          }
+          .auth-card { padding: 28px 20px; }
         }
       `}</style>
 
-      <div className="login-container">
-        {/* Decorative Background SVGs */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
-          {/* Radial Glow 1 */}
-          <div style={{ position: "absolute", top: "-100px", left: "10%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255, 59, 48, 0.12) 0%, transparent 75%)", filter: "blur(50px)" }} />
-          {/* Radial Glow 2 */}
-          <div style={{ position: "absolute", bottom: "-100px", right: "10%", width: "450px", height: "450px", borderRadius: "50%", background: "radial-gradient(circle, rgba(10, 37, 64, 0.4) 0%, transparent 80%)", filter: "blur(60px)" }} />
-          {/* Tech Grid Pattern */}
-          <svg width="100%" height="100%" opacity="0.035" stroke="#fff" strokeWidth="1">
-            <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
+      <div className="auth-shell">
+        {/* Ambient background */}
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
+          <div style={{
+            position: "absolute", top: "-120px", left: "8%", width: "420px", height: "420px",
+            borderRadius: "50%", background: "radial-gradient(circle, rgba(23, 184, 147, 0.10) 0%, transparent 72%)",
+            filter: "blur(50px)",
+          }} />
+          <div style={{
+            position: "absolute", bottom: "-140px", right: "6%", width: "460px", height: "460px",
+            borderRadius: "50%", background: "radial-gradient(circle, rgba(11, 122, 99, 0.35) 0%, transparent 78%)",
+            filter: "blur(60px)",
+          }} />
+          <svg width="100%" height="100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", inset: 0, opacity: 0.06 }}>
+            <ellipse cx="200" cy="700" rx="500" ry="320" fill="none" stroke="#17B893" strokeWidth="2" />
+            <ellipse cx="200" cy="700" rx="420" ry="260" fill="none" stroke="#17B893" strokeWidth="2" />
+            <ellipse cx="1050" cy="80" rx="480" ry="300" fill="none" stroke="#17B893" strokeWidth="2" />
           </svg>
         </div>
 
-        {/* Login Card */}
-        <div className={`login-card ${pageIn ? "active" : ""}`}>
-          {/* Brand Logo Header */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "28px" }}>
-            <img
-            src={logo}
-            alt="Athenura Logo"
-            style={{
-            width: "180px",
-            height: "auto",
-            objectFit: "contain",
-            marginBottom: "15px",
-      }}
-    />
-            <h2
-         style={{
-          fontFamily: "'Poppins', sans-serif",
-          fontWeight: 800,
-          fontSize: "18px",
-          color: "#fff",
-          letterSpacing: "0.5px",
-          textTransform: "uppercase",
-          marginBottom: "4px",
-        }}
-            >
-         ATHENURA SPORTSWEAR
-          </h2>
-            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", letterSpacing: "1.5px", textTransform: "uppercase", marginTop: "2px" }}>
-              Admin Access Panel
-            </p>
+        <div className={`auth-card ${pageIn ? "active" : ""}`}>
+          <div className="accent-line-top" />
+
+          <div className={`auth-header ${pageIn ? "visible" : "hidden"}`}>
+            <div className="logo-badge">
+              <img src={logo} alt="Comfy Sportswear" />
+            </div>
+            <div>
+              <div className="brand-eyebrow">Ops Console</div>
+              <div className="brand-name">COMFY SPORTSWEAR</div>
+            </div>
           </div>
 
-          {/* Error Banner */}
+          <svg className={`pulse-divider ${pageIn ? "visible" : "hidden"}`} viewBox="0 0 400 22" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="pulseGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#17B893" stopOpacity="0" />
+                <stop offset="50%" stopColor="#17B893" stopOpacity="1" />
+                <stop offset="100%" stopColor="#17B893" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path className="pulse-path" d="M0,11 L60,11 L75,3 L90,19 L105,11 L340,11 L355,3 L370,19 L385,11 L400,11" />
+          </svg>
+
           {error && (
-            <div className="login-error">
+            <div className="auth-error">
               <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                 <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
                 <line x1="12" y1="9" x2="12" y2="13" />
@@ -212,106 +499,97 @@ const AdminLogin = () => {
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleLogin}>
-            {/* Email Field */}
-            <div style={{ position: "relative", marginBottom: "16px" }}>
-              <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", display: "flex", color: "rgba(255,255,255,0.35)" }}>
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                  <polyline points="22,6 12,13 2,6" />
-                </svg>
-              </span>
-              <input
-                type="email"
-                required
-                className="login-input"
-                placeholder="Email Address"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setError("");
-                }}
-              />
+            <div className={`field-group ${pageIn ? "visible" : "hidden"}`} style={{ transitionDelay: "0.35s" }}>
+              <label className={`field-label ${focusedField === "email" ? "focused" : ""}`} htmlFor="email">Email address</label>
+              <div className="field-wrap">
+                <span className={`field-icon ${focusedField === "email" ? "focused" : ""}`}>
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22,6 12,13 2,6" />
+                  </svg>
+                </span>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  className="auth-input"
+                  placeholder="you@comfysportswear.com"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                  onFocus={() => setFocusedField("email")}
+                  onBlur={() => setFocusedField(null)}
+                />
+              </div>
             </div>
 
-            {/* Password Field */}
-            <div style={{ position: "relative", marginBottom: "24px" }}>
-              <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", display: "flex", color: "rgba(255,255,255,0.35)" }}>
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0110 0v4" />
-                </svg>
-              </span>
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                className="login-input"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError("");
-                }}
-                style={{ paddingRight: "42px" }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  right: "12px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  color: "rgba(255,255,255,0.4)",
-                  cursor: "pointer",
-                  display: "flex",
-                  padding: "4px",
-                }}
-              >
-                {showPassword ? (
+            <div className={`field-group ${pageIn ? "visible" : "hidden"}`} style={{ marginBottom: "20px", transitionDelay: "0.42s" }}>
+              <label className={`field-label ${focusedField === "password" ? "focused" : ""}`} htmlFor="password">Password</label>
+              <div className="field-wrap">
+                <span className={`field-icon ${focusedField === "password" ? "focused" : ""}`}>
                   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
-                    <line x1="1" y1="1" x2="23" y2="23" />
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0110 0v4" />
                   </svg>
-                ) : (
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
+                </span>
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="auth-input"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                  onFocus={() => setFocusedField("password")}
+                  onBlur={() => setFocusedField(null)}
+                  style={{ paddingRight: "42px" }}
+                />
+                <button
+                  type="button"
+                  className={`toggle-visibility ${showPassword ? "active" : ""}`}
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="auth-btn"
+              disabled={loading}
+            >
+              {loading && <div className="auth-btn-shimmer" />}
+              <span style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                {loading && (
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ animation: "spin 1s linear infinite" }}>
+                    <path d="M12 2a10 10 0 0110 10" />
                   </svg>
                 )}
-              </button>
-            </div>
-
-            {/* Login Button */}
-            <button type="submit" className="login-btn">
-              Authenticate
+                {loading ? "Authenticating…" : "Sign in"}
+              </span>
             </button>
           </form>
 
-          {/* Mock Credentials Card */}
-          <div style={{
-            background: "rgba(255,255,255,0.015)",
-            border: "1px solid rgba(255,255,255,0.05)",
-            borderRadius: "12px",
-            padding: "12px 14px",
-            marginTop: "20px",
-            fontSize: "12px",
-            color: "rgba(255,255,255,0.45)",
-            lineHeight: "1.5"
-          }}>
-            <div style={{ fontWeight: 600, color: "#fff", marginBottom: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="16" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>
-              Mock Credentials for Review:
-            </div>
-            Email: <span style={{ color: "#FF3B30", fontFamily: "monospace" }}>admin@comfysportwear.com</span><br/>
-            Password: <span style={{ color: "#FF3B30", fontFamily: "monospace" }}>admin123</span>
+          <div className={`footer-tag ${pageIn ? "visible" : ""}`} style={{ transitionDelay: "0.7s" }}>
+            <span className="footer-tag-text">
+              <span className="secure-dot" />
+              <span className="secure-dot" />
+              <span className="secure-dot" />
+              Secure session
+            </span>
+            <Link to="/admin/register" className="footer-link">First time? Create account</Link>
           </div>
         </div>
       </div>
