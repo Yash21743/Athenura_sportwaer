@@ -1,6 +1,10 @@
 ﻿import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
+
 import { Menu, ShoppingBag, User, X, LogIn, Package, Settings, ChevronDown, UserPlus } from "lucide-react"
+
+import { Menu, ShoppingBag, User, X, LogIn, Package, Settings, ChevronDown, UserPlus, Search } from "lucide-react"
+
 import { Link, NavLink as RouterNavLink, useLocation, useNavigate } from "react-router-dom"
 import logo from "../../../assets/images/comfy_logo4.png"
 
@@ -63,18 +67,35 @@ const styles = `
  color: rgba(0, 0, 0, 0.7);
   text-decoration: none;
   border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: none;
   transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
   white-space: nowrap;
+
+
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 1.2rem;
+  right: 1.2rem;
+  bottom: 4px;
+  height: 2px;
+  background: #14a889;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
+
 }
 
 .nav-link:hover,
 .nav-link.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
-  background-size: 200% 200%;
-  animation: redShift 1.5s ease infinite;
-  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
+  color: #000000;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
 }
 
 .nav-link__dot {
@@ -120,16 +141,14 @@ const styles = `
   border-radius: 14px;
   color: rgba(0, 0, 0, 0.8);
   cursor: pointer;
-  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
   transition: all 0.2s ease;
 }
 
-.icon-btn:hover {
-  color: #ffffff;
-  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
-  background-size: 200% 200%;
-  animation: redShift 1.5s ease infinite;
-  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
+.icon-btn:hover,
+.icon-btn.active {
+  color: rgba(0, 0, 0, 0.8);
+  background: #ffffff;
+  border: 1px solid #14a889;
 }
 
 .cart-badge {
@@ -214,7 +233,7 @@ const styles = `
 
 .mobile-panel {
   position: fixed;
-  top: var(--nav-h);
+  top: calc(var(--nav-h) + 40px);
   left: 0;
   right: 0;
   overflow: hidden;
@@ -242,27 +261,22 @@ const styles = `
   text-decoration: none;
   border-radius: 12px;
   background: #ffffff;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), -3px -3px 6px rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
 }
 
-.mobile-link:hover {
-  background: #111115;
-  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5), inset -2px -2px 4px rgba(255, 255, 255, 0.03);
-}
-
+.mobile-link:hover,
 .mobile-link.active {
   color: #ffffff;
   background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
   background-size: 200% 200%;
   animation: redShift 1.5s ease infinite;
-  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
+  border-color: transparent;
 }
 
 .mobile-overlay {
   position: fixed;
-  inset: var(--nav-h) 0 0 0;
+  inset: calc(var(--nav-h) + 40px) 0 0 0;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   z-index: 40;
@@ -555,20 +569,101 @@ const styles = `
     display: inline-flex;
   }
 }
+
 `
 const OFFERS = [
   { text: "Black Friday Sale up to 70% off. Use code:", code: "SALE70", cta: "Shop Now", href: "/products" },
+
+
+.search-wrap {
+  position: relative;
+}
+
+.search-dropdown {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  top: calc(var(--nav-h) + 40px + 10px);
+  width: auto;
+  max-width: none;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
+  overflow: hidden;
+  z-index: 60;
+  padding: 0.75rem;
+}
+
+@media (min-width: 900px) {
+  .search-dropdown {
+    position: absolute;
+    left: auto;
+    right: 0;
+    top: calc(100% + 12px);
+    width: 280px;
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+.search-dropdown-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-dropdown-input {
+  flex: 1;
+  height: 42px;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  background: #f7f7f2;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: #000000;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.search-dropdown-input:focus {
+  border-color: #14a889;
+}
+
+.search-dropdown-submit {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: #14a889;
+  color: #ffffff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.search-dropdown-submit:hover {
+  background: #0a3d33;
+}
+`
+const OFFERS = [
+
   { text: "Free shipping on orders over ₹999.", code: null, cta: "Shop Now", href: "/products" },
   { text: "New arrivals just dropped. Use code:", code: "NEW10", cta: "Explore", href: "/products" },
 ]
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
+
   { label: "Products", href: "/products" },
   { label: "Men", href: "/men" },
   { label: "Women", href: "/women" },
   { label: "Kids", href: "/kids" },
   { label: "About", href: "/about" },
+  { label: "Men", href: "/products" },
+  { label: "Women", href: "/women" },
+  { label: "Kids", href: "/kids" },
   { label: "Contact", href: "/contact" },
   { label: "Bulk Order", href: "/bulk-orders" },
 ]
@@ -595,6 +690,58 @@ export default function Navbar({ cartCount }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const accountRef = useRef(null)
+  const searchRef = useRef(null)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
+      setSearchOpen(false)
+      setSearchQuery("")
+    }
+  }
+
+  const handleSignInSubmit = (e) => {
+    e.preventDefault()
+    console.log("Sign in attempt:", { email: signInEmail, password: signInPassword })
+    setIsLoggedIn(true)
+    setShowSignInForm(false)
+    setSignInEmail("")
+    setSignInPassword("")
+  }
+
+  const handleLogout = () => {
+    setIsLoggedIn(false)
+    setAccountOpen(false)
+  }
+
+  const resetRegisterForm = () => {
+    setRegisterName("")
+    setRegisterNumber("")
+    setRegisterEmail("")
+    setRegisterPassword("")
+    setRegisterConfirmPassword("")
+    setRegisterStatus("idle")
+  }
+
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault()
+    if (registerPassword !== registerConfirmPassword) {
+      alert("Passwords do not match")
+      return
+    }
+    // TODO: wire this up to your actual registration logic
+    console.log("Register attempt:", {
+      name: registerName,
+      number: registerNumber,
+      email: registerEmail,
+      password: registerPassword,
+    })
+    setRegisterStatus("success")
+    setTimeout(() => setRegisterStatus("goToLogin"), 1500)
+  }
 
   const handleSignInSubmit = (e) => {
     e.preventDefault()
@@ -683,6 +830,12 @@ export default function Navbar({ cartCount }) {
         setShowSignInForm(false)
         setShowRegisterForm(false)
         resetRegisterForm()
+
+
+      }
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setSearchOpen(false)
+
       }
     }
     document.addEventListener("mousedown", onClick)
@@ -788,10 +941,48 @@ export default function Navbar({ cartCount }) {
         </motion.ul>
 
         <div className="nav-actions">
+          <div className="search-wrap" ref={searchRef}>
+            <motion.button
+              type="button"
+              className={`icon-btn${searchOpen ? " active" : ""}`}
+              aria-label="Search"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setSearchOpen((v) => !v)}
+            >
+              <Search size={20} />
+            </motion.button>
+            <AnimatePresence>
+              {searchOpen && (
+                <motion.div
+                  className="search-dropdown"
+                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <form className="search-dropdown-form" onSubmit={handleSearchSubmit}>
+                    <input
+                      type="text"
+                      className="search-dropdown-input"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      autoFocus
+                    />
+                    <button type="submit" className="search-dropdown-submit" aria-label="Submit search">
+                      <Search size={18} />
+                    </button>
+                  </form>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           <Link to="/cart" style={{ textDecoration: 'none' }}>
             <motion.button
               type="button"
-              className="icon-btn"
+              className={`icon-btn${location.pathname === "/cart" ? " active" : ""}`}
               aria-label={`Cart, ${cartItemsCount} items`}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
@@ -814,7 +1005,11 @@ export default function Navbar({ cartCount }) {
           <div className="desktop-account-wrap" ref={accountRef}>
             <motion.button
               type="button"
+
               className="icon-btn"
+
+              className={`icon-btn${accountOpen ? " active" : ""}`}
+
               aria-label="My Account"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
@@ -955,6 +1150,13 @@ export default function Navbar({ cartCount }) {
                     <>
                       {!isLoggedIn ? (
                         <>
+
+
+                          <Link to="/profile" className="desktop-account-item" onClick={() => setAccountOpen(false)}>
+                            <User size={17} />
+                            View Profile
+                          </Link>
+
                           <button
                             type="button"
                             className="desktop-account-item"
@@ -982,11 +1184,15 @@ export default function Navbar({ cartCount }) {
                           Logout
                         </button>
                       )}
+
                       <Link to="/cart" className="desktop-account-item" onClick={() => setAccountOpen(false)}>
                         <ShoppingBag size={17} />
                         Cart
                       </Link>
                     </>
+
+                      </>
+
                   )}
                 </motion.div>
               )}
@@ -1179,6 +1385,12 @@ export default function Navbar({ cartCount }) {
                           <>
                             {!isLoggedIn ? (
                               <>
+
+                                <Link to="/profile" className="mobile-account-item" onClick={() => setMobileOpen(false)}>
+                                  <User size={17} />
+                                  View Profile
+                                </Link>
+
                                 <button
                                   type="button"
                                   className="mobile-account-item"
@@ -1206,11 +1418,15 @@ export default function Navbar({ cartCount }) {
                                 Logout
                               </button>
                             )}
+
                             <Link to="/cart" className="mobile-account-item" onClick={() => setMobileOpen(false)}>
                               <ShoppingBag size={17} />
                               Cart
                             </Link>
                           </>
+
+                            </>
+
                         )}
                       </motion.div>
                     )}

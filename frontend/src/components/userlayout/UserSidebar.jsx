@@ -1,78 +1,47 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion"
-import logo from "../../../assets/images/comfy_logo4.png";
 import { motion } from "framer-motion";
-import logo from "../../../assets/images/ath.logo.jpeg";
-
+import { 
+  User, 
+  ShoppingBag, 
+  ShoppingCart,
+  MapPin, 
+  Settings, 
+  LogOut, 
+  ArrowLeft,
+} from "lucide-react";
+import logo from "../../assets/images/comfy_logo4.png";
 
 const navItems = [
   {
-    label: "Dashboard",
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
+    label: "My Dashboard",
+    icon: <User size={18} />,
     key: "dashboard",
   },
   {
-    label: "Products",
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" />
-        <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
-      </svg>
-    ),
-    key: "products",
-  },
-//   {
-//     label: "Categories",
-//     icon: (
-//       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-//         <path d="M3 5h8M3 10h5M3 15h8M3 20h5M13 5l4 4-4 4M21 9h-4" />
-//       </svg>
-//     ),
-//     key: "categories",
-//   },
-  {
-    label: "Leads",
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-      </svg>
-    ),
-    key: "leads",
+    label: "Order History",
+    icon: <ShoppingBag size={18} />,
+    key: "orders",
   },
   {
-    label: "Bulk Orders",
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M9 17H5a2 2 0 00-2 2v0a2 2 0 002 2h14a2 2 0 002-2v0a2 2 0 00-2-2h-4" />
-        <rect x="7" y="3" width="10" height="14" rx="2" />
-        <path d="M10 7h4M10 11h4" />
-      </svg>
-    ),
-    key: "bulkorders",
+    label: "My Cart",
+    icon: <ShoppingCart size={18} />,
+    key: "cart",
   },
   {
-    label: "Testimonials",
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-      </svg>
-    ),
-    key: "testimonials",
+    label: "Edit Address",
+    icon: <MapPin size={18} />,
+    key: "addresses",
+  },
+  {
+    label: "Edit Profile",
+    icon: <Settings size={18} />,
+    key: "settings",
   },
 ];
 
-const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCollapsedChange }) => {
-  const [collapsed, setCollapsed] = useState(false);
+const UserSidebar = ({ activeTab, setActiveTab, user = {}, isMobileOpen, onMobileClose, onCollapsedChange }) => {
+  const collapsed = false;
   const [hoveredKey, setHoveredKey] = useState(null);
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
@@ -87,24 +56,20 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
   }, []);
 
   const handleNav = (key) => {
-    const routeMap = {
-      dashboard: "/admin/dashboard",
-      products: "/admin/products",
-      categories: "/admin/categories",
-      leads: "/admin/leads",
-      bulkorders: "/admin/bulk-orders",
-      testimonials: "/admin/testimonials",
-    };
-    if (routeMap[key]) {
-      navigate(routeMap[key]);
-    }
-    if (onNavigate) onNavigate(key);
+    if (setActiveTab) setActiveTab(key);
     if (onMobileClose) onMobileClose();
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    sessionStorage.clear();
+    navigate("/");
   };
 
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Mobile Drawer Overlay */}
       <div
         onClick={onMobileClose}
         style={{
@@ -119,38 +84,33 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
         }}
       />
 
-      {/* Sidebar */}
+      {/* Sidebar Panel */}
       <aside
         style={{
           position: "fixed",
           top: 0,
           left: 0,
           height: "100vh",
-          width: isMobileOpen ? "260px" : collapsed ? "72px" : "260px",
+          width: isMobileOpen ? "280px" : collapsed ? "72px" : "280px",
           background: "rgba(8, 18, 16, 0.92)",
           backdropFilter: "blur(18px)",
           display: "flex",
           flexDirection: "column",
           zIndex: 50,
           transition: "width 0.35s cubic-bezier(0.4,0,0.2,1), transform 0.35s cubic-bezier(0.4,0,0.2,1)",
-          transform: isMobileOpen ? "translateX(0)" : "translateX(0)",
           boxShadow: "4px 0 32px rgba(0,0,0,0.5)",
           fontFamily: "'Manrope', sans-serif",
           overflowX: "hidden",
           overflowY: "auto",
           borderRight: "1px solid rgba(23, 184, 147, 0.10)",
         }}
-        className="admin-sidebar"
+        className="user-sidebar"
       >
         {/* Brand Header */}
         <div
           style={{
             padding: collapsed ? "24px 16px" : "24px 20px",
-
-            borderBottom: "1px solid rgba(10,127,110,0.2)",
-
             borderBottom: "1px solid rgba(23, 184, 147, 0.12)",
-
             display: "flex",
             alignItems: "center",
             gap: "12px",
@@ -162,61 +122,66 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
           <Link to="/" className="dashboard-logo" style={{ display: 'inline-flex', alignItems: 'center' }}>
             <motion.img
               src={logo}
-              alt="Comfy Sportswear Logo"
-              style={{ height: '84px', width: 'auto', objectFit: 'contain', paddingLeft: collapsed ? '0' : '30px' }}
+              alt="Logo"
+              style={{ height: '48px', maxWidth: '230px', width: 'auto', objectFit: 'contain', paddingLeft: collapsed ? '0' : '5px' }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             />
           </Link>
+        </div>
 
-          {/* Collapse Toggle (desktop only) */}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
+        {/* User Card */}
+        <div
+          style={{
+            margin: collapsed ? "12px 8px" : "16px 12px 10px 12px",
+            padding: collapsed ? "8px" : "12px 10px",
+            borderRadius: "12px",
+            border: "1px solid rgba(23, 184, 147, 0.10)",
+            background: "rgba(23, 184, 147, 0.02)",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            justifyContent: collapsed ? "center" : "flex-start",
+            transition: "all 0.3s ease",
+            overflow: "hidden"
+          }}
+        >
+          <div
             style={{
-              background: "rgba(23, 184, 147, 0.08)",
-              border: "1px solid rgba(23, 184, 147, 0.15)",
-              borderRadius: "8px",
-              width: "28px",
-              height: "28px",
+              width: "36px",
+              height: "36px",
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #17B893, #0B7A63)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              cursor: "pointer",
-              color: "rgba(23, 184, 147, 0.7)",
-              flexShrink: 0,
-              transition: "background 0.2s ease, transform 0.3s ease, border-color 0.2s ease",
-              transform: collapsed ? "rotate(180deg)" : "rotate(0deg)",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: "14px",
+              flexShrink: 0
             }}
-            className="collapse-btn"
           >
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
+            {user.name ? user.name[0].toUpperCase() : "U"}
+          </div>
+          {!collapsed && (
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <h4 style={{ margin: 0, fontSize: "13px", fontWeight: 600, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {user.name || "User"}
+              </h4>
+              <p style={{ margin: 0, fontSize: "10.5px", color: "rgba(244, 251, 249, 0.45)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {user.email || "member@comfysport.com"}
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Section Label */}
-        {!collapsed && (
-          <div
-            style={{
-              padding: "16px 20px 8px",
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "9px",
-              letterSpacing: "1.6px",
-              textTransform: "uppercase",
-              color: "rgba(23, 184, 147, 0.5)",
-              transition: "opacity 0.2s ease",
-            }}
-          >
-            Navigation
-          </div>
-        )}
-        {collapsed && <div style={{ height: "12px" }} />}
 
-        {/* Navigation */}
+
+
+        {/* Navigation items list */}
         <nav style={{ flex: 1, padding: "0 10px", display: "flex", flexDirection: "column", gap: "3px" }}>
           {navItems.map((item, idx) => {
-            const isActive = activeKey === item.key;
+            const isActive = activeTab === item.key;
             const isHovered = hoveredKey === item.key;
 
             return (
@@ -236,27 +201,18 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                   width: "100%",
                   textAlign: "left",
                   background: isActive
-
-                    ? "linear-gradient(135deg, #0A7F6E 0%, #08695C 100%)"
-
                     ? "linear-gradient(135deg, rgba(23, 184, 147, 0.18) 0%, rgba(11, 122, 99, 0.12) 100%)"
-
                     : isHovered
                     ? "rgba(23, 184, 147, 0.07)"
                     : "transparent",
                   color: isActive ? "#17B893" : isHovered ? "#F4FBF9" : "rgba(244, 251, 249, 0.55)",
                   transition: "all 0.22s cubic-bezier(0.4,0,0.2,1)",
-
-                  boxShadow: isActive ? "0 4px 16px rgba(10,127,110,0.35)" : "none",
-
                   boxShadow: isActive ? "0 4px 16px rgba(23, 184, 147, 0.15), inset 0 1px 0 rgba(23, 184, 147, 0.1)" : "none",
-
                   transform: isActive ? "translateX(2px)" : isHovered ? "translateX(2px)" : "translateX(0)",
                   justifyContent: collapsed ? "center" : "flex-start",
                   position: "relative",
                   opacity: mounted ? 1 : 0,
-                  animation: mounted ? `slideIn 0.4s ease ${idx * 0.05}s both` : "none",
-                  fontFamily: "'Manrope', sans-serif",
+                  animation: mounted ? `userSlideIn 0.4s ease ${idx * 0.05}s both` : "none",
                 }}
               >
                 {/* Icon */}
@@ -264,11 +220,7 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                   style={{
                     flexShrink: 0,
                     display: "flex",
-
-                    color: isActive ? "#fff" : isHovered ? "#0A7F6E" : "rgba(255,255,255,0.55)",
-
                     color: isActive ? "#17B893" : isHovered ? "#17B893" : "rgba(244, 251, 249, 0.4)",
-
                     transition: "color 0.22s ease",
                   }}
                 >
@@ -285,7 +237,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                     opacity: collapsed ? 0 : 1,
                     maxWidth: collapsed ? 0 : "200px",
                     transition: "opacity 0.2s ease, max-width 0.35s ease",
-                    fontFamily: "'Manrope', sans-serif",
                     letterSpacing: "0.2px",
                   }}
                 >
@@ -328,15 +279,9 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                       opacity: isHovered ? 1 : 0,
                       pointerEvents: "none",
                       transition: "opacity 0.2s ease",
-
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
-                      border: "1px solid rgba(10,127,110,0.3)",
-
                       boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
                       border: "1px solid rgba(23, 184, 147, 0.2)",
-
                       zIndex: 100,
-                      fontFamily: "'Manrope', sans-serif",
                     }}
                   >
                     {item.label}
@@ -360,64 +305,76 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
           })}
         </nav>
 
-        {/* Bottom User Section */}
+        {/* Footer Actions */}
         <div
           style={{
             padding: "14px 10px",
             borderTop: "1px solid rgba(23, 184, 147, 0.10)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "5px"
           }}
         >
-          {/* Logout */}
-          <button
-            onClick={() => {
-              sessionStorage.removeItem("csw_admin_session");
-              sessionStorage.removeItem("csw_admin_token");
-              navigate("/admin");
-            }}
+          {/* Back to Home */}
+          <Link
+            to="/"
             style={{
               display: "flex",
               alignItems: "center",
               gap: "12px",
               padding: "10px 14px",
               borderRadius: "10px",
-
-              border: "1px solid rgba(10,127,110,0.25)",
               cursor: "pointer",
-              width: "100%",
-              background: "rgba(10,127,110,0.07)",
-              color: "#0A7F6E",
+              background: "transparent",
+              color: "rgba(244, 251, 249, 0.45)",
+              justifyContent: collapsed ? "center" : "flex-start",
+              transition: "all 0.22s ease",
+              textDecoration: "none",
+              fontSize: "12px",
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "1px"
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "rgba(23, 184, 147, 0.06)";
+              e.currentTarget.style.color = "#17B893";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "rgba(244, 251, 249, 0.45)";
+            }}
+          >
+            <ArrowLeft size={14} />
+            <span style={{ display: collapsed ? "none" : "inline" }}>Back to Store</span>
+          </Link>
 
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: "10px 14px",
+              borderRadius: "10px",
               border: "1px solid rgba(248, 113, 113, 0.18)",
               cursor: "pointer",
               width: "100%",
               background: "rgba(248, 113, 113, 0.06)",
               color: "#F87171",
-
               justifyContent: collapsed ? "center" : "flex-start",
               transition: "all 0.22s ease",
-              fontFamily: "'Manrope', sans-serif",
             }}
             onMouseEnter={e => {
-
-              e.currentTarget.style.background = "rgba(10,127,110,0.18)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = "rgba(10,127,110,0.07)";
-
               e.currentTarget.style.background = "rgba(248, 113, 113, 0.14)";
               e.currentTarget.style.borderColor = "rgba(248, 113, 113, 0.3)";
             }}
             onMouseLeave={e => {
               e.currentTarget.style.background = "rgba(248, 113, 113, 0.06)";
               e.currentTarget.style.borderColor = "rgba(248, 113, 113, 0.18)";
-
             }}
           >
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
+            <LogOut size={17} />
             <span
               style={{
                 fontSize: "13px",
@@ -429,7 +386,7 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                 transition: "opacity 0.2s ease, max-width 0.35s ease",
               }}
             >
-              Logout
+              Sign Out
             </span>
           </button>
         </div>
@@ -438,20 +395,15 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-        @keyframes slideIn {
+        @keyframes userSlideIn {
           from { opacity: 0; transform: translateX(-12px); }
           to { opacity: 1; transform: translateX(0); }
         }
 
-        .admin-sidebar::-webkit-scrollbar { width: 4px; }
-        .admin-sidebar::-webkit-scrollbar-track { background: transparent; }
-
-        .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(10,127,110,0.3); border-radius: 2px; }
-
-        .collapse-btn:hover { background: rgba(10,127,110,0.18) !important; }
-
-        .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(23, 184, 147, 0.2); border-radius: 2px; }
-        .admin-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(23, 184, 147, 0.35); }
+        .user-sidebar::-webkit-scrollbar { width: 4px; }
+        .user-sidebar::-webkit-scrollbar-track { background: transparent; }
+        .user-sidebar::-webkit-scrollbar-thumb { background: rgba(23, 184, 147, 0.2); border-radius: 2px; }
+        .user-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(23, 184, 147, 0.35); }
 
         .collapse-btn:hover {
           background: rgba(23, 184, 147, 0.16) !important;
@@ -459,11 +411,10 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
           color: #17B893 !important;
         }
 
-
-        @media (max-width: 768px) {
-          .admin-sidebar {
+        @media (max-width: 1024px) {
+          .user-sidebar {
             transform: ${isMobileOpen ? "translateX(0)" : "translateX(-100%)"} !important;
-            width: 260px !important;
+            width: 280px !important;
           }
           .collapse-btn { display: none !important; }
         }
@@ -472,4 +423,4 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
   );
 };
 
-export default AdminSidebar;
+export default UserSidebar;
