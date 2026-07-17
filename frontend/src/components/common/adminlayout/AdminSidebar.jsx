@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion"
-import logo from "../../../assets/images/ath.logo.jpeg";
+import logo from "../../../assets/images/comfy_logo4.png";
 
 const navItems = [
   {
@@ -26,15 +26,15 @@ const navItems = [
     ),
     key: "products",
   },
-  {
-    label: "Categories",
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M3 5h8M3 10h5M3 15h8M3 20h5M13 5l4 4-4 4M21 9h-4" />
-      </svg>
-    ),
-    key: "categories",
-  },
+//   {
+//     label: "Categories",
+//     icon: (
+//       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+//         <path d="M3 5h8M3 10h5M3 15h8M3 20h5M13 5l4 4-4 4M21 9h-4" />
+//       </svg>
+//     ),
+//     key: "categories",
+//   },
   {
     label: "Leads",
     icon: (

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import { MessageCircle, Mail, Phone } from "lucide-react"
-import logo from "../../../assets/images/comfy_logo3.png"
+import logo from "../../../assets/images/comfy_logo4.png"
 
 const styles = `
 .footer-root {
@@ -88,24 +88,16 @@ const styles = `
 .footer-link {
   display: inline-flex;
   align-items: center;
-  padding: 0.4rem 0.8rem;
   font-size: 0.9rem;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.7);
   text-decoration: none;
-  border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.08), -2px -2px 4px rgba(255, 255, 255, 0.6);
-  transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+  transition: color 0.25s ease;
   width: fit-content;
 }
 
 .footer-link:hover {
-  color: #ffffff;
-  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
-  background-size: 200% 200%;
-  animation: redShift 1.5s ease infinite;
-  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
+  color: #14a889;
 }
 
 .footer-social {
@@ -117,32 +109,81 @@ const styles = `
 .footer-social a {
   display: inline-grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 14px;
+  width: 32px;
+  height: 32px;
   color: #000000;
   cursor: pointer;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.08), -2px -2px 4px rgba(255, 255, 255, 0.6);
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .footer-social a:hover {
-  color: #ffffff;
-  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
-  background-size: 200% 200%;
-  animation: redShift 1.5s ease infinite;
-  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.04);
+  color: #14a889;
 }
 
 .footer-bottom {
   margin-top: 2rem;
   padding-top: 1.5rem;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
-  text-align: center;
   font-size: 0.85rem;
   color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.footer-bottom-left {
+  flex: 1;
+  text-align: left;
+}
+
+.footer-bottom-center {
+  flex: 1;
+  text-align: center;
+}
+
+.footer-bottom-center a {
+  color: rgba(0, 0, 0, 0.55);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.footer-bottom-center a:hover {
+  color: #14a889;
+}
+
+.footer-bottom-right {
+  flex: 1;
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.25rem;
+}
+
+.footer-bottom-right a {
+  color: rgba(0, 0, 0, 0.4);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-bottom-right a:hover {
+  color: #14a889;
+}
+
+@media (max-width: 700px) {
+  .footer-bottom {
+    justify-content: center;
+    text-align: center;
+  }
+  .footer-bottom-left,
+  .footer-bottom-center,
+  .footer-bottom-right {
+    flex: 1 1 100%;
+    text-align: center;
+    justify-content: center;
+  }
 }
 
 @keyframes redShift {
@@ -168,7 +209,7 @@ export default function Footer() {
             <motion.img
               src={logo}
               alt="Comfy Sport Logo"
-              style={{ height: '84px', width: 'auto', objectFit: 'contain' }}
+              style={{ height: '64px', width: 'auto', objectFit: 'contain' }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             />
@@ -232,7 +273,19 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        &copy; {new Date().getFullYear()} Athenura Sportswear. All rights reserved.
+        <div className="footer-bottom-left">
+          &copy; {new Date().getFullYear()} Comfy Sportswear. All rights reserved.
+        </div>
+        <div className="footer-bottom-center">
+          Designed and Developed by{" "}
+          <a href="https://www.athenura.in/" target="_blank" rel="noopener noreferrer">
+            Athenura
+          </a>
+        </div>
+        <div className="footer-bottom-right">
+          <Link to="/privacy-policy">Privacy Policy</Link>
+          <Link to="/terms-and-conditions">Terms and Condition</Link>
+        </div>
       </div>
     </footer>
   )

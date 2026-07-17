@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
 import API from "../../services/api";
@@ -725,7 +725,7 @@ const ViewAllBtn = ({label="View All", red=false, onClick}) => (
   >{label}</button>
 );
 
-// â”€â”€â”€ Main Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Main Dashboard ────────────────────────────────────────────────────────
 const AdminDashboard = () => {
   const [activeKey,        setActiveKey]        = useState("dashboard");
   const [mobileOpen,       setMobileOpen]       = useState(false);
@@ -740,7 +740,7 @@ const AdminDashboard = () => {
   const [showAllNotifs, setShowAllNotifs] = useState(false);
   const navigate = useNavigate();
 
-  // â”€â”€ Live data from localStorage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Live data from localStorage ──────────────────────────────────────────
   const [liveLeads,    setLiveLeads]    = useState([]);
   const [liveProducts, setLiveProducts] = useState([]);
   const [liveActivity, setLiveActivity] = useState([]);
@@ -795,7 +795,7 @@ const AdminDashboard = () => {
 
   const LIVE_STATS = [
     { ...STATS[0], value: statsData.products || STATS[0].value },
-    { ...STATS[1], value: statsData.categories || STATS[1].value },
+    // { ...STATS[1], value: statsData.categories || STATS[1].value },
     { ...STATS[2], value: statsData.leads || STATS[2].value },
     { ...STATS[3], value: statsData.inquiries || STATS[3].value },
   ];
@@ -809,11 +809,11 @@ const AdminDashboard = () => {
           onClose={() => { setShowAllNotifs(false); setShowNotif(false); }}
         />
       )}
-      {/* â”€â”€ Global styles â”€â”€ */}
+      {/* ── Global styles ── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
-        body{background:#050e1a;color:#fff;font-family:'Poppins',sans-serif;}
+        body{background:#070C0B;color:#DDDFD2;font-family:'Poppins',sans-serif;}
         ::-webkit-scrollbar{width:4px;height:4px;}
         ::-webkit-scrollbar-track{background:rgba(255,255,255,0.03);}
         ::-webkit-scrollbar-thumb{background:rgba(10,127,110,0.3);border-radius:2px;}
@@ -824,12 +824,12 @@ const AdminDashboard = () => {
 
         .csw-card { transition-property: opacity, transform; }
 
-        /* â”€â”€ Topbar â”€â”€ */
+        /* ── Topbar ── */
         .csw-topbar{
           position:fixed;top:0;
           left:${sidebarCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED}px;right:0;
           height:64px;
-          background:rgba(5,14,26,0.92);
+          background:rgba(7, 12, 11, 0.92);
           backdrop-filter:blur(14px);
           border-bottom:1px solid rgba(255,255,255,0.07);
           display:flex;align-items:center;
@@ -847,9 +847,9 @@ const AdminDashboard = () => {
           transition:margin-left 0.35s cubic-bezier(0.4,0,0.2,1);
         }
 
-        /* â”€â”€ Stat grid â”€â”€ */
-        .csw-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
-        .csw-charts{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
+        /* ── Stat grid ── */
+        .csw-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+        .csw-charts{ display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:20px; }
         .csw-tables{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
 
         /* â”€â”€ Search input desktop â”€â”€ */
@@ -902,8 +902,14 @@ const AdminDashboard = () => {
             max-width: 440px !important;
           }
         }
-        @media(max-width:480px){
+        @media(max-width:992px){
+          .csw-charts{ grid-template-columns:1fr !important; }
+        }
+        @media(max-width:768px){
           .csw-stats{ grid-template-columns:1fr !important; }
+          .csw-tables{ grid-template-columns:1fr !important; }
+        }
+        @media(max-width:480px){
           .csw-topbar{ padding:0 12px; gap:6px; }
         }
 
@@ -916,7 +922,7 @@ const AdminDashboard = () => {
         .csw-tr:hover td{ background:rgba(255,255,255,0.04) !important; }
       `}</style>
 
-      <div style={{minHeight:"100vh",background:"#050e1a"}}>
+      <div style={{minHeight:"100vh",background:"#070C0B"}}>
 
         {/* â”€â”€ Sidebar â”€â”€ */}
         <AdminSidebar
@@ -1011,7 +1017,7 @@ const AdminDashboard = () => {
                     position:"absolute",top:"5px",right:"5px",
                     width:"8px",height:"8px",
                     background:"#0A7F6E",borderRadius:"50%",
-                    border:"1.5px solid #050e1a",
+                    border:"1.5px solid #070C0B",
                     animation:"csw-pulse 2s infinite",
                   }}/>
                 )}
@@ -1059,27 +1065,51 @@ const AdminDashboard = () => {
               </h1>
             </div>
             <p style={{color:"rgba(255,255,255,0.4)",fontSize:"12.5px",fontFamily:"'Poppins',sans-serif",paddingLeft:"14px"}}>
-              Welcome back â€” here's what's happening with Comfy Sport Wear today.
+              Welcome back — here's what's happening with Comfy Sport Wear today.
             </p>
           </div>
 
-          {/* â”€â”€ Stats â”€â”€ */}
+          {/* ── Stats ── */}
           <div className="csw-stats">
             {LIVE_STATS.map((s,i)=><StatCard key={s.key} stat={s} delay={i*0.07}/>)}
           </div>
 
-          {/* â”€â”€ Charts â”€â”€ */}
+          {/* ── Charts ── */}
           <div className="csw-charts">
             <Card delay={0.1}>
               <SectionHead
                 title="Monthly Inquiries" sub="2025 Overview"
-                action={<span style={{background:"rgba(10,127,110,0.12)",color:"#0A7F6E",border:"1px solid rgba(10,127,110,0.28)",borderRadius:"8px",padding:"4px 10px",fontSize:"11px",fontWeight:600,fontFamily:"'Poppins',sans-serif"}}>â–² 18.4%</span>}
+                action={<span style={{background:"rgba(10,127,110,0.12)",color:"#0A7F6E",border:"1px solid rgba(10,127,110,0.28)",borderRadius:"8px",padding:"4px 10px",fontSize:"11px",fontWeight:600,fontFamily:"'Poppins',sans-serif"}}>▲ 18.4%</span>}
               />
               <BarChart/>
             </Card>
-            <Card delay={0.15}>
-              <SectionHead title="Sales by Category" sub="Current distribution"/>
-              <DonutChart/>
+            <Card delay={0.15} style={{ display: "flex", flexDirection: "column" }}>
+              <SectionHead title="Recent Activity" sub="System log" />
+              <div style={{ display: "flex", flexDirection: "column", marginTop: "10px", flex: 1, overflowY: "auto", maxHeight: "250px", paddingRight: "4px" }}>
+                {liveActivity.length > 0 ? (
+                  liveActivity.map((a, i) => (
+                    <div key={i} style={{
+                      display: "flex", alignItems: "center", gap: "12px",
+                      padding: "10px 0",
+                      borderBottom: i < liveActivity.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                      animation: `csw-fadein 0.4s ease ${i * 0.07}s both`,
+                    }}>
+                      <div style={{
+                        width: "34px", height: "34px", borderRadius: "9px",
+                        background: `${a.color}18`, border: `1px solid ${a.color}30`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: "14px", flexShrink: 0,
+                      }}>{getIconSvg(a.icon, 16, a.color)}</div>
+                      <p style={{ flex: 1, fontSize: "12.5px", color: "rgba(255,255,255,0.72)", fontFamily: "'Poppins',sans-serif", lineHeight: 1.45, margin: 0 }}>{a.text}</p>
+                      <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.28)", fontFamily: "'Poppins',sans-serif", whiteSpace: "nowrap" }}>{a.time}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", textAlign: "center", margin: "auto" }}>
+                    No recent activities recorded.
+                  </p>
+                )}
+              </div>
             </Card>
           </div>
 
@@ -1162,7 +1192,8 @@ const AdminDashboard = () => {
             </Card>
           </div>
 
-          {/* â”€â”€ Recent Activity â”€â”€ */}
+          {/* Recent Activity commented out at bottom (moved to middle row next to chart) */}
+          {/* 
           <Card delay={0.08}>
             <SectionHead title="Recent Activity" sub="System log"/>
             <div>
@@ -1185,6 +1216,7 @@ const AdminDashboard = () => {
               ))}
             </div>
           </Card>
+          */}
 
         </main>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
   Flame,
   Target,
@@ -18,6 +18,8 @@ import {
   Flag,
   Check,
   ChevronRight,
+  Search,
+  X as CloseIcon,
 } from "lucide-react";
 
 const styles = `
@@ -68,7 +70,7 @@ const styles = `
 
 @keyframes au-blink {
   0%, 100% { color: var(--teal-primary); }
-  50%       { color: #000000; }
+  50%       { color: #ffffff; }
 }
 
 .au-section { padding: 5rem 1.5rem; position: relative; }
@@ -715,7 +717,7 @@ const styles = `
 .au-story-media {
   border-radius: var(--radius);
   overflow: hidden;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 4;
   background: var(--surface);
   border: 1px solid #2a2a2a;
   box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.4), 0 15px 25px rgba(0, 0, 0, 0.15);
@@ -725,7 +727,7 @@ const styles = `
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-16px); }
 }
-.au-story-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.au-story-media img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
 .au-story h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.25rem; }
 .au-story p { color: var(--muted-dark); line-height: 1.7; margin: 0 0 1rem; font-size: 1.02rem; }
 
@@ -1234,6 +1236,162 @@ const styles = `
     margin: 0 auto;
   }
 }
+
+.au-gallery-section {
+  padding: 4rem 0;
+  overflow: hidden;
+}
+
+.au-gallery-track-wrap {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+}
+
+.au-gallery-track {
+  display: flex;
+  width: max-content;
+  gap: 1.5rem;
+  animation: au-gallery-scroll 45s linear infinite;
+}
+
+.au-gallery-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes au-gallery-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.au-gallery-item {
+  flex: 0 0 auto;
+  width: 280px;
+  height: 340px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid #2a2a2a;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+}
+
+.au-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-gallery-track {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .au-gallery-item {
+    width: 200px;
+    height: 250px;
+  }
+  .au-gallery-track {
+    gap: 1rem;
+    animation-duration: 30s;
+  }
+}
+
+.au-gallery-item {
+  position: relative;
+  cursor: pointer;
+}
+
+.au-gallery-item-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 61, 51, 0.55);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.au-gallery-item:hover .au-gallery-item-overlay,
+.au-gallery-item:focus-visible .au-gallery-item-overlay {
+  opacity: 1;
+}
+
+.au-gallery-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #0a3d33;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transform: translateY(8px);
+  transition: transform 0.3s ease;
+}
+
+.au-gallery-item:hover .au-gallery-view-btn,
+.au-gallery-item:focus-visible .au-gallery-view-btn {
+  transform: translateY(0);
+}
+
+.au-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  cursor: zoom-out;
+}
+
+.au-lightbox-img {
+  max-width: 90vw;
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  cursor: default;
+}
+
+.au-lightbox-close {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  z-index: 201;
+}
+
+.au-lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 480px) {
+  .au-gallery-view-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+}
 `;
 
 const VALUES = [
@@ -1252,35 +1410,35 @@ const STATS = [
 
 const TIMELINE_JOURNEY = [
   {
-    year: "2014",
+    year: "Early 2025",
     title: "THE FIRST STITCH",
     description: "Our journey began with a simple vision: create sportswear that delivers comfort, durability, and performance for every athlete.",
     icon: HomeIcon,
     side: "left",
   },
   {
-    year: "2017",
+    year: "Mid 2025",
     title: "GAINING MOMENTUM",
-    description: "Expanded our product range and earned the trust of thousands of fitness enthusiasts, runners, and sports lovers across the country.",
+    description: "Launched our first collection and earned the trust of early customers, fitness enthusiasts, and sports lovers across the country.",
     icon: Rocket,
     side: "right",
   },
   {
-    year: "2020",
+    year: "Late 2025",
     title: "PERFORMANCE EVOLUTION",
     description: "Introduced advanced fabric technologies focused on breathability, flexibility, and all-day comfort for training and competition.",
     icon: Globe2,
     side: "left",
   },
   {
-    year: "2023",
+    year: "Early 2026",
     title: "INNOVATION IN MOTION",
     description: "Launched new performance collections and strengthened our commitment to sustainable materials and athlete-driven design.",
     icon: FlaskConical,
     side: "right",
   },
   {
-    year: "2026",
+    year: "2026 & Beyond",
     title: "THE FUTURE OF SPORT",
     description: "Continuing to push boundaries with premium sportswear, innovative technology, and a growing community united by movement and ambition.",
     icon: Flag,
@@ -1300,6 +1458,17 @@ const FEATURES = [
   { icon: Zap, label: "Performance Driven" },
   { icon: Heart, label: "Built for Champions" },
   { icon: Target, label: "Beyond Limits" },
+];
+
+const GALLERY_IMAGES = [
+  "https://i.ibb.co/zVMC3P6Q/Screenshot-2026-07-16-235636.png",
+  "https://i.ibb.co/rKmrhwdC/Screenshot-2026-07-16-235655.png",
+  "https://i.ibb.co/MxKnM0Yx/Screenshot-2026-07-16-235727.png",
+  "https://i.ibb.co/C3MRvxcL/Screenshot-2026-07-16-235757.png",
+  "https://i.ibb.co/rK4C79tf/Screenshot-2026-07-16-235858.png",
+  "https://i.ibb.co/Q32jnX2J/Screenshot-2026-07-16-235917.png",
+  "https://i.ibb.co/yFTspG41/Screenshot-2026-07-16-235946.png",
+  "https://i.ibb.co/vvxYt7dv/Screenshot-2026-07-17-000004.png",
 ];
 
 function AnimatedCounter({ target, suffix = "+" }) {
@@ -1791,11 +1960,31 @@ function GhostTextFill() {
   );
 }
 
-const BRAND = "Athenura Sportswear";
+const BRAND = "Comfy Sportswear";
 
 export default function AboutUs() {
   const heroRef = useRef(null);
   const videoRef = useRef(null);
+  const [lightboxImage, setLightboxImage] = useState(null);
+
+  useEffect(() => {
+    if (lightboxImage) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [lightboxImage]);
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setLightboxImage(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   const handleVideoEnter = () => {
     videoRef.current?.play();
@@ -1883,57 +2072,6 @@ export default function AboutUs() {
         </motion.div>
       </header>
 
-      <section className="au-section au-light" id="story" aria-labelledby="story-title">
-        <div className="au-inner au-story">
-          <motion.div 
-            className="au-story-media-frame"
-            initial={{ opacity: 0, scale: 0.94, y: 30 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.85, ease: "easeOut" }}
-          >
-            <div
-              className="au-story-media"
-              onMouseEnter={handleVideoEnter}
-              onMouseLeave={handleVideoLeave}
-            >
-              <video
-                ref={videoRef}
-                src="/sport.mp4"
-                loop
-                muted
-                playsInline
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-              />
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 45 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.85, ease: "easeOut" }}
-          >
-            <p className="au-eyebrow au-eyebrow-blink">Where It Started</p>
-            <h2 className="au-heading" id="story-title">
-              Forged In Sweat, Built To Last
-            </h2>
-            <p>
-              It began in a cramped garage with one sewing machine and an unshakable
-              obsession: create training gear that performs as hard as the athletes who
-              wear it. No shortcuts. No filler. Just relentless iteration.
-            </p>
-            <p>
-              A decade later, that obsession has scaled into a global movement. But our
-              mission hasn&apos;t changed — engineer the finest performance sportswear on
-              earth, and put it on the backs of people chasing something bigger.
-            </p>
-            <span className="au-pill au-pill-outline" style={{ marginTop: "0.5rem" }}>
-              Est. 2014
-            </span>
-          </motion.div>
-        </div>
-      </section>
-
       <section className="au-section au-light" aria-labelledby="values-title">
         <div className="au-inner">
           <motion.div 
@@ -2013,7 +2151,7 @@ export default function AboutUs() {
 
       <TimelineJourneySection />
 
-      <section className="au-section au-dark" aria-labelledby="team-title">
+      <section className="au-section au-dark" id="story" aria-labelledby="team-title">
         <div className="au-inner">
           <motion.div 
             className="au-section-head"
@@ -2022,37 +2160,109 @@ export default function AboutUs() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.8 }}
           >
-            <p className="au-eyebrow">The People Behind It</p>
             <h2 className="au-heading au-team-gradient" id="team-title">
-              Meet The Team
+              Founder of Comfy Sportswear
             </h2>
           </motion.div>
-          <div className="au-grid au-grid-4">
-            {TEAM.map((m, idx) => (
-              <motion.article 
-                className="au-team-card" 
-                key={m.name}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.65, delay: idx * 0.15, ease: "easeOut" }}
+
+          <div className="au-story" style={{ marginTop: "2.5rem" }}>
+            <motion.div 
+              className="au-story-media-frame"
+              initial={{ opacity: 0, scale: 0.94, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.85, ease: "easeOut" }}
+            >
+              <div className="au-story-media">
+                <img
+                  src="https://i.ibb.co/hRw7tG5X/Founder.png"
+                  alt="Founder of Comfy Sportswear"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", display: "block" }}
+                />
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 45 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.85, ease: "easeOut" }}
+            >
+              <p className="au-eyebrow au-eyebrow-blink">Meet The Founder</p>
+              <h2 className="au-heading" id="story-title">
+                Driven By Passion, Built On Vision
+              </h2>
+              <p>
+                With a deep love for fitness and an eye for detail, our founder{" "}
+                <span
+                  style={{
+                    background: "linear-gradient(120deg, #14a889, #72d4c6, #0a3d33, #14a889)",
+                    backgroundSize: "300% 300%",
+                    WebkitBackgroundClip: "text",
+                    backgroundClip: "text",
+                    color: "transparent",
+                    fontWeight: 700,
+                    animation: "au-team-glow 4s ease-in-out infinite",
+                  }}
+                >
+                  Danish Khan
+                </span>{" "}
+                set out to build sportswear that doesn&apos;t compromise — on comfort,
+                on quality, or on performance. What started as a simple idea has grown
+                into a brand trusted by athletes who refuse to settle for less.
+              </p>
+              <p>
+                Every design decision, every fabric choice, and every stitch reflects a
+                single belief: that great sportswear should empower you to push past your
+                limits, day after day.
+              </p>
+              <span className="au-pill au-pill-outline" style={{ marginTop: "0.5rem" }}>
+                Est. 2025
+              </span>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <section className="au-section au-light au-gallery-section" aria-labelledby="gallery-title">
+        <div className="au-inner">
+          <motion.div
+            className="au-section-head"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="au-heading au-gradient-text" id="gallery-title">
+              Our Gallery
+            </h2>
+          </motion.div>
+        </div>
+
+        <div className="au-gallery-track-wrap">
+          <div className="au-gallery-track">
+            {[...GALLERY_IMAGES, ...GALLERY_IMAGES].map((src, idx) => (
+              <div
+                className="au-gallery-item"
+                key={idx}
+                onClick={() => setLightboxImage(src)}
+                role="button"
+                tabIndex={0}
+                aria-label="View full image"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setLightboxImage(src);
+                  }
+                }}
               >
-                <div className="au-avatar" aria-label={`${m.name} avatar`}>
-                  <img
-                    src={m.image}
-                    alt={m.name}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      borderRadius: '50%',
-                      objectFit: 'cover'
-                    }}
-                  />
+                <img src={src} alt={`Comfy Sportswear gallery ${(idx % GALLERY_IMAGES.length) + 1}`} loading="lazy" />
+                <div className="au-gallery-item-overlay">
+                  <span className="au-gallery-view-btn">
+                    <Search size={16} aria-hidden="true" />
+                    View
+                  </span>
                 </div>
-                <h3>{m.name}</h3>
-                <p className="au-team-role">{m.role}</p>
-                <p>{m.bio}</p>
-              </motion.article>
+              </div>
             ))}
           </div>
         </div>
@@ -2087,6 +2297,38 @@ export default function AboutUs() {
           </motion.div>
         </div>
       </section>
+
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            className="au-lightbox-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={() => setLightboxImage(null)}
+          >
+            <button
+              type="button"
+              className="au-lightbox-close"
+              aria-label="Close image"
+              onClick={() => setLightboxImage(null)}
+            >
+              <CloseIcon size={24} />
+            </button>
+            <motion.img
+              src={lightboxImage}
+              alt="Full view"
+              className="au-lightbox-img"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

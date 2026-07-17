@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 // Layout
@@ -27,6 +27,8 @@ import AdminCategories from './components/admin/AdminCategories';
 import AdminLeads from './components/admin/AdminLeads';
 import AdminBulkOrders from './components/admin/AdminBulkOrders';
 import AdminTestimonials from './components/admin/AdminTestimonials';
+
+
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -73,13 +75,14 @@ function App() {
 
         {/* ── Admin Routes (NO Navbar/Footer) ── */}
         <Route path="/admin"                   element={<AdminLogin />} />
-        <Route path="/admin/register"           element={<AdminRegister />} />
+        <Route path="/admin/register"          element={<AdminRegister />} />
         <Route path="/admin/dashboard"         element={<AdminDashboard />} />
         <Route path="/admin/products"          element={<AdminProducts />} />
-        <Route path="/admin/categories"        element={<AdminCategories />} />
+        <Route path="/admin/categories"        element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/leads"             element={<AdminLeads />} />
         <Route path="/admin/bulk-orders"       element={<AdminBulkOrders />} />
         <Route path="/admin/testimonials"      element={<AdminTestimonials />} />
+       
       </Routes>
     </BrowserRouter>
   );

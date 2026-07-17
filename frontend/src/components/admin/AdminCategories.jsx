@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
@@ -109,6 +109,11 @@ const AdminCategories = () => {
       navigate("/admin");
     }
   }, [navigate]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setPageIn(true), 60);
+    return () => clearTimeout(t);
+  }, []);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -252,15 +257,15 @@ const AdminCategories = () => {
 
   return (
     <>
-      {/* â”€â”€ Stylesheet Overrides â”€â”€ */}
+      {/* ── Stylesheet Overrides ── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #050e1a; color: #fff; font-family: 'Poppins', sans-serif; }
+        body { background: #070C0B; color: #DDDFD2; font-family: 'Poppins', sans-serif; }
         
         .csw-topbar {
           position: fixed; top: 0; left: ${sidebarCollapsed ? 72 : 260}px; right: 0; height: 64px;
-          background: rgba(5, 14, 26, 0.92); backdrop-filter: blur(14px);
+          background: rgba(7, 12, 11, 0.92); backdrop-filter: blur(14px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.07);
           display: flex; align-items: center; justify-content: space-between;
           padding: 0 24px; gap: 12px; z-index: 30;
@@ -336,7 +341,7 @@ const AdminCategories = () => {
         }
       `}</style>
 
-      <div style={{ minHeight: "100vh", background: "#050e1a" }}>
+      <div style={{ minHeight: "100vh", background: "#070C0B" }}>
         {/* â”€â”€ Sidebar â”€â”€ */}
         <AdminSidebar
           activeKey="categories"
