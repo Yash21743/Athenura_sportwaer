@@ -141,7 +141,7 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
         <div
           style={{
             padding: collapsed ? "24px 16px" : "24px 20px",
-            borderBottom: "1px solid rgba(255,59,48,0.2)",
+            borderBottom: "1px solid rgba(10,127,110,0.2)",
             display: "flex",
             alignItems: "center",
             gap: "12px",
@@ -209,13 +209,13 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                   width: "100%",
                   textAlign: "left",
                   background: isActive
-                    ? "linear-gradient(135deg, #FF3B30 0%, #cc2e25 100%)"
+                    ? "linear-gradient(135deg, #0A7F6E 0%, #08695C 100%)"
                     : isHovered
                     ? "rgba(255,255,255,0.07)"
                     : "transparent",
                   color: isActive ? "#fff" : isHovered ? "#fff" : "rgba(255,255,255,0.65)",
                   transition: "all 0.22s cubic-bezier(0.4,0,0.2,1)",
-                  boxShadow: isActive ? "0 4px 16px rgba(255,59,48,0.35)" : "none",
+                  boxShadow: isActive ? "0 4px 16px rgba(10,127,110,0.35)" : "none",
                   transform: isActive ? "translateX(2px)" : isHovered ? "translateX(2px)" : "translateX(0)",
                   justifyContent: collapsed ? "center" : "flex-start",
                   position: "relative",
@@ -228,7 +228,7 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                   style={{
                     flexShrink: 0,
                     display: "flex",
-                    color: isActive ? "#fff" : isHovered ? "#FF3B30" : "rgba(255,255,255,0.55)",
+                    color: isActive ? "#fff" : isHovered ? "#0A7F6E" : "rgba(255,255,255,0.55)",
                     transition: "color 0.22s ease",
                   }}
                 >
@@ -288,7 +288,7 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                       pointerEvents: "none",
                       transition: "opacity 0.2s ease",
                       boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
-                      border: "1px solid rgba(255,59,48,0.3)",
+                      border: "1px solid rgba(10,127,110,0.3)",
                       zIndex: 100,
                     }}
                   >
@@ -332,20 +332,20 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
               gap: "12px",
               padding: "10px 14px",
               borderRadius: "10px",
-              border: "1px solid rgba(255,59,48,0.25)",
+              border: "1px solid rgba(10,127,110,0.25)",
               cursor: "pointer",
               width: "100%",
-              background: "rgba(255,59,48,0.07)",
-              color: "#FF3B30",
+              background: "rgba(10,127,110,0.07)",
+              color: "#0A7F6E",
               justifyContent: collapsed ? "center" : "flex-start",
               transition: "all 0.22s ease",
               fontFamily: "'Poppins', sans-serif",
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = "rgba(255,59,48,0.18)";
+              e.currentTarget.style.background = "rgba(10,127,110,0.18)";
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = "rgba(255,59,48,0.07)";
+              e.currentTarget.style.background = "rgba(10,127,110,0.07)";
             }}
           >
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -380,9 +380,9 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
 
         .admin-sidebar::-webkit-scrollbar { width: 4px; }
         .admin-sidebar::-webkit-scrollbar-track { background: transparent; }
-        .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(255,59,48,0.3); border-radius: 2px; }
+        .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(10,127,110,0.3); border-radius: 2px; }
 
-        .collapse-btn:hover { background: rgba(255,59,48,0.18) !important; }
+        .collapse-btn:hover { background: rgba(10,127,110,0.18) !important; }
 
         @media (max-width: 768px) {
           .admin-sidebar {

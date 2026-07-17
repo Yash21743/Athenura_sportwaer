@@ -1,16 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
 import API from "../../services/api";
 
-// ─── Sidebar widths ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Sidebar widths â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SIDEBAR_EXPANDED  = 260;
 const SIDEBAR_COLLAPSED = 72;
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Mock Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STATS = [
   { key:"products",   label:"Total Products",    value:148, change:"+12", positive:true,
-    accent:"#FF3B30",
+    accent:"#0A7F6E",
     icon:<svg width="21" height="21" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>,
   },
   { key:"categories", label:"Active Categories", value:9,   change:"+2",  positive:true,
@@ -36,7 +36,7 @@ const BAR_DATA = [
 ];
 
 const DONUT_DATA = [
-  {label:"Jerseys",    pct:35, color:"#FF3B30"},
+  {label:"Jerseys",    pct:35, color:"#0A7F6E"},
   {label:"Track Pants",pct:22, color:"#3B82F6"},
   {label:"T-Shirts",   pct:18, color:"#10B981"},
   {label:"Hoodies",    pct:14, color:"#F59E0B"},
@@ -44,18 +44,18 @@ const DONUT_DATA = [
 ];
 
 const NOTIFS = [
-  { id:1, icon:"🆕", color:"#3B82F6", text:"New lead from City Football Club",         time:"2 min ago",  read:false },
-  { id:2, icon:"✅", color:"#10B981", text:"Bulk order #BO-2047 confirmed",             time:"25 min ago", read:false },
-  { id:3, icon:"📦", color:"#F59E0B", text:"Victory Hoodie is running Low Stock",      time:"1 hr ago",   read:false },
-  { id:4, icon:"💬", color:"#FF3B30", text:"New testimonial by Pune Cricket Club",     time:"3 hr ago",   read:true  },
-  { id:5, icon:"🔧", color:"#8B5CF6", text:"Category 'Custom Team Kits' updated",     time:"5 hr ago",   read:true  },
+  { id:1, icon:"ðŸ†•", color:"#3B82F6", text:"New lead from City Football Club",         time:"2 min ago",  read:false },
+  { id:2, icon:"âœ…", color:"#10B981", text:"Bulk order #BO-2047 confirmed",             time:"25 min ago", read:false },
+  { id:3, icon:"ðŸ“¦", color:"#F59E0B", text:"Victory Hoodie is running Low Stock",      time:"1 hr ago",   read:false },
+  { id:4, icon:"ðŸ’¬", color:"#0A7F6E", text:"New testimonial by Pune Cricket Club",     time:"3 hr ago",   read:true  },
+  { id:5, icon:"ðŸ”§", color:"#8B5CF6", text:"Category 'Custom Team Kits' updated",     time:"5 hr ago",   read:true  },
 ];
 
 // ALL_SEARCH is now computed live inside SearchBox from localStorage
 
 // ACTIVITY is now generated live inside AdminDashboard component
 
-// ─── Hooks ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function useInView(threshold = 0.12) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -72,7 +72,7 @@ function useInView(threshold = 0.12) {
 
 const getIconSvg = (key, size = 18, color = "currentColor") => {
   switch (key) {
-    case "🆕":
+    case "ðŸ†•":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
@@ -80,14 +80,14 @@ const getIconSvg = (key, size = 18, color = "currentColor") => {
           <path d="M19 8v6M16 11h6" />
         </svg>
       );
-    case "✅":
+    case "âœ…":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2.2" viewBox="0 0 24 24">
           <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
           <polyline points="22 4 12 14.01 9 11.01" />
         </svg>
       );
-    case "📦":
+    case "ðŸ“¦":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
@@ -95,47 +95,47 @@ const getIconSvg = (key, size = 18, color = "currentColor") => {
           <line x1="12" y1="22.08" x2="12" y2="12" />
         </svg>
       );
-    case "💬":
+    case "ðŸ’¬":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
         </svg>
       );
-    case "🔧":
+    case "ðŸ”§":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="3" />
           <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
         </svg>
       );
-    case "👤":
+    case "ðŸ‘¤":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
       );
-    case "🏠":
+    case "ðŸ ":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
       );
-    case "🗂":
+    case "ðŸ—‚":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
         </svg>
       );
-    case "📋":
+    case "ðŸ“‹":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
           <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
         </svg>
       );
-    case "🥇":
+    case "ðŸ¥‡":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M20.38 3.46L16 2H8L3.62 3.46a2 2 0 00-1.34 2.23l1.5 10a2 2 0 002 1.7h13.44a2 2 0 002-1.7l1.5-10a2 2 0 00-1.34-2.23z" />
@@ -143,7 +143,7 @@ const getIconSvg = (key, size = 18, color = "currentColor") => {
           <path d="M9 8h6" />
         </svg>
       );
-    case "👖":
+    case "ðŸ‘–":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M6 2h12v3l-1 14a2 2 0 01-2 2h-6a2 2 0 01-2-2L6 5V2z" />
@@ -151,7 +151,7 @@ const getIconSvg = (key, size = 18, color = "currentColor") => {
           <path d="M6 7h12" />
         </svg>
       );
-    case "🧥":
+    case "ðŸ§¥":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M4 18V9a4 4 0 014-4h8a4 4 0 014 4v9a2 2 0 01-2 2H6a2 2 0 01-2-2z" />
@@ -160,14 +160,14 @@ const getIconSvg = (key, size = 18, color = "currentColor") => {
           <path d="M4 9l4 2M20 9l-4 2" />
         </svg>
       );
-    case "🩳":
+    case "ðŸ©³":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M6 2h12v4l-1 9a1 1 0 01-1 1h-3.5L12 12l-.5 4H7a1 1 0 01-1-1L5 6V2z" />
           <path d="M12 2v10" />
         </svg>
       );
-    case "🏃":
+    case "ðŸƒ":
       return (
         <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
           <path d="M18 22V14a3 3 0 00-3-3H9a3 3 0 00-3 3v8" />
@@ -185,7 +185,7 @@ const getIconSvg = (key, size = 18, color = "currentColor") => {
   }
 };
 
-// ─── Small components ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Small components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const StatusBadge = ({ status }) => {
   const MAP = {
     New:        { bg:"rgba(59,130,246,0.14)", color:"#3B82F6", border:"rgba(59,130,246,0.3)" },
@@ -204,8 +204,8 @@ const StatusBadge = ({ status }) => {
 };
 
 const StockDot = ({ stock }) => {
-  const c = stock==="In Stock"?"#10B981":stock==="Low Stock"?"#F59E0B":"#FF3B30";
-  return <span style={{ color:c, fontSize:"12px", fontWeight:600, fontFamily:"'Poppins',sans-serif", whiteSpace:"nowrap" }}>● {stock}</span>;
+  const c = stock==="In Stock"?"#10B981":stock==="Low Stock"?"#F59E0B":"#0A7F6E";
+  return <span style={{ color:c, fontSize:"12px", fontWeight:600, fontFamily:"'Poppins',sans-serif", whiteSpace:"nowrap" }}>â— {stock}</span>;
 };
 
 const AnimCounter = ({ target, duration=1400 }) => {
@@ -265,10 +265,10 @@ const BarChart = () => {
           <div style={{
             width:"100%",
             height: anim ? `${(d.v/max)*112}px` : "0",
-            background: i===9 ? "#FF3B30" : "linear-gradient(180deg,#FF3B30 0%,rgba(255,59,48,0.25) 100%)",
+            background: i===9 ? "#0A7F6E" : "linear-gradient(180deg,#0A7F6E 0%,rgba(10,127,110,0.25) 100%)",
             borderRadius:"4px 4px 0 0",
             transition:`height 0.75s cubic-bezier(0.4,0,0.2,1) ${i*0.042}s`,
-            boxShadow: i===9 ? "0 0 14px rgba(255,59,48,0.45)" : "none",
+            boxShadow: i===9 ? "0 0 14px rgba(10,127,110,0.45)" : "none",
           }}/>
           <span style={{ fontSize:"8.5px", color:"rgba(255,255,255,0.35)", fontFamily:"'Poppins',sans-serif" }}>{d.m}</span>
         </div>
@@ -335,7 +335,7 @@ const StatCard = ({ stat, delay }) => {
     <div ref={ref} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
       style={{
         background: hov ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.035)",
-        border:`1px solid ${hov ? "rgba(255,59,48,0.35)" : "rgba(255,255,255,0.08)"}`,
+        border:`1px solid ${hov ? "rgba(10,127,110,0.35)" : "rgba(255,255,255,0.08)"}`,
         borderRadius:"16px", padding:"20px",
         opacity: visible ? 1 : 0,
         transform: visible ? (hov?"translateY(-4px)":"translateY(0)") : "translateY(22px)",
@@ -360,13 +360,13 @@ const StatCard = ({ stat, delay }) => {
         </div>
         <span style={{
           fontSize:"11px",fontWeight:600,
-          color: stat.positive?"#10B981":"#FF3B30",
-          background: stat.positive?"rgba(16,185,129,0.12)":"rgba(255,59,48,0.12)",
-          border:`1px solid ${stat.positive?"rgba(16,185,129,0.28)":"rgba(255,59,48,0.28)"}`,
+          color: stat.positive?"#10B981":"#0A7F6E",
+          background: stat.positive?"rgba(16,185,129,0.12)":"rgba(10,127,110,0.12)",
+          border:`1px solid ${stat.positive?"rgba(16,185,129,0.28)":"rgba(10,127,110,0.28)"}`,
           borderRadius:"8px", padding:"3px 8px",
           fontFamily:"'Poppins',sans-serif",
         }}>
-          {stat.positive?"▲":"▼"} {stat.change}
+          {stat.positive?"â–²":"â–¼"} {stat.change}
         </span>
       </div>
       <p style={{fontFamily:"'Montserrat',sans-serif",fontWeight:800,fontSize:"30px",color:"#fff",marginBottom:"4px",lineHeight:1}}>
@@ -377,7 +377,7 @@ const StatCard = ({ stat, delay }) => {
   );
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function buildLiveNotifs() {
   const items = [];
   try {
@@ -388,40 +388,40 @@ function buildLiveNotifs() {
 
     // New leads
     leads.filter(l => l.status === "New").slice(0, 3).forEach((l, i) => items.push({
-      id: `lead-${i}`, icon: "🆕", color: "#3B82F6", read: false,
-      text: `New lead from ${l.name}${l.org ? ` — ${l.org}` : ""}`,
+      id: `lead-${i}`, icon: "ðŸ†•", color: "#3B82F6", read: false,
+      text: `New lead from ${l.name}${l.org ? ` â€” ${l.org}` : ""}`,
       time: l.date || "Recently",
     }));
     // Bulk orders pending
     orders.filter(o => o.status === "New" || o.status === "Pending").slice(0, 2).forEach((o, i) => items.push({
-      id: `order-${i}`, icon: "✅", color: "#10B981", read: false,
+      id: `order-${i}`, icon: "âœ…", color: "#10B981", read: false,
       text: `Bulk order from ${o.name || o.org || "a client"} is ${o.status}`,
       time: o.deliveryDate || "Recently",
     }));
     // Low / Out of stock products
     prods.filter(p => p.stockStatus === "Low Stock" || p.stockStatus === "Out of Stock").slice(0, 2).forEach((p, i) => items.push({
-      id: `stock-${i}`, icon: "📦", color: "#F59E0B", read: true,
+      id: `stock-${i}`, icon: "ðŸ“¦", color: "#F59E0B", read: true,
       text: `'${p.name}' is ${p.stockStatus}`,
       time: "Recently",
     }));
     // New testimonials
     tests.filter(t => t.status === "Pending").slice(0, 2).forEach((t, i) => items.push({
-      id: `test-${i}`, icon: "💬", color: "#FF3B30", read: true,
-      text: `New testimonial pending from ${t.name} — ${t.rating || 5}★`,
+      id: `test-${i}`, icon: "ðŸ’¬", color: "#0A7F6E", read: true,
+      text: `New testimonial pending from ${t.name} â€” ${t.rating || 5}â˜…`,
       time: t.date || "Recently",
     }));
   } catch {}
   // Fallback when no real data
   if (items.length === 0) {
-    items.push({ id: "empty", icon: "🔧", color: "#8B5CF6", read: true,
-      text: "No notifications yet — they'll appear as you add leads, orders and products.",
+    items.push({ id: "empty", icon: "ðŸ”§", color: "#8B5CF6", read: true,
+      text: "No notifications yet â€” they'll appear as you add leads, orders and products.",
       time: ""
     });
   }
   return items;
 }
 
-// ─── All Notifications Full Modal ────────────────────────────────────────────
+// â”€â”€â”€ All Notifications Full Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const AllNotifsModal = ({ notifs, onClose }) => (
   <div
     onClick={e => { if (e.target === e.currentTarget) onClose(); }}
@@ -465,7 +465,7 @@ const AllNotifsModal = ({ notifs, onClose }) => (
           <div key={n.id} style={{
             display:"flex", gap:"14px", alignItems:"flex-start",
             padding:"14px 22px",
-            background: n.read ? "transparent" : "rgba(255,59,48,0.05)",
+            background: n.read ? "transparent" : "rgba(10,127,110,0.05)",
             borderBottom: i < notifs.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
           }}>
             <div style={{
@@ -478,7 +478,7 @@ const AllNotifsModal = ({ notifs, onClose }) => (
                 margin:"0 0 4px", fontFamily:"'Poppins',sans-serif", lineHeight:1.4 }}>{n.text}</p>
               <p style={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", margin:0, fontFamily:"'Poppins',sans-serif" }}>{n.time}</p>
             </div>
-            {!n.read && <div style={{ width:"8px", height:"8px", borderRadius:"50%", background:"#FF3B30", marginTop:"6px", flexShrink:0 }}/>}
+            {!n.read && <div style={{ width:"8px", height:"8px", borderRadius:"50%", background:"#0A7F6E", marginTop:"6px", flexShrink:0 }}/>}
           </div>
         ))}
       </div>
@@ -486,7 +486,7 @@ const AllNotifsModal = ({ notifs, onClose }) => (
   </div>
 );
 
-// ─── Notification Panel ───────────────────────────────────────────────────────
+// â”€â”€â”€ Notification Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NotifPanel = ({ onClose, onViewAll, notifs, setNotifs }) => {
   const markAll = () => setNotifs(n => n.map(x => ({...x, read:true})));
   const unread = notifs.filter(n => !n.read).length;
@@ -524,10 +524,10 @@ const NotifPanel = ({ onClose, onViewAll, notifs, setNotifs }) => {
         </div>
         {unread > 0 && (
           <button onClick={markAll}
-            style={{ background:"none", border:"none", color:"#FF3B30",
+            style={{ background:"none", border:"none", color:"#0A7F6E",
               fontSize:"11px", fontWeight:600, cursor:"pointer", fontFamily:"'Poppins',sans-serif",
               padding:"4px 8px", borderRadius:"6px", transition:"background 0.2s ease" }}
-            onMouseEnter={e => e.target.style.background = "rgba(255,59,48,0.1)"}
+            onMouseEnter={e => e.target.style.background = "rgba(10,127,110,0.1)"}
             onMouseLeave={e => e.target.style.background = "none"}
           >Mark all read</button>
         )}
@@ -540,12 +540,12 @@ const NotifPanel = ({ onClose, onViewAll, notifs, setNotifs }) => {
             style={{
               display:"flex", gap:"12px", alignItems:"flex-start",
               padding:"13px 18px",
-              background: n.read ? "transparent" : "rgba(255,59,48,0.04)",
+              background: n.read ? "transparent" : "rgba(10,127,110,0.04)",
               borderBottom: "1px solid rgba(255,255,255,0.05)",
               cursor:"pointer", transition:"background 0.2s ease",
             }}
             onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
-            onMouseLeave={e => e.currentTarget.style.background = n.read ? "transparent" : "rgba(255,59,48,0.04)"}
+            onMouseLeave={e => e.currentTarget.style.background = n.read ? "transparent" : "rgba(10,127,110,0.04)"}
           >
             <div style={{
               width:"34px", height:"34px", borderRadius:"9px", flexShrink:0,
@@ -559,7 +559,7 @@ const NotifPanel = ({ onClose, onViewAll, notifs, setNotifs }) => {
                 WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>{n.text}</p>
               <p style={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", margin:0, fontFamily:"'Poppins',sans-serif" }}>{n.time}</p>
             </div>
-            {!n.read && <div style={{ width:"7px", height:"7px", borderRadius:"50%", background:"#FF3B30", marginTop:"4px", flexShrink:0 }}/>}
+            {!n.read && <div style={{ width:"7px", height:"7px", borderRadius:"50%", background:"#0A7F6E", marginTop:"4px", flexShrink:0 }}/>}
           </div>
         ))}
       </div>
@@ -567,19 +567,19 @@ const NotifPanel = ({ onClose, onViewAll, notifs, setNotifs }) => {
       <div style={{ padding:"12px 18px", borderTop:"1px solid rgba(255,255,255,0.08)", textAlign:"center" }}>
         <button
           onClick={onViewAll}
-          style={{ background:"rgba(255,59,48,0.08)", border:"1px solid rgba(255,59,48,0.2)",
-            color:"#FF3B30", fontSize:"12px", cursor:"pointer", fontFamily:"'Poppins',sans-serif",
+          style={{ background:"rgba(10,127,110,0.08)", border:"1px solid rgba(10,127,110,0.2)",
+            color:"#0A7F6E", fontSize:"12px", cursor:"pointer", fontFamily:"'Poppins',sans-serif",
             padding:"7px 18px", borderRadius:"8px", fontWeight:500,
             transition:"all 0.2s ease", width:"100%" }}
-          onMouseEnter={e => { e.target.style.background = "rgba(255,59,48,0.18)"; e.target.style.borderColor = "rgba(255,59,48,0.45)"; }}
-          onMouseLeave={e => { e.target.style.background = "rgba(255,59,48,0.08)"; e.target.style.borderColor = "rgba(255,59,48,0.2)"; }}
-        >View all notifications ({notifs.length}) →</button>
+          onMouseEnter={e => { e.target.style.background = "rgba(10,127,110,0.18)"; e.target.style.borderColor = "rgba(10,127,110,0.45)"; }}
+          onMouseLeave={e => { e.target.style.background = "rgba(10,127,110,0.08)"; e.target.style.borderColor = "rgba(10,127,110,0.2)"; }}
+        >View all notifications ({notifs.length}) â†’</button>
       </div>
     </div>
   );
 };
 
-// ─── Search Panel ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Search Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SearchPanel = ({ query, setQuery, onClose }) => {
   const ref = useRef(null);
   const inputRef = useRef(null);
@@ -587,19 +587,19 @@ const SearchPanel = ({ query, setQuery, onClose }) => {
   // Build search index live from localStorage
   const allSearch = (() => {
     const pages = [
-      { type:"Page", label:"Dashboard",   sub:"Overview",         icon:"🏠" },
-      { type:"Page", label:"Products",    sub:"Manage products",   icon:"📦" },
-      { type:"Page", label:"Categories",  sub:"Manage categories", icon:"🗂" },
-      { type:"Page", label:"Bulk Orders", sub:"B2B requests",      icon:"📋" },
-      { type:"Page", label:"Leads",       sub:"View inquiries",    icon:"👤" },
-      { type:"Page", label:"Testimonials",sub:"Reviews",           icon:"💬" },
+      { type:"Page", label:"Dashboard",   sub:"Overview",         icon:"ðŸ " },
+      { type:"Page", label:"Products",    sub:"Manage products",   icon:"ðŸ“¦" },
+      { type:"Page", label:"Categories",  sub:"Manage categories", icon:"ðŸ—‚" },
+      { type:"Page", label:"Bulk Orders", sub:"B2B requests",      icon:"ðŸ“‹" },
+      { type:"Page", label:"Leads",       sub:"View inquiries",    icon:"ðŸ‘¤" },
+      { type:"Page", label:"Testimonials",sub:"Reviews",           icon:"ðŸ’¬" },
     ];
     try {
       const leads = JSON.parse(localStorage.getItem("csw_admin_leads") || "[]");
       const prods = JSON.parse(localStorage.getItem("csw_admin_products") || "[]");
       return [
-        ...leads.map(l => ({ type:"Lead",    label:l.name,    sub:l.org || l.company || "", icon:"👤" })),
-        ...prods.map(p => ({ type:"Product", label:p.name,    sub:p.category || "",         icon:"📦" })),
+        ...leads.map(l => ({ type:"Lead",    label:l.name,    sub:l.org || l.company || "", icon:"ðŸ‘¤" })),
+        ...prods.map(p => ({ type:"Product", label:p.name,    sub:p.category || "",         icon:"ðŸ“¦" })),
         ...pages,
       ];
     } catch {
@@ -639,13 +639,13 @@ const SearchPanel = ({ query, setQuery, onClose }) => {
         borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
         <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input ref={inputRef} value={query} onChange={e=>setQuery(e.target.value)}
-          placeholder="Search products, leads, pages…"
+          placeholder="Search products, leads, pagesâ€¦"
           style={{flex:1,background:"none",border:"none",outline:"none",
             color:"#fff",fontSize:"14px",fontFamily:"'Poppins',sans-serif"}}
         />
         {query && (
           <button onClick={()=>setQuery("")}
-            style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:"16px",lineHeight:1}}>×</button>
+            style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:"16px",lineHeight:1}}>Ã—</button>
         )}
       </div>
       {/* Results */}
@@ -700,7 +700,7 @@ const SearchPanel = ({ query, setQuery, onClose }) => {
   );
 };
 
-// ─── Section header helper ────────────────────────────────────────────────────
+// â”€â”€â”€ Section header helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SectionHead = ({title, sub, action}) => (
   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"16px",flexWrap:"wrap",gap:"8px"}}>
     <div>
@@ -713,19 +713,19 @@ const SectionHead = ({title, sub, action}) => (
 
 const ViewAllBtn = ({label="View All", red=false, onClick}) => (
   <button onClick={onClick} style={{
-    background: red?"rgba(255,59,48,0.1)":"rgba(255,255,255,0.06)",
-    border:`1px solid ${red?"rgba(255,59,48,0.28)":"rgba(255,255,255,0.1)"}`,
-    color: red?"#FF3B30":"rgba(255,255,255,0.55)",
+    background: red?"rgba(10,127,110,0.1)":"rgba(255,255,255,0.06)",
+    border:`1px solid ${red?"rgba(10,127,110,0.28)":"rgba(255,255,255,0.1)"}`,
+    color: red?"#0A7F6E":"rgba(255,255,255,0.55)",
     borderRadius:"8px",padding:"5px 12px",fontSize:"11px",fontWeight:500,
     cursor:"pointer",fontFamily:"'Poppins',sans-serif",
     transition:"all 0.2s ease",display:"flex",alignItems:"center",gap:"5px",
   }}
-    onMouseEnter={e=>{ e.currentTarget.style.background=red?"rgba(255,59,48,0.2)":"rgba(255,255,255,0.1)"; }}
-    onMouseLeave={e=>{ e.currentTarget.style.background=red?"rgba(255,59,48,0.1)":"rgba(255,255,255,0.06)"; }}
+    onMouseEnter={e=>{ e.currentTarget.style.background=red?"rgba(10,127,110,0.2)":"rgba(255,255,255,0.1)"; }}
+    onMouseLeave={e=>{ e.currentTarget.style.background=red?"rgba(10,127,110,0.1)":"rgba(255,255,255,0.06)"; }}
   >{label}</button>
 );
 
-// ─── Main Dashboard ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Dashboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const AdminDashboard = () => {
   const [activeKey,        setActiveKey]        = useState("dashboard");
   const [mobileOpen,       setMobileOpen]       = useState(false);
@@ -740,7 +740,7 @@ const AdminDashboard = () => {
   const [showAllNotifs, setShowAllNotifs] = useState(false);
   const navigate = useNavigate();
 
-  // ── Live data from localStorage ──────────────────────────────────────────────
+  // â”€â”€ Live data from localStorage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [liveLeads,    setLiveLeads]    = useState([]);
   const [liveProducts, setLiveProducts] = useState([]);
   const [liveActivity, setLiveActivity] = useState([]);
@@ -802,29 +802,29 @@ const AdminDashboard = () => {
 
   return (
     <>
-      {/* ── All Notifications Modal — rendered at root, outside all positioned parents ── */}
+      {/* â”€â”€ All Notifications Modal â€” rendered at root, outside all positioned parents â”€â”€ */}
       {showAllNotifs && (
         <AllNotifsModal
           notifs={allNotifs}
           onClose={() => { setShowAllNotifs(false); setShowNotif(false); }}
         />
       )}
-      {/* ── Global styles ── */}
+      {/* â”€â”€ Global styles â”€â”€ */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
         body{background:#050e1a;color:#fff;font-family:'Poppins',sans-serif;}
         ::-webkit-scrollbar{width:4px;height:4px;}
         ::-webkit-scrollbar-track{background:rgba(255,255,255,0.03);}
-        ::-webkit-scrollbar-thumb{background:rgba(255,59,48,0.3);border-radius:2px;}
+        ::-webkit-scrollbar-thumb{background:rgba(10,127,110,0.3);border-radius:2px;}
 
         @keyframes csw-fadein{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
         @keyframes csw-dropdown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
-        @keyframes csw-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,59,48,0.5);}50%{box-shadow:0 0 0 7px rgba(255,59,48,0);}}
+        @keyframes csw-pulse{0%,100%{box-shadow:0 0 0 0 rgba(10,127,110,0.5);}50%{box-shadow:0 0 0 7px rgba(10,127,110,0);}}
 
         .csw-card { transition-property: opacity, transform; }
 
-        /* ── Topbar ── */
+        /* â”€â”€ Topbar â”€â”€ */
         .csw-topbar{
           position:fixed;top:0;
           left:${sidebarCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED}px;right:0;
@@ -839,7 +839,7 @@ const AdminDashboard = () => {
           transition:left 0.35s cubic-bezier(0.4,0,0.2,1);
         }
 
-        /* ── Main ── */
+        /* â”€â”€ Main â”€â”€ */
         .csw-main{
           margin-left:${sidebarCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED}px;
           padding:80px 24px 40px;
@@ -847,12 +847,12 @@ const AdminDashboard = () => {
           transition:margin-left 0.35s cubic-bezier(0.4,0,0.2,1);
         }
 
-        /* ── Stat grid ── */
+        /* â”€â”€ Stat grid â”€â”€ */
         .csw-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
         .csw-charts{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
         .csw-tables{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
 
-        /* ── Search input desktop ── */
+        /* â”€â”€ Search input desktop â”€â”€ */
         .csw-search-outer{ position:relative; }
         .csw-search-wrap{ position:relative; }
         .csw-search-box{
@@ -862,7 +862,7 @@ const AdminDashboard = () => {
           borderRadius:10px;padding:7px 14px;
           cursor:text;transition:border-color 0.2s ease;
         }
-        .csw-search-box:focus-within{ border-color:rgba(255,59,48,0.4); }
+        .csw-search-box:focus-within{ border-color:rgba(10,127,110,0.4); }
         .csw-search-box input{
           background:none;border:none;outline:none;
           color:#fff;font-size:13px;width:150px;
@@ -870,13 +870,13 @@ const AdminDashboard = () => {
         }
         .csw-search-box input::placeholder{ color:rgba(255,255,255,0.3); }
 
-        /* ── Mobile search (icon only) ── */
+        /* â”€â”€ Mobile search (icon only) â”€â”€ */
         .csw-mobile-search-btn{ display:none; }
 
-        /* ── Hamburger ── */
+        /* â”€â”€ Hamburger â”€â”€ */
         .csw-hamburger{ display:none; }
 
-        /* ── Responsive ── */
+        /* â”€â”€ Responsive â”€â”€ */
         @media(max-width:1024px){
           .csw-charts{ grid-template-columns:1fr !important; }
           .csw-tables{ grid-template-columns:1fr !important; }
@@ -889,7 +889,7 @@ const AdminDashboard = () => {
           /* Hide full search box on mobile, show icon */
           .csw-search-wrap .csw-search-box{ display:none; }
           .csw-mobile-search-btn{ display:flex !important; }
-          /* greeting text — shorter on mobile */
+          /* greeting text â€” shorter on mobile */
           .csw-greeting-sub{ display:none; }
           .csw-search-outer { position: static !important; }
           .csw-search-wrap { position: static !important; }
@@ -918,7 +918,7 @@ const AdminDashboard = () => {
 
       <div style={{minHeight:"100vh",background:"#050e1a"}}>
 
-        {/* ── Sidebar ── */}
+        {/* â”€â”€ Sidebar â”€â”€ */}
         <AdminSidebar
           activeKey={activeKey}
           onNavigate={setActiveKey}
@@ -927,7 +927,7 @@ const AdminDashboard = () => {
           onCollapsedChange={setSidebarCollapsed}
         />
 
-        {/* ── Topbar ── */}
+        {/* â”€â”€ Topbar â”€â”€ */}
         <header className="csw-topbar">
 
           {/* Left: hamburger + greeting */}
@@ -964,11 +964,11 @@ const AdminDashboard = () => {
                   value={searchQuery}
                   onChange={e=>{setSearchQuery(e.target.value);setShowSearch(true);setShowNotif(false);}}
                   onFocus={()=>{setShowSearch(true);setShowNotif(false);}}
-                  placeholder="Search products, leads…"
+                  placeholder="Search products, leadsâ€¦"
                 />
                 {searchQuery && (
                   <button onClick={e=>{e.stopPropagation();setSearchQuery("");}}
-                    style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:"16px",lineHeight:1,flexShrink:0}}>×</button>
+                    style={{background:"none",border:"none",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:"16px",lineHeight:1,flexShrink:0}}>Ã—</button>
                 )}
               </div>
               {showSearch && (
@@ -996,8 +996,8 @@ const AdminDashboard = () => {
                 onClick={()=>{setShowNotif(n=>!n);setShowSearch(false);}}
                 style={{
                   position:"relative",
-                  background: showNotif?"rgba(255,59,48,0.12)":"rgba(255,255,255,0.07)",
-                  border:`1px solid ${showNotif?"rgba(255,59,48,0.35)":"rgba(255,255,255,0.1)"}`,
+                  background: showNotif?"rgba(10,127,110,0.12)":"rgba(255,255,255,0.07)",
+                  border:`1px solid ${showNotif?"rgba(10,127,110,0.35)":"rgba(255,255,255,0.1)"}`,
                   borderRadius:"9px",width:"38px",height:"38px",
                   display:"flex",alignItems:"center",justifyContent:"center",
                   cursor:"pointer",color:"rgba(255,255,255,0.75)",
@@ -1010,7 +1010,7 @@ const AdminDashboard = () => {
                   <span style={{
                     position:"absolute",top:"5px",right:"5px",
                     width:"8px",height:"8px",
-                    background:"#FF3B30",borderRadius:"50%",
+                    background:"#0A7F6E",borderRadius:"50%",
                     border:"1.5px solid #050e1a",
                     animation:"csw-pulse 2s infinite",
                   }}/>
@@ -1031,10 +1031,10 @@ const AdminDashboard = () => {
             {/* Avatar */}
             <div style={{
               width:"38px",height:"38px",borderRadius:"9px",flexShrink:0,
-              background:"linear-gradient(135deg,#FF3B30,#cc2020)",
+              background:"linear-gradient(135deg,#0A7F6E,#08695C)",
               display:"flex",alignItems:"center",justifyContent:"center",
               fontFamily:"'Montserrat',sans-serif",fontWeight:800,fontSize:"15px",color:"#fff",
-              cursor:"pointer",boxShadow:"0 0 14px rgba(255,59,48,0.3)",
+              cursor:"pointer",boxShadow:"0 0 14px rgba(10,127,110,0.3)",
               transition:"transform 0.2s ease",
             }}
               onMouseEnter={e=>e.currentTarget.style.transform="scale(1.06)"}
@@ -1043,7 +1043,7 @@ const AdminDashboard = () => {
           </div>
         </header>
 
-        {/* ── Main content ── */}
+        {/* â”€â”€ Main content â”€â”€ */}
         <main className="csw-main">
 
           {/* Page title */}
@@ -1053,27 +1053,27 @@ const AdminDashboard = () => {
             transition:"opacity 0.5s ease 0.05s, transform 0.5s ease 0.05s",
           }}>
             <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"3px"}}>
-              <div style={{width:"4px",height:"22px",background:"#FF3B30",borderRadius:"2px",boxShadow:"0 0 10px rgba(255,59,48,0.5)"}}/>
+              <div style={{width:"4px",height:"22px",background:"#0A7F6E",borderRadius:"2px",boxShadow:"0 0 10px rgba(10,127,110,0.5)"}}/>
               <h1 style={{fontFamily:"'Montserrat',sans-serif",fontWeight:800,fontSize:"21px",color:"#fff",letterSpacing:"0.4px"}}>
                 Dashboard Overview
               </h1>
             </div>
             <p style={{color:"rgba(255,255,255,0.4)",fontSize:"12.5px",fontFamily:"'Poppins',sans-serif",paddingLeft:"14px"}}>
-              Welcome back — here's what's happening with Comfy Sport Wear today.
+              Welcome back â€” here's what's happening with Comfy Sport Wear today.
             </p>
           </div>
 
-          {/* ── Stats ── */}
+          {/* â”€â”€ Stats â”€â”€ */}
           <div className="csw-stats">
             {LIVE_STATS.map((s,i)=><StatCard key={s.key} stat={s} delay={i*0.07}/>)}
           </div>
 
-          {/* ── Charts ── */}
+          {/* â”€â”€ Charts â”€â”€ */}
           <div className="csw-charts">
             <Card delay={0.1}>
               <SectionHead
                 title="Monthly Inquiries" sub="2025 Overview"
-                action={<span style={{background:"rgba(255,59,48,0.12)",color:"#FF3B30",border:"1px solid rgba(255,59,48,0.28)",borderRadius:"8px",padding:"4px 10px",fontSize:"11px",fontWeight:600,fontFamily:"'Poppins',sans-serif"}}>▲ 18.4%</span>}
+                action={<span style={{background:"rgba(10,127,110,0.12)",color:"#0A7F6E",border:"1px solid rgba(10,127,110,0.28)",borderRadius:"8px",padding:"4px 10px",fontSize:"11px",fontWeight:600,fontFamily:"'Poppins',sans-serif"}}>â–² 18.4%</span>}
               />
               <BarChart/>
             </Card>
@@ -1083,7 +1083,7 @@ const AdminDashboard = () => {
             </Card>
           </div>
 
-          {/* ── Tables ── */}
+          {/* â”€â”€ Tables â”€â”€ */}
           <div className="csw-tables">
             {/* Leads */}
             <Card delay={0.1} style={{overflowX:"hidden"}}>
@@ -1106,15 +1106,15 @@ const AdminDashboard = () => {
                       <tr key={l.id || i} className="csw-tr" style={{animation:`csw-fadein 0.4s ease ${i*0.055}s both`}}>
                         <td style={{padding:"10px 10px",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
                           <p style={{fontSize:"12px",fontWeight:500,color:"#fff",fontFamily:"'Poppins',sans-serif",margin:0}}>{l.name}</p>
-                          <p style={{fontSize:"10px",color:"rgba(255,255,255,0.33)",fontFamily:"'Poppins',sans-serif",margin:0}}>{l.org || l.company || "—"}</p>
+                          <p style={{fontSize:"10px",color:"rgba(255,255,255,0.33)",fontFamily:"'Poppins',sans-serif",margin:0}}>{l.org || l.company || "â€”"}</p>
                         </td>
-                        <td style={{padding:"10px 10px",fontSize:"12px",color:"rgba(255,255,255,0.6)",fontFamily:"'Poppins',sans-serif",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>{l.product || l.category || "—"}</td>
-                        <td style={{padding:"10px 10px",fontSize:"12px",fontWeight:700,color:"#fff",fontFamily:"'Montserrat',sans-serif",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>{l.qty || l.quantity || "—"}</td>
+                        <td style={{padding:"10px 10px",fontSize:"12px",color:"rgba(255,255,255,0.6)",fontFamily:"'Poppins',sans-serif",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>{l.product || l.category || "â€”"}</td>
+                        <td style={{padding:"10px 10px",fontSize:"12px",fontWeight:700,color:"#fff",fontFamily:"'Montserrat',sans-serif",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>{l.qty || l.quantity || "â€”"}</td>
                         <td style={{padding:"10px 10px",borderBottom:"1px solid rgba(255,255,255,0.04)"}}><StatusBadge status={l.status}/></td>
-                        <td style={{padding:"10px 10px",fontSize:"10.5px",color:"rgba(255,255,255,0.32)",fontFamily:"'Poppins',sans-serif",borderBottom:"1px solid rgba(255,255,255,0.04)",whiteSpace:"nowrap"}}>{l.date || l.time || "—"}</td>
+                        <td style={{padding:"10px 10px",fontSize:"10.5px",color:"rgba(255,255,255,0.32)",fontFamily:"'Poppins',sans-serif",borderBottom:"1px solid rgba(255,255,255,0.04)",whiteSpace:"nowrap"}}>{l.date || l.time || "â€”"}</td>
                       </tr>
                     )) : (
-                      <tr><td colSpan={5} style={{padding:"24px",textAlign:"center",color:"rgba(255,255,255,0.3)",fontSize:"12px",fontFamily:"'Poppins',sans-serif"}}>No leads yet — add your first lead from the Leads page.</td></tr>
+                      <tr><td colSpan={5} style={{padding:"24px",textAlign:"center",color:"rgba(255,255,255,0.3)",fontSize:"12px",fontFamily:"'Poppins',sans-serif"}}>No leads yet â€” add your first lead from the Leads page.</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -1143,18 +1143,18 @@ const AdminDashboard = () => {
                       <tr key={p.id || i} className="csw-tr" style={{animation:`csw-fadein 0.4s ease ${i*0.055}s both`}}>
                         <td style={{padding:"10px 10px",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
                           <div style={{display:"flex",alignItems:"center",gap:"9px"}}>
-                            <div style={{width:"28px",height:"28px",borderRadius:"7px",background:"rgba(255,59,48,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#FF3B30",flexShrink:0}}>
-                              <svg width="14" height="14" fill="none" stroke="#FF3B30" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                            <div style={{width:"28px",height:"28px",borderRadius:"7px",background:"rgba(10,127,110,0.1)",display:"flex",alignItems:"center",justifyContent:"center",color:"#0A7F6E",flexShrink:0}}>
+                              <svg width="14" height="14" fill="none" stroke="#0A7F6E" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
                             </div>
                             <span style={{fontSize:"12px",fontWeight:500,color:"#fff",fontFamily:"'Poppins',sans-serif"}}>{p.name}</span>
                           </div>
                         </td>
                         <td style={{padding:"10px 10px",fontSize:"11px",color:"rgba(255,255,255,0.45)",fontFamily:"'Poppins',sans-serif",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>{p.category}</td>
-                        <td style={{padding:"10px 10px",fontSize:"12px",fontWeight:600,color:"#FF3B30",fontFamily:"'Montserrat',sans-serif",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>{p.price ? `₹${p.price}` : "—"}</td>
+                        <td style={{padding:"10px 10px",fontSize:"12px",fontWeight:600,color:"#0A7F6E",fontFamily:"'Montserrat',sans-serif",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>{p.price ? `â‚¹${p.price}` : "â€”"}</td>
                         <td style={{padding:"10px 10px",borderBottom:"1px solid rgba(255,255,255,0.04)"}}><StockDot stock={p.stockStatus || p.stock || "In Stock"}/></td>
                       </tr>
                     )) : (
-                      <tr><td colSpan={4} style={{padding:"24px",textAlign:"center",color:"rgba(255,255,255,0.3)",fontSize:"12px",fontFamily:"'Poppins',sans-serif"}}>No products yet — add your first product from the Products page.</td></tr>
+                      <tr><td colSpan={4} style={{padding:"24px",textAlign:"center",color:"rgba(255,255,255,0.3)",fontSize:"12px",fontFamily:"'Poppins',sans-serif"}}>No products yet â€” add your first product from the Products page.</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -1162,7 +1162,7 @@ const AdminDashboard = () => {
             </Card>
           </div>
 
-          {/* ── Recent Activity ── */}
+          {/* â”€â”€ Recent Activity â”€â”€ */}
           <Card delay={0.08}>
             <SectionHead title="Recent Activity" sub="System log"/>
             <div>

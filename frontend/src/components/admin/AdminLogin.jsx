@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../../assets/images/ath.logo.jpeg";
+import logo from "../../assets/images/comfy_logo3.png";
 import API from "../../services/api";
 
 
@@ -47,7 +47,7 @@ const AdminLogin = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #050e1a; color: #fff; font-family: 'Poppins', sans-serif; }
+        body { background: #000000; color: #fff; font-family: 'Poppins', sans-serif; }
         
         .login-container {
           min-height: 100vh;
@@ -62,7 +62,7 @@ const AdminLogin = () => {
 
         .login-card {
           background: rgba(0, 0, 0, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          border: 1px solid #DDDFD2;
           backdrop-filter: blur(16px);
           border-radius: 24px;
           padding: 40px 32px;
@@ -82,7 +82,7 @@ const AdminLogin = () => {
 
         .login-input {
           background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.12);
+          border: 1px solid #DDDFD2;
           color: #fff;
           border-radius: 12px;
           padding: 12px 14px;
@@ -95,12 +95,12 @@ const AdminLogin = () => {
         }
         
         .login-input:focus {
-          border-color: #FF3B30;
-          box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.15);
+          border-color: #0A7F6E;
+          box-shadow: 0 0 0 3px rgba(10, 127, 110, 0.15);
         }
 
         .login-btn {
-          background: linear-gradient(135deg, #FF3B30 0%, #cc2e25 100%);
+          background: linear-gradient(135deg, #0A7F6E 0%, #08695C 100%);
           border: none;
           color: #fff;
           border-radius: 12px;
@@ -110,13 +110,13 @@ const AdminLogin = () => {
           cursor: pointer;
           transition: transform 0.2s, box-shadow 0.2s;
           width: 100%;
-          box-shadow: 0 4px 16px rgba(255, 59, 48, 0.3);
+          box-shadow: 0 4px 16px rgba(10, 127, 110, 0.3);
           font-family: 'Poppins', sans-serif;
         }
 
         .login-btn:hover {
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(255, 59, 48, 0.45);
+          box-shadow: 0 6px 20px rgba(10, 127, 110, 0.45);
         }
 
         .login-btn:active {
@@ -124,9 +124,9 @@ const AdminLogin = () => {
         }
 
         .login-error {
-          background: rgba(239, 68, 68, 0.12);
-          border: 1px solid rgba(239, 68, 68, 0.25);
-          color: #EF4444;
+          background: rgba(10, 127, 110, 0.12);
+          border: 1px solid rgba(10, 127, 110, 0.25);
+          color: #0A7F6E;
           border-radius: 10px;
           padding: 10px 14px;
           font-size: 12.5px;
@@ -154,9 +154,9 @@ const AdminLogin = () => {
         {/* Decorative Background SVGs */}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
           {/* Radial Glow 1 */}
-          <div style={{ position: "absolute", top: "-100px", left: "10%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255, 59, 48, 0.12) 0%, transparent 75%)", filter: "blur(50px)" }} />
+          <div style={{ position: "absolute", top: "-100px", left: "10%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(10, 127, 110, 0.12) 0%, transparent 75%)", filter: "blur(50px)" }} />
           {/* Radial Glow 2 */}
-          <div style={{ position: "absolute", bottom: "-100px", right: "10%", width: "450px", height: "450px", borderRadius: "50%", background: "radial-gradient(circle, rgba(10, 37, 64, 0.4) 0%, transparent 80%)", filter: "blur(60px)" }} />
+          <div style={{ position: "absolute", bottom: "-100px", right: "10%", width: "450px", height: "450px", borderRadius: "50%", background: "radial-gradient(circle, rgba(10, 127, 110, 0.25) 0%, transparent 80%)", filter: "blur(60px)" }} />
           {/* Tech Grid Pattern */}
           <svg width="100%" height="100%" opacity="0.035" stroke="#fff" strokeWidth="1">
             <defs>
@@ -176,7 +176,7 @@ const AdminLogin = () => {
             src={logo}
             alt="Athenura Logo"
             style={{
-            width: "180px",
+            width: "100px",
             height: "auto",
             objectFit: "contain",
             marginBottom: "15px",
@@ -193,7 +193,7 @@ const AdminLogin = () => {
           marginBottom: "4px",
         }}
             >
-         ATHENURA SPORTSWEAR
+         COMFY SPORTSWEAR
           </h2>
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", letterSpacing: "1.5px", textTransform: "uppercase", marginTop: "2px" }}>
               Admin Access Panel
@@ -310,8 +310,8 @@ const AdminLogin = () => {
               </svg>
               Mock Credentials for Review:
             </div>
-            Email: <span style={{ color: "#FF3B30", fontFamily: "monospace" }}>admin@comfysportwear.com</span><br/>
-            Password: <span style={{ color: "#FF3B30", fontFamily: "monospace" }}>admin123</span>
+            Email: <span style={{ color: "#0A7F6E", fontFamily: "monospace" }}>admin@comfysportwear.com</span><br/>
+            Password: <span style={{ color: "#0A7F6E", fontFamily: "monospace" }}>admin123</span>
           </div>
         </div>
       </div>

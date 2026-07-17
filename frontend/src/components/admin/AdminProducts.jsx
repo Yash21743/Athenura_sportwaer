@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
 import API from "../../services/api";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CATEGORIES = [
   "Sports T-Shirts",
   "Performance Jerseys",
@@ -102,7 +102,7 @@ const DEFAULT_FORM = {
   description: "",
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [apiCategories, setApiCategories] = useState([]);
@@ -343,7 +343,7 @@ const AdminProducts = () => {
 
   return (
     <>
-      {/* ── Stylesheet overrides ── */}
+      {/* â”€â”€ Stylesheet overrides â”€â”€ */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -392,7 +392,7 @@ const AdminProducts = () => {
           padding: 3px 9px; borderRadius: 20px; fontSize: 10px; fontWeight: 700;
         }
 
-        /* ── Input & Select styling ── */
+        /* â”€â”€ Input & Select styling â”€â”€ */
         .csw-input, .csw-select, .csw-textarea {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.12);
@@ -401,7 +401,7 @@ const AdminProducts = () => {
           width: 100%;
         }
         .csw-input:focus, .csw-select:focus, .csw-textarea:focus {
-          border-color: #FF3B30;
+          border-color: #0A7F6E;
         }
 
         /* Explicit Select option dark mode fix */
@@ -411,7 +411,7 @@ const AdminProducts = () => {
           padding: 8px;
         }
 
-        /* ── Responsive ── */
+        /* â”€â”€ Responsive â”€â”€ */
         @media(max-width:768px){
           .csw-topbar { left: 0 !important; padding: 0 14px; }
           .csw-main { margin-left: 0 !important; padding: 76px 14px 32px; }
@@ -440,7 +440,7 @@ const AdminProducts = () => {
       `}</style>
 
       <div style={{ minHeight: "100vh", background: "#050e1a" }}>
-        {/* ── Sidebar ── */}
+        {/* â”€â”€ Sidebar â”€â”€ */}
         <AdminSidebar
           activeKey="products"
           isMobileOpen={mobileOpen}
@@ -448,7 +448,7 @@ const AdminProducts = () => {
           onCollapsedChange={setSidebarCollapsed}
         />
 
-        {/* ── Topbar ── */}
+        {/* â”€â”€ Topbar â”€â”€ */}
         <header className="csw-topbar">
           {/* Left: Mobile toggle + Page Title */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -489,7 +489,7 @@ const AdminProducts = () => {
                 width: "36px",
                 height: "36px",
                 borderRadius: "9px",
-                background: "linear-gradient(135deg,#FF3B30,#cc2020)",
+                background: "linear-gradient(135deg,#0A7F6E,#08695C)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -497,7 +497,7 @@ const AdminProducts = () => {
                 fontWeight: 800,
                 fontSize: "14px",
                 color: "#fff",
-                boxShadow: "0 0 10px rgba(255,59,48,0.3)",
+                boxShadow: "0 0 10px rgba(10,127,110,0.3)",
               }}
             >
               A
@@ -505,7 +505,7 @@ const AdminProducts = () => {
           </div>
         </header>
 
-        {/* ── Main Content ── */}
+        {/* â”€â”€ Main Content â”€â”€ */}
         <main className="csw-main">
           {/* Section Header */}
           <div
@@ -527,9 +527,9 @@ const AdminProducts = () => {
                   style={{
                     width: "4px",
                     height: "22px",
-                    background: "#FF3B30",
+                    background: "#0A7F6E",
                     borderRadius: "2px",
-                    boxShadow: "0 0 10px rgba(255,59,48,0.5)",
+                    boxShadow: "0 0 10px rgba(10,127,110,0.5)",
                   }}
                 />
                 <h2 style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: "20px", color: "#fff" }}>
@@ -543,7 +543,7 @@ const AdminProducts = () => {
             <button
               onClick={openAddModal}
               style={{
-                background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                 color: "#fff",
                 border: "none",
                 borderRadius: "10px",
@@ -554,7 +554,7 @@ const AdminProducts = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                boxShadow: "0 4px 16px rgba(255,59,48,0.3)",
+                boxShadow: "0 4px 16px rgba(10,127,110,0.3)",
                 fontFamily: "'Poppins',sans-serif",
                 transition: "transform 0.2s",
               }}
@@ -660,7 +660,7 @@ const AdminProducts = () => {
             </div>
           </div>
 
-          {/* ── Desktop Table View ── */}
+          {/* â”€â”€ Desktop Table View â”€â”€ */}
           <div
             className="desktop-only"
             style={{
@@ -687,7 +687,7 @@ const AdminProducts = () => {
                   {sortedProducts.map((p) => {
                     const isLow = p.stockStatus === "Low Stock";
                     const isOut = p.stockStatus === "Out of Stock";
-                    const statusColor = isOut ? "#FF3B30" : isLow ? "#F59E0B" : "#10B981";
+                    const statusColor = isOut ? "#0A7F6E" : isLow ? "#F59E0B" : "#10B981";
 
                     return (
                       <tr key={p.id} className="table-row" onClick={() => setViewingProduct(p)}>
@@ -728,12 +728,12 @@ const AdminProducts = () => {
                         </td>
                         <td style={{ color: "rgba(255,255,255,0.6)", fontFamily: "monospace", fontSize: "12px" }}>{p.code}</td>
                         <td style={{ color: "rgba(255,255,255,0.55)" }}>{p.category}</td>
-                        <td style={{ fontWeight: 700, fontFamily: "'Montserrat',sans-serif" }}>₹{p.price}</td>
+                        <td style={{ fontWeight: 700, fontFamily: "'Montserrat',sans-serif" }}>â‚¹{p.price}</td>
                         <td>
                           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                             <span style={{ fontWeight: 600 }}>{p.stock} units</span>
                             <span style={{ fontSize: "10px", fontWeight: 700, color: statusColor }}>
-                              ● {p.stockStatus}
+                              â— {p.stockStatus}
                             </span>
                           </div>
                         </td>
@@ -754,7 +754,7 @@ const AdminProducts = () => {
                                 color: "rgba(255,255,255,0.6)",
                                 transition: "all 0.2s",
                               }}
-                              onMouseEnter={(e) => (e.currentTarget.style.color = "#FF3B30")}
+                              onMouseEnter={(e) => (e.currentTarget.style.color = "#0A7F6E")}
                               onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
                             >
                               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -765,8 +765,8 @@ const AdminProducts = () => {
                             <button
                               onClick={(e) => handleDelete(p.id, e)}
                               style={{
-                                background: "rgba(255,59,48,0.07)",
-                                border: "1px solid rgba(255,59,48,0.2)",
+                                background: "rgba(10,127,110,0.07)",
+                                border: "1px solid rgba(10,127,110,0.2)",
                                 borderRadius: "8px",
                                 width: "32px",
                                 height: "32px",
@@ -774,11 +774,11 @@ const AdminProducts = () => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 cursor: "pointer",
-                                color: "#FF3B30",
+                                color: "#0A7F6E",
                                 transition: "all 0.2s",
                               }}
-                              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,59,48,0.15)")}
-                              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,59,48,0.07)")}
+                              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(10,127,110,0.15)")}
+                              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(10,127,110,0.07)")}
                             >
                               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                                 <polyline points="3 6 5 6 21 6" />
@@ -801,7 +801,7 @@ const AdminProducts = () => {
             )}
           </div>
 
-          {/* ── Mobile/Tablet Grid View ── */}
+          {/* â”€â”€ Mobile/Tablet Grid View â”€â”€ */}
           <div
             className="mobile-only"
             style={{
@@ -813,8 +813,8 @@ const AdminProducts = () => {
                 {sortedProducts.map((p) => {
                   const isLow = p.stockStatus === "Low Stock";
                   const isOut = p.stockStatus === "Out of Stock";
-                  const statusBg = isOut ? "rgba(255,59,48,0.15)" : isLow ? "rgba(245,158,11,0.15)" : "rgba(16,185,129,0.15)";
-                  const statusColor = isOut ? "#FF3B30" : isLow ? "#F59E0B" : "#10B981";
+                  const statusBg = isOut ? "rgba(10,127,110,0.15)" : isLow ? "rgba(245,158,11,0.15)" : "rgba(16,185,129,0.15)";
+                  const statusColor = isOut ? "#0A7F6E" : isLow ? "#F59E0B" : "#10B981";
 
                   return (
                     <div key={p.id} className="product-card" onClick={() => setViewingProduct(p)}>
@@ -840,8 +840,8 @@ const AdminProducts = () => {
                               {p.code}
                             </span>
                           </div>
-                          <span style={{ fontSize: "14px", fontWeight: 800, color: "#FF3B30", fontFamily: "'Montserrat',sans-serif" }}>
-                            ₹{p.price}
+                          <span style={{ fontSize: "14px", fontWeight: 800, color: "#0A7F6E", fontFamily: "'Montserrat',sans-serif" }}>
+                            â‚¹{p.price}
                           </span>
                         </div>
 
@@ -886,8 +886,8 @@ const AdminProducts = () => {
                             <button
                               onClick={(e) => handleDelete(p.id, e)}
                               style={{
-                                background: "rgba(255,59,48,0.06)",
-                                border: "1px solid rgba(255,59,48,0.15)",
+                                background: "rgba(10,127,110,0.06)",
+                                border: "1px solid rgba(10,127,110,0.15)",
                                 borderRadius: "8px",
                                 width: "30px",
                                 height: "30px",
@@ -895,7 +895,7 @@ const AdminProducts = () => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 cursor: "pointer",
-                                color: "#FF3B30",
+                                color: "#0A7F6E",
                               }}
                             >
                               <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -918,7 +918,7 @@ const AdminProducts = () => {
           </div>
         </main>
 
-        {/* ── Add / Edit Product Modal ── */}
+        {/* â”€â”€ Add / Edit Product Modal â”€â”€ */}
         {isModalOpen && (
           <div
             style={{
@@ -1014,7 +1014,7 @@ const AdminProducts = () => {
                       alignItems: "center",
                       justifyContent: "center",
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#FF3B30")}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#0A7F6E")}
                     onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
                   >
                     <input
@@ -1041,7 +1041,7 @@ const AdminProducts = () => {
                             position: "absolute",
                             top: "8px",
                             right: "8px",
-                            background: "rgba(255,59,48,0.9)",
+                            background: "rgba(10,127,110,0.9)",
                             border: "none",
                             borderRadius: "50%",
                             width: "22px",
@@ -1053,7 +1053,7 @@ const AdminProducts = () => {
                             justifyContent: "center",
                           }}
                         >
-                          ×
+                          Ã—
                         </button>
                       </>
                     ) : (
@@ -1179,8 +1179,8 @@ const AdminProducts = () => {
                           type="button"
                           onClick={() => handleCheckboxChange("sizes", sz)}
                           style={{
-                            border: `1px solid ${active ? "#FF3B30" : "rgba(255,255,255,0.12)"}`,
-                            background: active ? "rgba(255,59,48,0.12)" : "transparent",
+                            border: `1px solid ${active ? "#0A7F6E" : "rgba(255,255,255,0.12)"}`,
+                            background: active ? "rgba(10,127,110,0.12)" : "transparent",
                             color: active ? "#fff" : "rgba(255,255,255,0.6)",
                             padding: "6px 12px",
                             borderRadius: "8px",
@@ -1211,8 +1211,8 @@ const AdminProducts = () => {
                           type="button"
                           onClick={() => handleCheckboxChange("colors", clr)}
                           style={{
-                            border: `1px solid ${active ? "#FF3B30" : "rgba(255,255,255,0.12)"}`,
-                            background: active ? "rgba(255,59,48,0.12)" : "transparent",
+                            border: `1px solid ${active ? "#0A7F6E" : "rgba(255,255,255,0.12)"}`,
+                            background: active ? "rgba(10,127,110,0.12)" : "transparent",
                             color: active ? "#fff" : "rgba(255,255,255,0.6)",
                             padding: "6px 12px",
                             borderRadius: "8px",
@@ -1274,7 +1274,7 @@ const AdminProducts = () => {
                   <button
                     type="submit"
                     style={{
-                      background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                      background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
                       border: "none",
                       borderRadius: "10px",
@@ -1282,7 +1282,7 @@ const AdminProducts = () => {
                       fontSize: "13px",
                       fontWeight: 600,
                       cursor: "pointer",
-                      boxShadow: "0 4px 16px rgba(255,59,48,0.35)",
+                      boxShadow: "0 4px 16px rgba(10,127,110,0.35)",
                     }}
                   >
                     {editingProduct ? "Save Changes" : "Create Product"}
@@ -1293,7 +1293,7 @@ const AdminProducts = () => {
           </div>
         )}
 
-        {/* ── View Product Details Modal ── */}
+        {/* â”€â”€ View Product Details Modal â”€â”€ */}
         {viewingProduct && (
           <div
             style={{
@@ -1335,7 +1335,7 @@ const AdminProducts = () => {
                 }}
               >
                 <div>
-                  <span style={{ fontSize: "10.5px", color: "#FF3B30", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
+                  <span style={{ fontSize: "10.5px", color: "#0A7F6E", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
                     Product Catalog Details
                   </span>
                   <h3 style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: "18px", margin: "2px 0 0" }}>
@@ -1421,7 +1421,7 @@ const AdminProducts = () => {
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Price</span>
-                      <span style={{ fontWeight: 800, fontSize: "15px", color: "#FF3B30", fontFamily: "'Montserrat',sans-serif" }}>₹{viewingProduct.price}</span>
+                      <span style={{ fontWeight: 800, fontSize: "15px", color: "#0A7F6E", fontFamily: "'Montserrat',sans-serif" }}>â‚¹{viewingProduct.price}</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Inventory</span>
@@ -1483,7 +1483,7 @@ const AdminProducts = () => {
                           style={{
                             background: "none",
                             border: "none",
-                            borderBottom: `2.5px solid ${active ? "#FF3B30" : "transparent"}`,
+                            borderBottom: `2.5px solid ${active ? "#0A7F6E" : "transparent"}`,
                             color: active ? "#fff" : "rgba(255,255,255,0.4)",
                             padding: "8px 4px",
                             cursor: "pointer",
@@ -1528,7 +1528,7 @@ const AdminProducts = () => {
                               { s: "XL", c: "44-46", w: "38-40", l: "30" },
                               { s: "XXL", c: "47-49", w: "41-43", l: "31" },
                             ].map((row) => (
-                              <tr key={row.s} style={{ background: viewingProduct.sizes.includes(row.s) ? "rgba(255,59,48,0.05)" : "transparent" }}>
+                              <tr key={row.s} style={{ background: viewingProduct.sizes.includes(row.s) ? "rgba(10,127,110,0.05)" : "transparent" }}>
                                 <td style={{ padding: "8px 12px", border: "1px solid rgba(255,255,255,0.08)", fontWeight: 700 }}>{row.s}</td>
                                 <td style={{ padding: "8px 12px", border: "1px solid rgba(255,255,255,0.08)" }}>{row.c}</td>
                                 <td style={{ padding: "8px 12px", border: "1px solid rgba(255,255,255,0.08)" }}>{row.w}</td>
@@ -1578,7 +1578,7 @@ const AdminProducts = () => {
                       openEditModal(viewingProduct, e);
                     }}
                     style={{
-                      background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                      background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
                       border: "none",
                       borderRadius: "10px",
@@ -1596,9 +1596,9 @@ const AdminProducts = () => {
                       handleDelete(viewingProduct.id, e);
                     }}
                     style={{
-                      background: "rgba(255,59,48,0.07)",
-                      border: "1px solid rgba(255,59,48,0.25)",
-                      color: "#FF3B30",
+                      background: "rgba(10,127,110,0.07)",
+                      border: "1px solid rgba(10,127,110,0.25)",
+                      color: "#0A7F6E",
                       borderRadius: "10px",
                       padding: "10px 22px",
                       fontSize: "12.5px",
@@ -1620,3 +1620,4 @@ const AdminProducts = () => {
 };
 
 export default AdminProducts;
+

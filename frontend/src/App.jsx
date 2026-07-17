@@ -20,6 +20,7 @@ import NotFound from './pages/NotFound';
 
 // Admin Pages
 import AdminLogin from './components/admin/AdminLogin';
+import AdminRegister from './components/admin/AdminRegister';
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminProducts from './components/admin/AdminProducts';
 import AdminCategories from './components/admin/AdminCategories';
@@ -72,6 +73,7 @@ function App() {
 
         {/* ── Admin Routes (NO Navbar/Footer) ── */}
         <Route path="/admin"                   element={<AdminLogin />} />
+        <Route path="/admin/register"           element={<AdminRegister />} />
         <Route path="/admin/dashboard"         element={<AdminDashboard />} />
         <Route path="/admin/products"          element={<AdminProducts />} />
         <Route path="/admin/categories"        element={<AdminCategories />} />
