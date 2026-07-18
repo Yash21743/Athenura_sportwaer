@@ -32,19 +32,26 @@ const styles = `
   position: relative;
   padding: 7rem 1.5rem 6rem;
   overflow: hidden;
-  background: linear-gradient(120deg, #06251f, #0a3d33, #051612);
+  background: linear-gradient(120deg, rgba(6,37,31,0.13), rgba(10,61,51,0.13), rgba(5,22,18,0.13)), url('https://i.ibb.co/zTpqD8bp/Chat-GPT-Image-Jul-18-2026-01-27-01-PM.png');
+  background-size: cover;
+  background-position: center;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 480px;
 }
-.ct-hero-glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    600px circle at var(--mx, 50%) var(--my, 30%),
-    rgba(20,168,137,0.18),
-    transparent 60%
-  );
-  transition: background 0.1s ease;
+
+@media (min-width: 600px) {
+  .ct-hero {
+    min-height: 540px;
+  }
+}
+
+@media (min-width: 900px) {
+  .ct-hero {
+    min-height: 627px;
+  }
 }
 .ct-hero-noise {
   position: absolute;
@@ -783,35 +790,15 @@ function ContactForm() {
 
 /* ─── Main Page ─── */
 export default function ContactPage() {
-  const heroRef = useRef(null);
-  const [glow, setGlow] = useState({ x: 50, y: 30 });
-
-  const handleMouseMove = (e) => {
-    const rect = heroRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    setGlow({
-      x: ((e.clientX - rect.left) / rect.width) * 100,
-      y: ((e.clientY - rect.top) / rect.height) * 100,
-    });
-  };
-
-  const glowStyle = useMemo(
-    () => ({ "--mx": `${glow.x}%`, "--my": `${glow.y}%` }),
-    [glow]
-  );
-
   return (
     <div className="ct-root">
       <style>{styles}</style>
 
       {/* ── Hero ── */}
       <header
-        ref={heroRef}
         className="ct-hero"
-        onMouseMove={handleMouseMove}
         aria-label="Contact hero"
       >
-        <div className="ct-hero-glow" style={glowStyle} aria-hidden="true" />
         <div className="ct-hero-noise" aria-hidden="true" />
         <svg className="ct-hero-dots" viewBox="0 0 120 120" aria-hidden="true">
           {[0, 20, 40, 60, 80, 100, 120].map((x) => (

@@ -93,33 +93,23 @@ const styles = `
   .hero {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(120deg, #06251f, #0a3d33, #051612);
+    background: linear-gradient(120deg, rgba(6,37,31,0.13), rgba(10,61,51,0.13), rgba(5,22,18,0.13)), url('https://i.ibb.co/mrRPzPzK/Chat-GPT-Image-Jul-18-2026-01-12-58-PM.png');
+    background-size: cover;
+    background-position: center;
     padding: 5rem 1.5rem 5rem;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  .hero-glow {
-    position: absolute;
-    top: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 26rem; height: 26rem;
-    background: rgba(255,255,255,0.28);
-    border-radius: 50%;
-    filter: blur(90px);
-    pointer-events: none;
-    opacity: 0;
-    animation: heroGlowIn 1.8s ease-out forwards;
+
+  @media (min-width: 900px) {
+    .hero {
+      min-height: 627px;
+      padding: 4rem 1.5rem;
+    }
   }
-  .hero-glow.tracking {
-    animation: none;
-    opacity: 1;
-    transform: translate(-50%, -50%);
-    transition: left 0.15s ease-out, top 0.15s ease-out;
-  }
-  @keyframes heroGlowIn {
-    0% { opacity: 0; transform: translateX(-50%) scale(0.6); }
-    50% { opacity: 1; transform: translateX(-50%) scale(1.25); }
-    100% { opacity: 1; transform: translateX(-50%) scale(1); }
-  }
+  
   .hero-inner { position: relative; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
   .hero-badge {
     display: inline-flex; align-items: center; gap: 0.5rem;
@@ -412,24 +402,12 @@ function FaqList({ query, category }) {
 export default function FaqPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
-  const heroRef = useRef(null);
-  const [glowPos, setGlowPos] = useState(null);
-
-  const handleHeroMouseMove = (e) => {
-    const rect = heroRef.current.getBoundingClientRect();
-    setGlowPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
 
   return (
     <>
       <style>{styles}</style>
       <main className="page">
-        <header className="hero" ref={heroRef} onMouseMove={handleHeroMouseMove}>
-          <div
-            className={`hero-glow${glowPos ? " tracking" : ""}`}
-            style={glowPos ? { left: `${glowPos.x}px`, top: `${glowPos.y}px` } : undefined}
-            aria-hidden="true"
-          />
+        <header className="hero">
           <div className="hero-inner">
             <h1 className="heading-display hero-title">
               Frequently Asked <span>Questions</span>

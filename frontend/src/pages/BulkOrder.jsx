@@ -28,18 +28,28 @@ const styles = `
   position: relative;
   padding: 7rem 1.5rem 6rem;
   overflow: hidden;
-  background: linear-gradient(120deg, #06251f, #0a3d33, #051612);
+  background: linear-gradient(120deg, rgba(6,37,31,0.13), rgba(10,61,51,0.13), rgba(5,22,18,0.13)), url('https://i.ibb.co/zHszBhFQ/Chat-GPT-Image-Jul-18-2026-01-20-04-PM.png');
+  background-size: cover;
+  background-position: center;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 480px;
 }
-.bo-hero-glow {
-  position: absolute; inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    600px circle at var(--mx, 50%) var(--my, 30%),
-    rgba(20,168,137,0.18), transparent 60%
-  );
-  transition: background 0.1s ease;
+
+@media (min-width: 600px) {
+  .bo-hero {
+    min-height: 540px;
+  }
 }
+
+@media (min-width: 900px) {
+  .bo-hero {
+    min-height: 627px;
+  }
+}
+
 .bo-hero-noise {
   position: absolute; inset: 0; opacity: 0.03; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -771,35 +781,15 @@ function BulkOrderForm() {
 
 /* ─── Main Page ─── */
 export default function BulkOrderPage() {
-  const heroRef = useRef(null);
-  const [glow, setGlow] = useState({ x: 50, y: 30 });
-
-  const handleMouseMove = (e) => {
-    const rect = heroRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    setGlow({
-      x: ((e.clientX - rect.left) / rect.width) * 100,
-      y: ((e.clientY - rect.top) / rect.height) * 100,
-    });
-  };
-
-  const glowStyle = useMemo(
-    () => ({ "--mx": `${glow.x}%`, "--my": `${glow.y}%` }),
-    [glow]
-  );
-
   return (
     <div className="bo-root">
       <style>{styles}</style>
 
       {/* ── HERO ── */}
       <header
-        ref={heroRef}
         className="bo-hero"
-        onMouseMove={handleMouseMove}
         aria-label="Bulk order hero"
       >
-        <div className="bo-hero-glow" style={glowStyle} aria-hidden="true" />
         <div className="bo-hero-noise" aria-hidden="true" />
         <div className="bo-hero-inner">
 
