@@ -15,6 +15,8 @@ import BulkOrder from './pages/BulkOrder';
 import Contact from './pages/Contact';
 import Testimonials from './pages/Testimonials';
 import FAQ from './pages/FAQ';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
 import AddToBag from './pages/AddToBag';
 import NotFound from './pages/NotFound';
 
@@ -65,9 +67,11 @@ function App() {
                   <Route path="/testimonials"    element={<Testimonials />} />
                   <Route path="/faq"             element={<FAQ />} />
                   <Route path="/contact"         element={<Contact />} />
-                  <Route path="/cart"            element={<AddToBag />} />
-                  <Route path="/add-to-bag"      element={<AddToBag />} />
-                  <Route path="*"                element={<NotFound />} />
+                  <Route path="/cart"               element={<AddToBag />} />
+                  <Route path="/add-to-bag"         element={<AddToBag />} />
+                  <Route path="/privacy-policy"       element={<PrivacyPolicy />} />
+                  <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                  <Route path="*"                   element={<NotFound />} />
                 </Routes>
               </main>
               <Footer />
