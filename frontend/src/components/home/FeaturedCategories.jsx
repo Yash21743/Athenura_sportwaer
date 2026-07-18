@@ -233,7 +233,7 @@ const styles = `
     padding: 14px 16px;
     background: #08201dff;
     border-radius: 12px;
-    border-bottom: 5px solid #15a092ff;
+    border-bottom: 5px solid #21897bff;
     box-shadow: 0 4px 18px rgba(0,0,0,0.18);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     cursor: default;
@@ -360,28 +360,28 @@ const styles = `
 
 const TruckIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <rect x="1" y="3" width="13" height="13" rx="1" stroke="#0A7F6E" strokeWidth="1.6" />
-    <path d="M14 8h4.2L21 11.5V16h-7V8z" stroke="#0A7F6E" strokeWidth="1.6" strokeLinejoin="round" />
-    <circle cx="5.5" cy="18.5" r="2" stroke="#0A7F6E" strokeWidth="1.6" />
-    <circle cx="17.5" cy="18.5" r="2" stroke="#0A7F6E" strokeWidth="1.6" />
+    <rect x="1" y="3" width="13" height="13" rx="1" stroke="#22d3bb" strokeWidth="1.6" />
+    <path d="M14 8h4.2L21 11.5V16h-7V8z" stroke="#22d3bb" strokeWidth="1.6" strokeLinejoin="round" />
+    <circle cx="5.5" cy="18.5" r="2" stroke="#22d3bb" strokeWidth="1.6" />
+    <circle cx="17.5" cy="18.5" r="2" stroke="#22d3bb" strokeWidth="1.6" />
   </svg>
 );
 const LockIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <rect x="3" y="11" width="18" height="11" rx="2" stroke="#0A7F6E" strokeWidth="1.6" />
-    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#0A7F6E" strokeWidth="1.6" strokeLinecap="round" />
-    <circle cx="12" cy="16" r="1.5" fill="#0A7F6E" />
+    <rect x="3" y="11" width="18" height="11" rx="2" stroke="#22d3bb" strokeWidth="1.6" />
+    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#22d3bb" strokeWidth="1.6" strokeLinecap="round" />
+    <circle cx="12" cy="16" r="1.5" fill="#22d3bb" />
   </svg>
 );
 const MoneyIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="9" stroke="#0A7F6E" strokeWidth="1.6" />
-    <path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 010 3H11a1.5 1.5 0 000 3H15" stroke="#0A7F6E" strokeWidth="1.6" strokeLinecap="round" />
+    <circle cx="12" cy="12" r="9" stroke="#22d3bb" strokeWidth="1.6" />
+    <path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 010 3H11a1.5 1.5 0 000 3H15" stroke="#22d3bb" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
 const ChatIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#0A7F6E" strokeWidth="1.6" strokeLinejoin="round" />
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#22d3bb" strokeWidth="1.6" strokeLinejoin="round" />
   </svg>
 );
 const ArrowSm = () => (
