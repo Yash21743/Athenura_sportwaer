@@ -154,7 +154,11 @@ const TermsAndConditions = () => {
   const scrollToSection = (id) => {
     setActiveSection(id);
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el) {
+      const navbarOffset = 100;
+      const top = el.getBoundingClientRect().top + window.pageYOffset - navbarOffset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
   };
 
   const navigate = useNavigate();
@@ -312,7 +316,7 @@ const TermsAndConditions = () => {
           margin-top: 8px;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1300px) {
           .tc-sidebar { display: none; }
           .tc-toc-pills {
             display: flex;

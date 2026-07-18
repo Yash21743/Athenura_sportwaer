@@ -130,7 +130,11 @@ const PrivacyPolicy = () => {
   const scrollToSection = (id) => {
     setActiveSection(id);
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el) {
+      const navbarOffset = 100;
+      const top = el.getBoundingClientRect().top + window.pageYOffset - navbarOffset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
   };
 
   const navigate = useNavigate();
@@ -297,7 +301,7 @@ const PrivacyPolicy = () => {
           margin-top: 8px;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1300px) {
           .pp-sidebar { display: none; }
           .pp-toc-pills {
             display: flex;
