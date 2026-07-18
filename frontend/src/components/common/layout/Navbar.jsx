@@ -229,7 +229,10 @@ const styles = `
   top: calc(var(--nav-h) + 40px);
   left: 0;
   right: 0;
-  overflow: hidden;
+  bottom: 0;
+  max-height: calc(100vh - var(--nav-h) - 40px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: #d6d7cb;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
@@ -563,7 +566,7 @@ const styles = `
   }
 }
 
-.search-wrap {
+.nav-search-wrap {
   position: relative;
 }
 
@@ -574,6 +577,7 @@ const styles = `
   top: calc(var(--nav-h) + 40px + 10px);
   width: auto;
   max-width: none;
+  box-sizing: border-box;
   background: #ffffff;
   border-radius: 14px;
   box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
@@ -597,10 +601,13 @@ const styles = `
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .search-dropdown-input {
   flex: 1;
+  min-width: 0;
   height: 42px;
   padding: 0 0.85rem;
   border: 1px solid rgba(0, 0, 0, 0.12);
@@ -610,6 +617,7 @@ const styles = `
   font-family: inherit;
   color: #000000;
   outline: none;
+  box-sizing: border-box;
   transition: border 0.2s ease;
 }
 
@@ -673,6 +681,7 @@ export default function Navbar({ cartCount }) {
 
   const accountRef = useRef(null)
   const searchRef = useRef(null)
+  const mobilePanelRef = useRef(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -767,7 +776,9 @@ export default function Navbar({ cartCount }) {
 
   useEffect(() => {
     const onClick = (e) => {
-      if (accountRef.current && !accountRef.current.contains(e.target)) {
+      const insideAccount = accountRef.current && accountRef.current.contains(e.target)
+      const insideMobilePanel = mobilePanelRef.current && mobilePanelRef.current.contains(e.target)
+      if (!insideAccount && !insideMobilePanel) {
         setAccountOpen(false)
         setShowSignInForm(false)
         setShowRegisterForm(false)
@@ -880,7 +891,7 @@ export default function Navbar({ cartCount }) {
         </motion.ul>
 
         <div className="nav-actions">
-          <div className="search-wrap" ref={searchRef}>
+          <div className="nav-search-wrap" ref={searchRef}>
             <motion.button
               type="button"
               className={`icon-btn${searchOpen ? " active" : ""}`}
@@ -1085,10 +1096,6 @@ export default function Navbar({ cartCount }) {
                     <>
                       {!isLoggedIn ? (
                         <>
-                          <Link to="/profile" className="desktop-account-item" onClick={() => setAccountOpen(false)}>
-                            <User size={17} />
-                            View Profile
-                          </Link>
                           <button
                             type="button"
                             className="desktop-account-item"
@@ -1107,14 +1114,20 @@ export default function Navbar({ cartCount }) {
                           </button>
                         </>
                       ) : (
-                        <button
-                          type="button"
-                          className="desktop-account-item"
-                          onClick={handleLogout}
-                        >
-                          <LogIn size={17} style={{ transform: "rotate(180deg)" }} />
-                          Logout
-                        </button>
+                        <>
+                          <Link to="/dashboard" className="desktop-account-item" onClick={() => setAccountOpen(false)}>
+                            <User size={17} />
+                            View Profile
+                          </Link>
+                          <button
+                            type="button"
+                            className="desktop-account-item"
+                            onClick={handleLogout}
+                          >
+                            <LogIn size={17} style={{ transform: "rotate(180deg)" }} />
+                            Logout
+                          </button>
+                        </>
                       )}
                       </>
                   )}
@@ -1157,6 +1170,7 @@ export default function Navbar({ cartCount }) {
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
+              ref={mobilePanelRef}
               className="mobile-panel"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
@@ -1309,10 +1323,6 @@ export default function Navbar({ cartCount }) {
                           <>
                             {!isLoggedIn ? (
                               <>
-                                <Link to="/profile" className="mobile-account-item" onClick={() => setMobileOpen(false)}>
-                                  <User size={17} />
-                                  View Profile
-                                </Link>
                                 <button
                                   type="button"
                                   className="mobile-account-item"
@@ -1331,14 +1341,20 @@ export default function Navbar({ cartCount }) {
                                 </button>
                               </>
                             ) : (
-                              <button
-                                type="button"
-                                className="mobile-account-item"
-                                onClick={handleLogout}
-                              >
-                                <LogIn size={17} style={{ transform: "rotate(180deg)" }} />
-                                Logout
-                              </button>
+                              <>
+                                <Link to="/dashboard" className="mobile-account-item" onClick={() => setMobileOpen(false)}>
+                                  <User size={17} />
+                                  View Profile
+                                </Link>
+                                <button
+                                  type="button"
+                                  className="mobile-account-item"
+                                  onClick={handleLogout}
+                                >
+                                  <LogIn size={17} style={{ transform: "rotate(180deg)" }} />
+                                  Logout
+                                </button>
+                              </>
                             )}
                             </>
                         )}
