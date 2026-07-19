@@ -10,6 +10,8 @@ import Footer from './components/common/layout/Footer';
 import Home from './pages/Home';
 import About from './pages/About';
 import Products from './pages/Products';
+import WomensProducts from './pages/WomensProducts';
+import KidsProducts from './pages/KidsProducts';
 import ProductDetail from './pages/ProductDetail';
 import BulkOrder from './pages/BulkOrder';
 import Contact from './pages/Contact';
@@ -60,6 +62,8 @@ function App() {
                   <Route path="/"                element={<Home />} />
                   <Route path="/about"           element={<About />} />
                   <Route path="/products"        element={<Products />} />
+                  <Route path="/women"           element={<WomensProducts />} />
+                  <Route path="/kids"            element={<KidsProducts />} />
                   <Route path="/products/:id"    element={<ProductDetail />} />
                   <Route path="/bulk-orders"     element={<BulkOrder />} />
                   <Route path="/testimonials"    element={<Testimonials />} />

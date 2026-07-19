@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { 
-  ArrowLeft, Star, Truck, Info, Check, 
-  MessageSquare, Users, ChevronRight, FileText, Send, X, ArrowUpRight 
+import {
+  ArrowLeft, Star, Truck, Info, Check,
+  MessageSquare, Users, ChevronRight, FileText, Send, X, ArrowUpRight
 } from 'lucide-react';
 import RelatedProducts from '../components/products/RelatedProducts';
 import { mockProducts } from '../services/mockProducts';
@@ -12,6 +12,7 @@ import API from '../services/api';
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // Page States
   const [product, setProduct] = useState(null);
@@ -20,11 +21,11 @@ const ProductDetail = () => {
 
   // Gallery States
   const [activeImage, setActiveImage] = useState('');
-  
+
   // Customization selection states
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
-  const [quantity, setQuantity] = useState(15);
+  const [quantity, setQuantity] = useState(1);
 
   // Size guide modal state
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
@@ -34,7 +35,9 @@ const ProductDetail = () => {
   const [inquiryEmail, setInquiryEmail] = useState('');
   const [inquiryPhone, setInquiryPhone] = useState('');
   const [inquiryOrg, setInquiryOrg] = useState('');
-  const [inquiryMsg, setInquiryMsg] = useState('');
+  const [inquiryCategory, setInquiryCategory] = useState('');
+  const [inquiryQuantityRange, setInquiryQuantityRange] = useState('');
+  const [inquiryPrinting, setInquiryPrinting] = useState('');
   const [inquirySubmitting, setInquirySubmitting] = useState(false);
   const [inquirySuccess, setInquirySuccess] = useState(false);
 
@@ -92,7 +95,7 @@ const ProductDetail = () => {
   // Handle Inquiry Form Submission
   const handleInquirySubmit = async (e) => {
     e.preventDefault();
-    if (!inquiryName || !inquiryEmail || !inquiryPhone) {
+    if (!inquiryName || !inquiryOrg || !inquiryEmail || !inquiryPhone || !inquiryCategory || !inquiryQuantityRange || !inquiryPrinting) {
       toast.error('Please fill in all required fields.');
       return;
     }
@@ -107,10 +110,11 @@ const ProductDetail = () => {
         email: inquiryEmail,
         phone: inquiryPhone,
         organization: inquiryOrg,
-        quantity: quantity,
+        category: inquiryCategory,
+        quantityRange: inquiryQuantityRange,
+        printing: inquiryPrinting,
         size: selectedSize,
-        color: product.colorNames ? product.colorNames[selectedColorIndex] : 'Default',
-        message: inquiryMsg
+        color: product.colorNames ? product.colorNames[selectedColorIndex] : 'Default'
       };
 
       try {
@@ -124,7 +128,9 @@ const ProductDetail = () => {
 
       setInquirySubmitting(false);
       setInquirySuccess(true);
-      setInquiryMsg('');
+      setInquiryCategory('');
+      setInquiryQuantityRange('');
+      setInquiryPrinting('');
 
     } catch (err) {
       setInquirySubmitting(false);
@@ -219,9 +225,9 @@ const ProductDetail = () => {
   }
 
   const stockConf = {
-    'In Stock':      { dot: '#16a34a', color: '#16a34a', label: 'In Stock' },
+    'In Stock': { dot: '#16a34a', color: '#16a34a', label: 'In Stock' },
     'Limited Stock': { dot: '#d97706', color: '#d97706', label: 'Limited' },
-    'Out of Stock':  { dot: '#dc2626', color: '#dc2626', label: 'Sold Out' },
+    'Out of Stock': { dot: '#dc2626', color: '#dc2626', label: 'Sold Out' },
   };
   const stock = stockConf[product.stockStatus] || { dot: '#888', color: '#888', label: product.stockStatus };
   const cleanDescription = stripHtml(product.description);
@@ -265,22 +271,44 @@ const ProductDetail = () => {
       .pd-price-box { flex-direction: column; align-items: flex-start; text-align: left; }
       .pd-price-box > div { text-align: left !important; }
     }
+    
+    .custom-radio-btn {
+      padding: 12px 20px;
+      border-radius: 30px;
+      border: 1px solid rgba(0,0,0,0.15);
+      background: #ffffff;
+      color: #333333;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Poppins', sans-serif;
+    }
+    .custom-radio-btn.selected {
+      border-color: #0A7F6E;
+      color: #0A7F6E;
+      background: rgba(10,127,110,0.05);
+      font-weight: 600;
+    }
+    .custom-radio-btn:hover:not(.selected) {
+      background: #f5f5f5;
+    }
   `;
 
   return (
     <>
       <style>{styles}</style>
       <div className="pd-wrap">
-      
-      {/* Navigation Breadcrumbs / Back button */}
-      <div className="pd-header">
-          <Link to="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'rgba(0,0,0,0.6)', fontWeight: 600, fontSize: '13px', textDecoration: 'none', transition: 'color 0.2s' }}
+
+        {/* Navigation Breadcrumbs / Back button */}
+        <div className="pd-header">
+          <button onClick={() => navigate(-1)} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'rgba(0,0,0,0.6)', fontWeight: 600, fontSize: '13px', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s', fontFamily: 'inherit' }}
             onMouseEnter={(e) => e.currentTarget.style.color = '#0A7F6E'}
             onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(0,0,0,0.6)'}
           >
             <ArrowLeft size={16} />
-            <span>Back to Catalog</span>
-          </Link>
+            <span>Back</span>
+          </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'rgba(0,0,0,0.4)', fontWeight: 500, fontFamily: 'monospace' }}>
             <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>HOME</Link>
             <ChevronRight size={14} />
@@ -290,484 +318,559 @@ const ProductDetail = () => {
           </div>
         </div>
 
-      {/* Main product card details */}
-      <main className="pd-container">
-        <div className="pd-card">
-          
-          <div className="pd-grid">
-            
-            {/* Column 1: Image Gallery (Span 5) */}
-            <div className="pd-img-col">
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '1', borderRadius: '16px', overflow: 'hidden', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src={activeImage} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <span style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(0,0,0,0.8)', color: '#ffffff', fontSize: '10px', fontFamily: 'monospace', fontWeight: 800, padding: '4px 12px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.15)' }}>
-                  {product.code}
-                </span>
-              </div>
+        {/* Main product card details */}
+        <main className="pd-container">
+          <div className="pd-card">
 
+            <div className="pd-grid">
 
-              {/* Product Specifications */}
-              <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ background: '#EAEBE3', border: '1px solid rgba(10,127,110,0.2)', borderRadius: '16px', padding: '28px', position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: '#0A7F6E' }} />
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#111111', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '20px', fontFamily: 'Montserrat, sans-serif' }}>Product Details</h3>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    {product.fabric && (
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <FileText size={20} color="#0A7F6E" />
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Fabric</div>
-                          <div style={{ fontSize: '14px', color: '#111111', fontWeight: 500 }}>{product.fabric}</div>
-                        </div>
-                      </div>
-                    )}
-                    {product.sizes && product.sizes.length > 0 && (
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Users size={20} color="#0A7F6E" />
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Available Sizes</div>
-                          <div style={{ fontSize: '14px', color: '#111111', fontWeight: 500 }}>{product.sizes.join(', ')}</div>
-                        </div>
-                      </div>
-                    )}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-                      <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Info size={20} color="#0A7F6E" />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Category</div>
-                        <div style={{ fontSize: '14px', color: '#111111', fontWeight: 500 }}>{product.category}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Highlighting Activewear Features */}
-              <div style={{ marginTop: '16px', padding: '20px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '16px', fontSize: '12px', color: 'rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <Truck size={16} color="#0A7F6E" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <div>
-                    <span style={{ fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px', fontFamily: 'Montserrat, sans-serif' }}>Custom & Bulk Shipping</span>
-                    <span style={{ fontWeight: 300, lineHeight: 1.5 }}>Direct shipping across India. Custom printing adds 4-7 business days processing.</span>
-                  </div>
-                </div>
-                <div style={{ paddingTop: '16px', borderTop: '1px solid rgba(0,0,0,0.08)', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <Info size={16} color="#0A7F6E" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <div>
-                    <span style={{ fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px', fontFamily: 'Montserrat, sans-serif' }}>Team Customizations Available</span>
-                    <span style={{ fontWeight: 300, lineHeight: 1.5 }}>Get sublimation numbers, logo embroidery, and player name prints custom configured.</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Column 2: Specs & Inquiry Details (Span 7) */}
-            <div className="pd-info-col">
-              
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 700, border: '1px solid rgba(0,0,0,0.15)', padding: '3px 10px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.05em', color: stock.color, background: 'rgba(0,0,0,0.05)' }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: stock.dot, display: 'inline-block' }} />
-                    {stock.label}
+              {/* Column 1: Image Gallery (Span 5) */}
+              <div className="pd-img-col">
+                <div style={{ position: 'relative', width: '100%', aspectRatio: '1', borderRadius: '16px', overflow: 'hidden', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <img src={activeImage} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <span style={{ position: 'absolute', top: '16px', left: '16px', background: 'rgba(0,0,0,0.8)', color: '#ffffff', fontSize: '10px', fontFamily: 'monospace', fontWeight: 800, padding: '4px 12px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.15)' }}>
+                    {product.code}
                   </span>
                 </div>
 
-                <h1 style={{ fontSize: '36px', fontWeight: 900, color: '#111111', marginBottom: '8px', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', lineHeight: 1.1 }}>
-                  {product.name}
-                </h1>
 
-                {/* Rating & Code */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} style={{ fill: i < 4 ? '#fbbf24' : '#ffffff', color: i < 4 ? '#fbbf24' : '#ffffff' }} />
-                      ))}
-                    </div>
-                    <span style={{ fontSize: '13px', color: '#111111', fontWeight: 700 }}>4.2</span>
-                    <span style={{ fontSize: '12px', color: 'rgba(0,0,0,0.35)', fontWeight: 500 }}>(28 inquiries)</span>
-                  </div>
-                  <span style={{ color: 'rgba(0,0,0,0.15)' }}>|</span>
-                  <span style={{ fontSize: '12px', color: 'rgba(0,0,0,0.35)', fontFamily: 'monospace' }}>Product ID: {product.code}</span>
-                </div>
+                {/* Product Specifications */}
+                <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ background: '#EAEBE3', border: '1px solid rgba(10,127,110,0.2)', borderRadius: '16px', padding: '28px', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: '#0A7F6E' }} />
+                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#111111', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '20px', fontFamily: 'Montserrat, sans-serif' }}>Product Details</h3>
 
-                {/* Price */}
-                <div className="pd-price-box">
-                  <div>
-                    <span style={{ fontSize: '10px', color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', fontWeight: 700, marginBottom: '4px' }}>Standard Unit Price</span>
-                    <span style={{ fontSize: '32px', fontWeight: 900, color: '#111111', lineHeight: 1 }}>₹{product.price}</span>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: '10px', background: 'rgba(10,127,110,0.1)', color: '#0A7F6E', border: '1px solid rgba(10,127,110,0.2)', fontWeight: 800, padding: '4px 10px', borderRadius: '6px', display: 'inline-block', marginBottom: '4px' }}>
-                      Bulk Discount Available
-                    </span>
-                    <span style={{ fontSize: '10px', color: 'rgba(0,0,0,0.35)', display: 'block' }}>Minimum order quantity: 10 units</span>
-                  </div>
-                </div>
-
-                {/* Color Selector */}
-                {product.colors && product.colors.length > 0 && (
-                  <div style={{ marginBottom: '24px' }}>
-                    <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#111111', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'Montserrat, sans-serif' }}>
-                      Available Colors: <span style={{ color: '#0A7F6E', fontWeight: 400 }}>{product.colorNames && product.colorNames[selectedColorIndex]}</span>
-                    </h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      {product.colors.map((colorHex, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setSelectedColorIndex(idx)}
-                          style={{
-                            width: '36px', height: '36px', borderRadius: '50%', border: selectedColorIndex === idx ? '2px solid #0A7F6E' : '2px solid rgba(0,0,0,0.15)',
-                            backgroundColor: colorHex, cursor: 'pointer', transition: 'all 0.2s', padding: 0,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            boxShadow: selectedColorIndex === idx ? '0 0 0 4px rgba(10,127,110,0.15)' : 'none'
-                          }}
-                          title={product.colorNames ? product.colorNames[idx] : `Color ${idx + 1}`}
-                        >
-                          {selectedColorIndex === idx && (
-                            <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: colorHex.toLowerCase() === '#ffffff' ? '#111' : '#111111' }} />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Size Selector */}
-                {product.sizes && product.sizes.length > 0 && (
-                  <div style={{ marginBottom: '32px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                      <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#111111', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'Montserrat, sans-serif' }}>
-                        Select Size
-                      </h3>
-                      <button
-                        type="button"
-                        onClick={() => setIsSizeGuideOpen(true)}
-                        style={{ fontSize: '11px', fontWeight: 700, color: '#0A7F6E', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'Poppins, sans-serif' }}
-                      >
-                        Size Guide
-                      </button>
-                    </div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                      {product.sizes.map((size) => {
-                        const isActive = selectedSize === size;
-                        return (
-                          <button
-                            key={size}
-                            type="button"
-                            onClick={() => setSelectedSize(size)}
-                            style={{
-                              width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '13px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s',
-                              background: isActive ? '#0A7F6E' : 'transparent',
-                              border: isActive ? '1px solid #0A7F6E' : '1px solid rgba(0,0,0,0.15)',
-                              color: isActive ? '#111111' : 'rgba(0,0,0,0.4)'
-                            }}
-                          >
-                            {size}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Direct Purchase Actions */}
-                <div className="pd-action-btns">
-                  <button 
-                    type="button" 
-                    onClick={handleAddToCart}
-                    style={{ padding: '16px', background: '#EAEBE3', color: '#111111', border: '1px solid #0A7F6E', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(10,127,110,0.1)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = '#EAEBE3'}
-                  >
-                    Add to Cart
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => alert("Proceeding to checkout")}
-                    style={{ padding: '16px', background: '#0A7F6E', color: '#111111', border: 'none', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = '#cc2e25'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = '#0A7F6E'}
-                  >
-                    Buy Now
-                  </button>
-                </div>
-
-                {/* Description */}
-                <div style={{ marginBottom: '24px' }}>
-                  <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#111111', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'Montserrat, sans-serif' }}>
-                    Product Description
-                  </h3>
-                  <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '13px', lineHeight: 1.8, fontWeight: 300 }}>
-                    {cleanDescription}
-                  </p>
-                </div>
-
-                {/* Fabric Specifications */}
-                {product.fabric && (
-                  <div style={{ marginBottom: '24px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '16px 20px', display: 'flex', gap: '16px' }}>
-                    <FileText size={20} color="#0A7F6E" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <div>
-                      <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#111111', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Fabric Composition</h4>
-                      <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '13px', fontWeight: 300 }}>{product.fabric}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Inquiry Form */}
-              <div style={{ 
-                marginTop: '32px', 
-                background: 'linear-gradient(145deg, #EAEBE3 0%, #DDDFD2 100%)', 
-                border: '1px solid rgba(255,255,255,0.08)', 
-                borderRadius: '24px', 
-                padding: '32px',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(0,0,0,0.08)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                {/* Decorative background glow */}
-                <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '150px', height: '150px', background: '#0A7F6E', filter: 'blur(100px)', opacity: 0.15, borderRadius: '50%', pointerEvents: 'none' }} />
-
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(10,127,110,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <MessageSquare size={16} color="#0A7F6E" />
-                      </div>
-                      <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#111111', fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.02em' }}>
-                        Bulk & Team Orders
-                      </h3>
-                    </div>
-                    <p style={{ fontSize: '12px', color: 'rgba(0,0,0,0.5)', fontWeight: 400, marginLeft: '42px' }}>Request a custom quote for wholesale pricing and customizations.</p>
-                  </div>
-                </div>
-
-                <AnimatePresence mode="wait">
-                  {inquirySuccess ? (
-                    <motion.div
-                      key="success"
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0 }}
-                      style={{ background: 'rgba(74,222,128,0.05)', border: '1px solid rgba(74,222,128,0.2)', borderRadius: '16px', padding: '32px 24px', textAlign: 'center', color: '#4ade80' }}
-                    >
-                      <div style={{ width: '64px', height: '64px', background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)', color: '#000', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 10px 20px rgba(74,222,128,0.2)' }}>
-                        <Check size={32} strokeWidth={3} />
-                      </div>
-                      <h4 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '8px', color: '#111111' }}>Quote Request Sent!</h4>
-                      <p style={{ fontSize: '13px', color: 'rgba(0,0,0,0.7)', maxWidth: '400px', margin: '0 auto 24px', lineHeight: 1.6 }}>
-                        Thank you, <strong style={{ color: '#4ade80' }}>{inquiryName}</strong>! We've received your request for <strong>{quantity}x</strong> units. Our sales team will get back to you within 24 hours with a custom proposal.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setInquirySuccess(false)}
-                        style={{ padding: '12px 24px', background: 'rgba(0,0,0,0.08)', color: '#111111', fontWeight: 700, fontSize: '12px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.15)', cursor: 'pointer', transition: 'all 0.2s' }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.15)' }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
-                      >
-                        Submit Another Request
-                      </button>
-                    </motion.div>
-                  ) : (
-                    <motion.form
-                      key="form"
-                      onSubmit={handleInquirySubmit}
-                      className="pd-form-grid"
-                    >
-                      {/* Name */}
-                      <div>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'rgba(0,0,0,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
-                          Full Name <span style={{ color: '#0A7F6E' }}>*</span>
-                        </label>
-                        <input type="text" required value={inquiryName} onChange={(e) => setInquiryName(e.target.value)} placeholder="Enter your name"
-                          style={{ width: '100%', padding: '14px 16px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '12px', color: '#111111', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', transition: 'all 0.2s' }}
-                          onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = 'rgba(10,127,110,0.05)'; }}
-                          onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.15)'; e.currentTarget.style.background = '#EAEBE3'; }}
-                        />
-                      </div>
-
-                      {/* Email */}
-                      <div>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'rgba(0,0,0,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
-                          Email Address <span style={{ color: '#0A7F6E' }}>*</span>
-                        </label>
-                        <input type="email" required value={inquiryEmail} onChange={(e) => setInquiryEmail(e.target.value)} placeholder="you@company.com"
-                          style={{ width: '100%', padding: '14px 16px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '12px', color: '#111111', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', transition: 'all 0.2s' }}
-                          onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = 'rgba(10,127,110,0.05)'; }}
-                          onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.15)'; e.currentTarget.style.background = '#EAEBE3'; }}
-                        />
-                      </div>
-
-                      {/* Phone */}
-                      <div>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'rgba(0,0,0,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
-                          Phone Number <span style={{ color: '#0A7F6E' }}>*</span>
-                        </label>
-                        <input type="tel" required value={inquiryPhone} onChange={(e) => setInquiryPhone(e.target.value)} placeholder="+91 xxxxx xxxxx"
-                          style={{ width: '100%', padding: '14px 16px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '12px', color: '#111111', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', transition: 'all 0.2s' }}
-                          onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = 'rgba(10,127,110,0.05)'; }}
-                          onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.15)'; e.currentTarget.style.background = '#EAEBE3'; }}
-                        />
-                      </div>
-
-                      {/* Organization */}
-                      <div>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'rgba(0,0,0,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
-                          Team / Organization
-                        </label>
-                        <input type="text" value={inquiryOrg} onChange={(e) => setInquiryOrg(e.target.value)} placeholder="Club, school or company"
-                          style={{ width: '100%', padding: '14px 16px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '12px', color: '#111111', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', transition: 'all 0.2s' }}
-                          onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = 'rgba(10,127,110,0.05)'; }}
-                          onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.15)'; e.currentTarget.style.background = '#EAEBE3'; }}
-                        />
-                      </div>
-
-                      {/* Quantity Selector */}
-                      <div className="pd-form-full pd-qty-box" style={{ background: '#EAEBE3', border: '1px dashed rgba(0,0,0,0.2)', borderRadius: '16px', padding: '20px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                      {product.fabric && (
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <FileText size={20} color="#0A7F6E" />
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Fabric</div>
+                            <div style={{ fontSize: '14px', color: '#111111', fontWeight: 500 }}>{product.fabric}</div>
+                          </div>
+                        </div>
+                      )}
+                      {product.sizes && product.sizes.length > 0 && (
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <Users size={20} color="#0A7F6E" />
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Available Sizes</div>
+                            <div style={{ fontSize: '14px', color: '#111111', fontWeight: 500 }}>{product.sizes.join(', ')}</div>
+                          </div>
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Info size={20} color="#0A7F6E" />
+                        </div>
                         <div>
-                          <span style={{ fontSize: '13px', fontWeight: 800, color: '#111111', display: 'block', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Required Quantity</span>
-                          <span style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', fontWeight: 300 }}>Minimum order quantity: 10 units</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#EAEBE3', padding: '4px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.08)' }}>
-                          <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 5))} style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0,0,0,0.08)', color: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 700, border: 'none', transition: 'all 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.15)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.08)'}>-</button>
-                          <input type="number" min="1" value={quantity} onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))} style={{ width: '60px', textAlign: 'center', fontSize: '18px', fontWeight: 900, color: '#111111', background: 'transparent', border: 'none', outline: 'none', fontFamily: 'Montserrat, sans-serif' }} />
-                          <button type="button" onClick={() => setQuantity(quantity + 5)} style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0,0,0,0.08)', color: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 700, border: 'none', transition: 'all 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.15)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.08)'}>+</button>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Category</div>
+                          <div style={{ fontSize: '14px', color: '#111111', fontWeight: 500 }}>{product.category}</div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                </div>
 
-                      {/* Message */}
-                      <div className="pd-form-full">
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, color: 'rgba(0,0,0,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
-                          Customizations & Instructions
-                        </label>
-                        <textarea rows="4" value={inquiryMsg} onChange={(e) => setInquiryMsg(e.target.value)} placeholder="Include logo details, player names, sizing breakdown, specific colors, and your expected deadline..."
-                          style={{ width: '100%', padding: '16px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '16px', color: '#111111', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif', resize: 'vertical', transition: 'all 0.2s', lineHeight: 1.6 }}
-                          onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = 'rgba(10,127,110,0.05)'; }}
-                          onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.15)'; e.currentTarget.style.background = '#EAEBE3'; }}
-                        />
-                      </div>
+                {/* Highlighting Activewear Features */}
+                <div style={{ marginTop: '16px', padding: '20px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '16px', fontSize: '12px', color: 'rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <Truck size={16} color="#0A7F6E" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div>
+                      <span style={{ fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px', fontFamily: 'Montserrat, sans-serif' }}>Custom & Bulk Shipping</span>
+                      <span style={{ fontWeight: 300, lineHeight: 1.5 }}>Direct shipping across India. Custom printing adds 4-7 business days processing.</span>
+                    </div>
+                  </div>
+                  <div style={{ paddingTop: '16px', borderTop: '1px solid rgba(0,0,0,0.08)', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <Info size={16} color="#0A7F6E" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <div>
+                      <span style={{ fontWeight: 700, color: '#111111', display: 'block', marginBottom: '4px', fontFamily: 'Montserrat, sans-serif' }}>Team Customizations Available</span>
+                      <span style={{ fontWeight: 300, lineHeight: 1.5 }}>Get sublimation numbers, logo embroidery, and player name prints custom configured.</span>
+                    </div>
+                  </div>
+                </div>
 
-                      {/* Submit */}
-                      <div className="pd-form-full" style={{ marginTop: '16px' }}>
-                        <button type="submit" disabled={inquirySubmitting}
-                          style={{ 
-                            width: '100%', padding: '20px', 
-                            background: inquirySubmitting ? '#555' : '#0A7F6E', 
-                            color: '#ffffff', borderRadius: '16px', fontSize: '14px', fontWeight: 900, border: 'none', 
-                            cursor: inquirySubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', 
-                            fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', 
-                            transition: 'all 0.3s ease', opacity: inquirySubmitting ? 0.7 : 1,
-                            boxShadow: inquirySubmitting ? 'none' : '0 10px 25px rgba(10, 127, 110, 0.4)'
-                          }}
-                          onMouseEnter={(e) => { if(!inquirySubmitting) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 15px 35px rgba(10, 127, 110, 0.5)'; } }}
-                          onMouseLeave={(e) => { if(!inquirySubmitting) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(10, 127, 110, 0.4)'; } }}
-                        >
-                          {inquirySubmitting ? (
-                            <span>Processing Request...</span>
-                          ) : (
-                            <>
-                              Get Custom Quote <ArrowUpRight size={18} />
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </motion.form>
-                  )}
-                </AnimatePresence>
               </div>
 
+              {/* Column 2: Specs & Inquiry Details (Span 7) */}
+              <div className="pd-info-col">
 
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 700, border: '1px solid rgba(0,0,0,0.15)', padding: '3px 10px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.05em', color: stock.color, background: 'rgba(0,0,0,0.05)' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: stock.dot, display: 'inline-block' }} />
+                      {stock.label}
+                    </span>
+                  </div>
+
+                  <h1 style={{ fontSize: '36px', fontWeight: 900, color: '#111111', marginBottom: '8px', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', lineHeight: 1.1 }}>
+                    {product.name}
+                  </h1>
+
+                  {/* Rating & Code */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={14} style={{ fill: i < 4 ? '#fbbf24' : '#ffffff', color: i < 4 ? '#fbbf24' : '#ffffff' }} />
+                        ))}
+                      </div>
+                      <span style={{ fontSize: '13px', color: '#111111', fontWeight: 700 }}>4.2</span>
+                      <span style={{ fontSize: '12px', color: 'rgba(0,0,0,0.35)', fontWeight: 500 }}>(28 inquiries)</span>
+                    </div>
+                    <span style={{ color: 'rgba(0,0,0,0.15)' }}>|</span>
+                    <span style={{ fontSize: '12px', color: 'rgba(0,0,0,0.35)', fontFamily: 'monospace' }}>Product ID: {product.code}</span>
+                  </div>
+
+                  {/* Price */}
+                  <div className="pd-price-box">
+                    <div>
+                      <span style={{ fontSize: '10px', color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'block', fontWeight: 700, marginBottom: '4px' }}>Standard Unit Price</span>
+                      <span style={{ fontSize: '32px', fontWeight: 900, color: '#111111', lineHeight: 1 }}>₹{product.price}</span>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '10px', background: 'rgba(10,127,110,0.1)', color: '#0A7F6E', border: '1px solid rgba(10,127,110,0.2)', fontWeight: 800, padding: '4px 10px', borderRadius: '6px', display: 'inline-block', marginBottom: '4px' }}>
+                        Bulk Discount Available
+                      </span>
+                      <span style={{ fontSize: '10px', color: 'rgba(0,0,0,0.35)', display: 'block' }}>Minimum order quantity: 10 units</span>
+                    </div>
+                  </div>
+
+                  {/* Color Selector */}
+                  {product.colors && product.colors.length > 0 && (
+                    <div style={{ marginBottom: '24px' }}>
+                      <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#111111', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'Montserrat, sans-serif' }}>
+                        Available Colors: <span style={{ color: '#0A7F6E', fontWeight: 400 }}>{product.colorNames && product.colorNames[selectedColorIndex]}</span>
+                      </h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        {product.colors.map((colorHex, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setSelectedColorIndex(idx)}
+                            style={{
+                              width: '36px', height: '36px', borderRadius: '50%', border: selectedColorIndex === idx ? '2px solid #0A7F6E' : '2px solid rgba(0,0,0,0.15)',
+                              backgroundColor: colorHex, cursor: 'pointer', transition: 'all 0.2s', padding: 0,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              boxShadow: selectedColorIndex === idx ? '0 0 0 4px rgba(10,127,110,0.15)' : 'none'
+                            }}
+                            title={product.colorNames ? product.colorNames[idx] : `Color ${idx + 1}`}
+                          >
+                            {selectedColorIndex === idx && (
+                              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: colorHex.toLowerCase() === '#ffffff' ? '#111' : '#111111' }} />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Size Selector */}
+                  {product.sizes && product.sizes.length > 0 && (
+                    <div style={{ marginBottom: '32px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                        <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#111111', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'Montserrat, sans-serif' }}>
+                          Select Size
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => setIsSizeGuideOpen(true)}
+                          style={{ fontSize: '11px', fontWeight: 700, color: '#0A7F6E', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          Size Guide
+                        </button>
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                        {product.sizes.map((size) => {
+                          const isActive = selectedSize === size;
+                          return (
+                            <button
+                              key={size}
+                              type="button"
+                              onClick={() => setSelectedSize(size)}
+                              style={{
+                                width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '13px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s',
+                                background: isActive ? '#0A7F6E' : 'transparent',
+                                border: isActive ? '1px solid #0A7F6E' : '1px solid rgba(0,0,0,0.15)',
+                                color: isActive ? '#111111' : 'rgba(0,0,0,0.4)'
+                              }}
+                            >
+                              {size}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Quantity Selector */}
+                  <div style={{ marginBottom: '32px' }}>
+                    <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#111111', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'Montserrat, sans-serif', marginBottom: '12px' }}>
+                      Quantity
+                    </h3>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '12px', overflow: 'hidden', height: '48px', background: 'transparent' }}>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                        style={{ width: '48px', height: '100%', background: '#ffffff', border: 'none', cursor: 'pointer', fontSize: '20px', fontWeight: 500, color: '#111111', transition: 'background 0.2s' }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#ffffff'}
+                      >
+                        -
+                      </button>
+                      <div style={{ width: '60px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 800, color: '#111111', borderLeft: '1px solid rgba(0,0,0,0.1)', borderRight: '1px solid rgba(0,0,0,0.1)' }}>
+                        {quantity}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(q => Math.min(5, q + 1))}
+                        disabled={quantity >= 5}
+                        style={{ width: '48px', height: '100%', background: '#ffffff', border: 'none', cursor: quantity >= 5 ? 'not-allowed' : 'pointer', fontSize: '20px', fontWeight: 500, color: quantity >= 5 ? '#ccc' : '#111111', transition: 'background 0.2s' }}
+                        onMouseEnter={(e) => { if (quantity < 5) e.currentTarget.style.background = '#f5f5f5' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff' }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Direct Purchase Actions */}
+                  <div className="pd-action-btns">
+                    <button
+                      type="button"
+                      onClick={handleAddToCart}
+                      style={{ padding: '16px', background: '#EAEBE3', color: '#111111', border: '1px solid #0A7F6E', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(10,127,110,0.1)'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = '#EAEBE3'}
+                    >
+                      Add to Cart
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => alert("Proceeding to checkout")}
+                      style={{ padding: '16px', background: '#0A7F6E', color: '#111111', border: 'none', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#cc2e25'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = '#0A7F6E'}
+                    >
+                      Buy Now
+                    </button>
+                  </div>
+
+                  {/* Description */}
+                  <div style={{ marginBottom: '24px' }}>
+                    <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#111111', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'Montserrat, sans-serif' }}>
+                      Product Description
+                    </h3>
+                    <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '13px', lineHeight: 1.8, fontWeight: 300 }}>
+                      {cleanDescription}
+                    </p>
+                  </div>
+
+                  {/* Fabric Specifications */}
+                  {product.fabric && (
+                    <div style={{ marginBottom: '24px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '16px', padding: '16px 20px', display: 'flex', gap: '16px' }}>
+                      <FileText size={20} color="#0A7F6E" style={{ flexShrink: 0, marginTop: '2px' }} />
+                      <div>
+                        <h4 style={{ fontSize: '11px', fontWeight: 800, color: '#111111', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Fabric Composition</h4>
+                        <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '13px', fontWeight: 300 }}>{product.fabric}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Inquiry Form */}
+                <div style={{
+                  marginTop: '32px',
+                  background: '#ffffff',
+                  border: '1px solid rgba(0,0,0,0.04)',
+                  borderRadius: '24px',
+                  padding: '40px',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.03)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'linear-gradient(90deg, #0A7F6E 0%, #22c55e 100%)' }} />
+
+                  <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'linear-gradient(135deg, rgba(10,127,110,0.1) 0%, rgba(34,197,94,0.1) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <MessageSquare size={24} color="#0A7F6E" />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '24px', fontWeight: 900, color: '#111111', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '0.02em' }}>
+                        B2B ENQUIRY FORM
+                      </h3>
+                      <p style={{ fontSize: '14px', color: 'rgba(0,0,0,0.5)', fontWeight: 400 }}>Fill in your details and our team will send you a custom quote.</p>
+                    </div>
+                  </div>
+
+                  <AnimatePresence mode="wait">
+                    {inquirySuccess ? (
+                      <motion.div
+                        key="success"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{ background: 'linear-gradient(135deg, rgba(74,222,128,0.05) 0%, rgba(34,197,94,0.05) 100%)', border: '1px solid rgba(74,222,128,0.2)', borderRadius: '20px', padding: '40px 32px', textAlign: 'center', color: '#4ade80' }}
+                      >
+                        <div style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)', color: '#ffffff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 10px 30px rgba(74,222,128,0.3)' }}>
+                          <Check size={40} strokeWidth={3} />
+                        </div>
+                        <h4 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '12px', color: '#111111', fontFamily: 'Montserrat, sans-serif' }}>Quote Request Sent!</h4>
+                        <p style={{ fontSize: '15px', color: 'rgba(0,0,0,0.6)', maxWidth: '420px', margin: '0 auto 32px', lineHeight: 1.6 }}>
+                          Thank you, <strong style={{ color: '#0A7F6E' }}>{inquiryName}</strong>! We've received your request. Our sales team will get back to you within 24 hours with a custom proposal.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setInquirySuccess(false)}
+                          style={{ padding: '16px 32px', background: 'rgba(0,0,0,0.05)', color: '#111111', fontWeight: 700, fontSize: '13px', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.1)', cursor: 'pointer', transition: 'all 0.2s', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)' }}
+                        >
+                          Submit Another Request
+                        </button>
+                      </motion.div>
+                    ) : (
+                      <motion.form
+                        key="form"
+                        onSubmit={handleInquirySubmit}
+                        className="pd-form-grid"
+                        style={{ gap: '28px 20px' }}
+                      >
+                        {/* Name */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
+                            FULL NAME <span style={{ color: '#0A7F6E' }}>*</span>
+                          </label>
+                          <input type="text" required value={inquiryName} onChange={(e) => setInquiryName(e.target.value)} placeholder="Enter your name"
+                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: '#111', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
+                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
+                          />
+                        </div>
+
+                        {/* Organization */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
+                            ORGANIZATION NAME <span style={{ color: '#0A7F6E' }}>*</span>
+                          </label>
+                          <input type="text" required value={inquiryOrg} onChange={(e) => setInquiryOrg(e.target.value)} placeholder="ABC Sports Club"
+                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: '#111', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
+                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
+                          />
+                        </div>
+
+                        {/* Phone */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
+                            PHONE NUMBER <span style={{ color: '#0A7F6E' }}>*</span>
+                          </label>
+                          <input type="tel" required value={inquiryPhone} onChange={(e) => setInquiryPhone(e.target.value)} placeholder="+91 8755578878"
+                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: '#111', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
+                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
+                          />
+                        </div>
+
+                        {/* Email */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
+                            EMAIL ADDRESS <span style={{ color: '#0A7F6E' }}>*</span>
+                          </label>
+                          <input type="email" required value={inquiryEmail} onChange={(e) => setInquiryEmail(e.target.value)} placeholder="you@company.com"
+                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: '#111', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
+                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
+                          />
+                        </div>
+
+                        {/* Product Category */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
+                            PRODUCT CATEGORY <span style={{ color: '#0A7F6E' }}>*</span>
+                          </label>
+                          <select required value={inquiryCategory} onChange={(e) => setInquiryCategory(e.target.value)}
+                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: inquiryCategory ? '#111' : 'rgba(0,0,0,0.4)', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', appearance: 'none', backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23666\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 20px center', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
+                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
+                          >
+                            <option value="" disabled>Select category...</option>
+                            <option value="T-Shirts">T-Shirts</option>
+                            <option value="Jerseys">Jerseys</option>
+                            <option value="Shorts">Shorts</option>
+                            <option value="Tracksuits">Tracksuits</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+
+                        {/* Quantity Required */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
+                            QUANTITY REQUIRED <span style={{ color: '#0A7F6E' }}>*</span>
+                          </label>
+                          <select required value={inquiryQuantityRange} onChange={(e) => setInquiryQuantityRange(e.target.value)}
+                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: inquiryQuantityRange ? '#111' : 'rgba(0,0,0,0.4)', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', appearance: 'none', backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23666\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 20px center', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
+                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
+                          >
+                            <option value="" disabled>Select range...</option>
+                            <option value="10-50">10 - 50 Units</option>
+                            <option value="51-100">51 - 100 Units</option>
+                            <option value="101-500">101 - 500 Units</option>
+                            <option value="500+">500+ Units</option>
+                          </select>
+                        </div>
+
+                        {/* Custom Printing */}
+                        <div className="pd-form-full">
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '14px' }}>
+                            CUSTOM PRINTING REQUIRED <span style={{ color: '#0A7F6E' }}>*</span>
+                          </label>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                            {['Yes – Logo / Text', 'Yes – Full Sublimation', 'Yes – Embroidery', 'No Printing'].map((option) => (
+                              <button
+                                key={option}
+                                type="button"
+                                className={`custom-radio-btn ${inquiryPrinting === option ? 'selected' : ''}`}
+                                onClick={() => setInquiryPrinting(option)}
+                                style={{
+                                  padding: '14px 24px',
+                                  borderRadius: '30px',
+                                  border: inquiryPrinting === option ? '1px solid #0A7F6E' : '1px solid rgba(0,0,0,0.1)',
+                                  background: inquiryPrinting === option ? 'rgba(10,127,110,0.08)' : '#ffffff',
+                                  color: inquiryPrinting === option ? '#0A7F6E' : '#333',
+                                  fontSize: '13px',
+                                  fontWeight: inquiryPrinting === option ? 700 : 500,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s',
+                                  boxShadow: inquiryPrinting === option ? '0 4px 12px rgba(10,127,110,0.1)' : '0 2px 6px rgba(0,0,0,0.02)'
+                                }}
+                                onMouseEnter={(e) => { if (inquiryPrinting !== option) { e.currentTarget.style.background = '#f9f9f9'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; } }}
+                                onMouseLeave={(e) => { if (inquiryPrinting !== option) { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; } }}
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Submit */}
+                        <div className="pd-form-full" style={{ marginTop: '32px' }}>
+                          <button type="submit" disabled={inquirySubmitting}
+                            style={{
+                              width: '100%',
+                              padding: '20px',
+                              background: inquirySubmitting ? '#555' : 'linear-gradient(135deg, #0A7F6E 0%, #086053 100%)',
+                              color: '#ffffff', borderRadius: '16px', fontSize: '15px', fontWeight: 800, border: 'none',
+                              cursor: inquirySubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
+                              textTransform: 'uppercase', letterSpacing: '0.05em',
+                              transition: 'all 0.3s ease', opacity: inquirySubmitting ? 0.7 : 1,
+                              boxShadow: inquirySubmitting ? 'none' : '0 12px 24px rgba(10, 127, 110, 0.3)'
+                            }}
+                            onMouseEnter={(e) => { if (!inquirySubmitting) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 32px rgba(10, 127, 110, 0.4)'; } }}
+                            onMouseLeave={(e) => { if (!inquirySubmitting) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(10, 127, 110, 0.3)'; } }}
+                          >
+                            {inquirySubmitting ? (
+                              <span>Processing...</span>
+                            ) : (
+                              <>
+                                Submit Enquiry <Send size={18} />
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </motion.form>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+
+
+              </div>
 
             </div>
 
+            {/* Related Products Hook */}
+            <div style={{ marginTop: '48px', paddingTop: '40px' }}>
+              <RelatedProducts category={product.category} currentProductId={product._id} />
+            </div>
+
           </div>
+        </main>
 
-          {/* Related Products Hook */}
-          <div style={{ marginTop: '48px', paddingTop: '40px' }}>
-            <RelatedProducts category={product.category} currentProductId={product._id} />
-          </div>
-
-        </div>
-      </main>
-
-      {/* Size Guide Modal Overlay */}
-      <AnimatePresence>
-        {isSizeGuideOpen && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} exit={{ opacity: 0 }}
-              onClick={() => setIsSizeGuideOpen(false)}
-              style={{ position: 'absolute', inset: 0, background: '#EAEBE3', cursor: 'pointer' }}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              style={{ position: 'relative', width: '100%', maxWidth: '600px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '24px', padding: '32px', boxShadow: '0 40px 80px rgba(0,0,0,0.8)', maxHeight: '85vh', overflowY: 'auto' }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Users size={24} color="#0A7F6E" />
-                  <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#111111', fontFamily: 'Montserrat, sans-serif' }}>Athenura Size Chart</h3>
-                </div>
-                <button onClick={() => setIsSizeGuideOpen(false)} style={{ background: 'rgba(0,0,0,0.08)', border: 'none', color: 'rgba(0,0,0,0.6)', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                  <X size={16} />
-                </button>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '13px', lineHeight: 1.6, fontWeight: 300 }}>
-                  Our apparel sizes are athletic-fit. If you prefer a loose chest configuration or plan to wear base-layers beneath your jersey/tees, we suggest ordering one size up.
-                </p>
-                <div style={{ borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', overflow: 'hidden' }}>
-                  <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', fontSize: '13px' }}>
-                    <thead>
-                      <tr style={{ background: 'rgba(0,0,0,0.05)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-                        <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Size</th>
-                        <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Chest (in)</th>
-                        <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Waist (in)</th>
-                        <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Length (in)</th>
-                      </tr>
-                    </thead>
-                    <tbody style={{ color: 'rgba(0,0,0,0.5)' }}>
-                      {[
-                        { s: 'XS', c: '34 - 36', w: '28 - 30', l: '26.5' },
-                        { s: 'S', c: '36 - 38', w: '30 - 32', l: '27.5' },
-                        { s: 'M', c: '38 - 40', w: '32 - 34', l: '28.5' },
-                        { s: 'L', c: '40 - 42', w: '34 - 36', l: '29.5' },
-                        { s: 'XL', c: '42 - 44', w: '36 - 38', l: '30.5' },
-                        { s: 'XXL', c: '44 - 46', w: '38 - 40', l: '31.5' },
-                        { s: 'XXXL', c: '46 - 48', w: '40 - 42', l: '32.5' }
-                      ].map((r, i) => (
-                        <tr key={r.s} style={{ borderTop: i > 0 ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
-                          <td style={{ padding: '16px', fontWeight: 700, color: '#111111' }}>{r.s}</td>
-                          <td style={{ padding: '16px' }}>{r.c}</td>
-                          <td style={{ padding: '16px' }}>{r.w}</td>
-                          <td style={{ padding: '16px' }}>{r.l}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
-                  <button onClick={() => setIsSizeGuideOpen(false)} style={{ padding: '12px 24px', background: '#1a1a1a', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '12px', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
-                    Got It
+        {/* Size Guide Modal Overlay */}
+        <AnimatePresence>
+          {isSizeGuideOpen && (
+            <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} exit={{ opacity: 0 }}
+                onClick={() => setIsSizeGuideOpen(false)}
+                style={{ position: 'absolute', inset: 0, background: '#EAEBE3', cursor: 'pointer' }}
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                style={{ position: 'relative', width: '100%', maxWidth: '600px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '24px', padding: '32px', boxShadow: '0 40px 80px rgba(0,0,0,0.8)', maxHeight: '85vh', overflowY: 'auto' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Users size={24} color="#0A7F6E" />
+                    <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#111111', fontFamily: 'Montserrat, sans-serif' }}>Athenura Size Chart</h3>
+                  </div>
+                  <button onClick={() => setIsSizeGuideOpen(false)} style={{ background: 'rgba(0,0,0,0.08)', border: 'none', color: 'rgba(0,0,0,0.6)', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                    <X size={16} />
                   </button>
                 </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
-    </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '13px', lineHeight: 1.6, fontWeight: 300 }}>
+                    Our apparel sizes are athletic-fit. If you prefer a loose chest configuration or plan to wear base-layers beneath your jersey/tees, we suggest ordering one size up.
+                  </p>
+                  <div style={{ borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+                    <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', fontSize: '13px' }}>
+                      <thead>
+                        <tr style={{ background: 'rgba(0,0,0,0.05)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+                          <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Size</th>
+                          <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Chest (in)</th>
+                          <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Waist (in)</th>
+                          <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Length (in)</th>
+                        </tr>
+                      </thead>
+                      <tbody style={{ color: 'rgba(0,0,0,0.5)' }}>
+                        {[
+                          { s: 'XS', c: '34 - 36', w: '28 - 30', l: '26.5' },
+                          { s: 'S', c: '36 - 38', w: '30 - 32', l: '27.5' },
+                          { s: 'M', c: '38 - 40', w: '32 - 34', l: '28.5' },
+                          { s: 'L', c: '40 - 42', w: '34 - 36', l: '29.5' },
+                          { s: 'XL', c: '42 - 44', w: '36 - 38', l: '30.5' },
+                          { s: 'XXL', c: '44 - 46', w: '38 - 40', l: '31.5' },
+                          { s: 'XXXL', c: '46 - 48', w: '40 - 42', l: '32.5' }
+                        ].map((r, i) => (
+                          <tr key={r.s} style={{ borderTop: i > 0 ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
+                            <td style={{ padding: '16px', fontWeight: 700, color: '#111111' }}>{r.s}</td>
+                            <td style={{ padding: '16px' }}>{r.c}</td>
+                            <td style={{ padding: '16px' }}>{r.w}</td>
+                            <td style={{ padding: '16px' }}>{r.l}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+                    <button onClick={() => setIsSizeGuideOpen(false)} style={{ padding: '12px 24px', background: '#1a1a1a', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '12px', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
+                      Got It
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+      </div>
     </>
   );
 };
