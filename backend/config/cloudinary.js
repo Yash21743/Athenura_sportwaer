@@ -1,20 +1,20 @@
 const { v2: cloudinary } = require("cloudinary");
-const config = require("./index");
 
+// Use process.env directly for robustness (no dependency on config/index.js shape)
 cloudinary.config({
-  cloud_name: config.cloudinary.cloudName,
-  api_key: config.cloudinary.apiKey,
-  api_secret: config.cloudinary.apiSecret,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true,
 });
 
+// ─── Helper: upload from file path ───
 const uploadImage = async (filePath, folder = "comfy-sportwear") => {
   try {
     const result = await cloudinary.uploader.upload(filePath, {
       folder,
       resource_type: "auto",
       allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
-      max_file_size: 5000000, // 5MB
     });
     return {
       url: result.secure_url,
@@ -29,9 +29,10 @@ const uploadImage = async (filePath, folder = "comfy-sportwear") => {
   }
 };
 
+// ─── Helper: upload from buffer ───
 const uploadBuffer = async (buffer, folder = "comfy-sportwear") => {
   return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
+    const stream = cloudinary.uploader.upload_stream(
       {
         folder,
         resource_type: "auto",
@@ -48,11 +49,11 @@ const uploadBuffer = async (buffer, folder = "comfy-sportwear") => {
         });
       }
     );
-
-    uploadStream.end(buffer);
+    stream.end(buffer);
   });
 };
 
+// ─── Helper: delete image ───
 const deleteImage = async (publicId) => {
   try {
     await cloudinary.uploader.destroy(publicId);
@@ -63,4 +64,10 @@ const deleteImage = async (publicId) => {
   }
 };
 
-module.exports = { cloudinary, uploadImage, uploadBuffer, deleteImage };
+// ✅ Attach helpers as properties so callers can still use them
+cloudinary.uploadImage = uploadImage;
+cloudinary.uploadBuffer = uploadBuffer;
+cloudinary.deleteImage = deleteImage;
+
+// ✅ Export the cloudinary v2 instance DIRECTLY (NOT wrapped in an object)
+module.exports = cloudinary;

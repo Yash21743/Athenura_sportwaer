@@ -1,91 +1,13 @@
 import { useState, useEffect } from "react";
 import { Menu, ShoppingBag, ShoppingCart, CheckCircle, MapPin, User } from "lucide-react";
 import UserSidebar from "../userlayout/UserSidebar";
-
-// Jersey Image Imports from website assets
-import amuBl from "../../assets/ath.jersey/amu_bl.jpeg";
-import hills from "../../assets/ath.jersey/hills.jpeg";
-import purvanchal from "../../assets/ath.jersey/purvanchal.jpeg";
-import rcbred from "../../assets/ath.jersey/rcbred.jpeg";
+import API from "../../services/api";
 
 // Sub-components
 import OrderHistory from "./OrderHistory";
 import MyCart from "./MyCart";
 import Addresses from "./Addresses";
 import EditProfile from "./EditProfile";
-
-// Mock User Data
-const MOCK_USER = {
-  name: "Biswajit Roy",
-  email: "biswajit@comfysportwear.com",
-  phone: "+91 9876543210",
-  joinDate: "July 2026",
-};
-
-// Mock Orders - Only Jerseys with website calculations
-const MOCK_ORDERS = [
-  {
-    id: "#CS-82049",
-    date: "July 12, 2026",
-    status: "Delivered",
-    total: "₹3,797",
-    items: [
-      { name: "AMU Blue Striker", qty: 2, size: "L", price: "₹1,299", image: amuBl },
-      { name: "Hills FC Classic", qty: 1, size: "M", price: "₹1,199", image: hills },
-    ]
-  },
-  {
-    id: "#CS-81930",
-    date: "June 28, 2026",
-    status: "In Transit",
-    total: "₹1,599",
-    items: [
-      { name: "RCB Flame Edition", qty: 1, size: "XL", price: "₹1,599", image: rcbred },
-    ]
-  },
-  {
-    id: "#CS-81544",
-    date: "May 15, 2026",
-    status: "Processing",
-    total: "₹2,798",
-    items: [
-      { name: "Purvanchal Legacy", qty: 2, size: "XL", price: "₹1,399", image: purvanchal },
-    ]
-  }
-];
-
-// Mock Wishlist / Saved Items
-const MOCK_WISHLIST = [
-  { id: 1, name: "Premium Hooded Track Jacket", price: "₹2,499", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300&auto=format&fit=crop" },
-  { id: 2, name: "Athletic Compression Shorts", price: "₹899", image: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=300&auto=format&fit=crop" },
-  { id: 3, name: "AMU Classic Polo Jersey", price: "₹1,699", image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=300&auto=format&fit=crop" }
-];
-
-// Mock Addresses
-const MOCK_ADDRESSES = [
-  {
-    id: 1,
-    type: "Home",
-    isDefault: true,
-    fullName: "Biswajit Roy",
-    addressLine: "Flat 402, Green Glen Heights, Sector 4",
-    city: "Bangalore",
-    state: "Karnataka",
-    pinCode: "560103",
-    phone: "+91 9876543210"
-  },
-  {
-    id: 2,
-    type: "Office",
-    isDefault: false,
-    fullName: "Biswajit Roy",
-    addressLine: "Athenura Sports Tech, Block C, 7th Floor, Tech Park",
-    city: "Mumbai",
-    state: "Maharashtra",
-    pinCode: "400051",
-    phone: "+91 9876543211"
-  }
-];
 
 // Reusable card container matching clean light style
 const Card = ({ children, title, titleParts, sub, action, delay = 0 }) => {
@@ -135,7 +57,6 @@ const StatCard = ({ title, value, badge, accent, icon, vector, delay = 0 }) => {
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
-    // Parse target value
     const target = parseInt(value, 10);
     if (isNaN(target)) {
       setDisplayValue(value);
@@ -143,16 +64,13 @@ const StatCard = ({ title, value, badge, accent, icon, vector, delay = 0 }) => {
     }
 
     let startTimestamp = null;
-    const duration = 800; // Count-up speed (800ms)
+    const duration = 800;
 
     const step = (timestamp) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      
-      // Easing out quad formula: t * (2 - t)
       const easeProgress = progress * (2 - progress);
       setDisplayValue(Math.floor(easeProgress * target));
-
       if (progress < 1) {
         window.requestAnimationFrame(step);
       } else {
@@ -184,7 +102,6 @@ const StatCard = ({ title, value, badge, accent, icon, vector, delay = 0 }) => {
         animationDelay: `${delay}s`,
       }}
     >
-      {/* Accent top line */}
       <div 
         style={{
           position: "absolute",
@@ -195,8 +112,6 @@ const StatCard = ({ title, value, badge, accent, icon, vector, delay = 0 }) => {
           background: `linear-gradient(90deg, ${accent}, transparent)`,
         }}
       />
-
-      {/* Decorative vector background */}
       {vector && (
         <div 
           style={{ 
@@ -219,7 +134,6 @@ const StatCard = ({ title, value, badge, accent, icon, vector, delay = 0 }) => {
           {vector}
         </div>
       )}
-
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "14px" }}>
         <div
           style={{
@@ -267,75 +181,85 @@ const UserDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isDesktop, setIsDesktop] = useState(typeof window !== "undefined" ? window.innerWidth > 1024 : true);
 
-  // Addresses, profile and cart items state
-  const [addresses, setAddresses] = useState(MOCK_ADDRESSES);
-  const [profile, setProfile] = useState(MOCK_USER);
+  // ✅ Real data from backend, replacing MOCK_USER / MOCK_ADDRESSES / MOCK_ORDERS
+  const [profile, setProfile] = useState({ name: "", email: "", phone: "" });
+  const [addresses, setAddresses] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [cartCount, setCartCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth > 1024);
-    };
+    const handleResize = () => setIsDesktop(window.innerWidth > 1024);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // ✅ Fetch everything the dashboard needs in one pass
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      const [profileRes, addressesRes, ordersRes, cartRes] = await Promise.all([
+        API.get("/users/me"),
+        API.get("/addresses"),
+        API.get("/orders"),
+        API.get("/cart"),
+      ]);
+
+      if (profileRes.data?.data) setProfile(profileRes.data.data);
+      if (addressesRes.data?.data) setAddresses(addressesRes.data.data);
+      if (ordersRes.data?.data) setOrders(ordersRes.data.data);
+      if (cartRes.data?.data) setCartCount(cartRes.data.data.length);
+    } catch (err) {
+      console.error("Failed to load dashboard data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const checkCart = () => {
-      const stored = localStorage.getItem("csw_cart_items");
-      if (stored) {
-        try {
-          setCartCount(JSON.parse(stored).length);
-        } catch (e) {}
-      }
-    };
-    checkCart();
-    window.addEventListener("cartUpdated", checkCart);
-    return () => window.removeEventListener("cartUpdated", checkCart);
+    loadDashboardData();
   }, []);
 
-  // Return header title based on active key
-  const getHeaderTitle = () => {
-    switch (activeTab) {
-      case "dashboard":
-        return "Dashboard Overview";
-      case "orders":
-        return "Order History";
-      case "cart":
-        return "My Cart";
-      case "addresses":
-        return "Edit Address";
-      case "settings":
-        return "Edit Profile";
-      default:
-        return "Dashboard";
-    }
-  };
+  // ✅ Let child components (MyCart) trigger a cart-count refresh after add/remove
+  useEffect(() => {
+    const refreshCartCount = async () => {
+      try {
+        const res = await API.get("/cart");
+        setCartCount(res.data?.data?.length || 0);
+      } catch (err) {
+        console.error("Failed to refresh cart count:", err);
+      }
+    };
+    window.addEventListener("cartUpdated", refreshCartCount);
+    return () => window.removeEventListener("cartUpdated", refreshCartCount);
+  }, []);
 
-  // Get two part header titles
   const getHeaderTitleParts = () => {
     switch (activeTab) {
-      case "dashboard":
-        return { first: "DASHBOARD", second: "OVERVIEW" };
-      case "orders":
-        return { first: "ORDER", second: "HISTORY" };
-      case "cart":
-        return { first: "MY", second: "CART" };
-      case "addresses":
-        return { first: "EDIT", second: "ADDRESS" };
-      case "settings":
-        return { first: "EDIT", second: "PROFILE" };
-      default:
-        return { first: "MY", second: "DASHBOARD" };
+      case "dashboard": return { first: "DASHBOARD", second: "OVERVIEW" };
+      case "orders": return { first: "ORDER", second: "HISTORY" };
+      case "cart": return { first: "MY", second: "CART" };
+      case "addresses": return { first: "EDIT", second: "ADDRESS" };
+      case "settings": return { first: "EDIT", second: "PROFILE" };
+      default: return { first: "MY", second: "DASHBOARD" };
     }
   };
 
-  // Delivered count
-  const deliveredCount = MOCK_ORDERS.filter(o => o.status === "Delivered").length;
+  const deliveredCount = orders.filter((o) => o.status === "Delivered").length;
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc" }}>
+        <div style={{ position: "relative", width: "48px", height: "48px" }}>
+          <div style={{ position: "absolute", inset: 0, border: "2px solid rgba(10,127,110,0.15)", borderRadius: "50%" }} />
+          <div style={{ position: "absolute", inset: 0, border: "2px solid transparent", borderTopColor: "#0A7F6E", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans user-dashboard-root">
-      {/* Sidebar Layout */}
       <UserSidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -345,7 +269,6 @@ const UserDashboard = () => {
         onCollapsedChange={setSidebarCollapsed}
       />
 
-      {/* Main Content Area */}
       <div 
         style={{
           marginLeft: isDesktop ? (sidebarCollapsed ? "72px" : "280px") : "0px",
@@ -354,37 +277,21 @@ const UserDashboard = () => {
         }}
         className="min-h-screen flex flex-col"
       >
-        {/* Header/Navbar */}
         <header className="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-200 z-30 shadow-sm py-5">
-          {/* Hamburger sits inside the sticky header, absolutely on the left — mobile only */}
           <button
             onClick={() => setIsMobileSidebarOpen(true)}
             style={{
-              position: "absolute",
-              top: "50%",
-              left: "16px",
-              transform: "translateY(-50%)",
-              zIndex: 40,
-              width: "38px",
-              height: "38px",
-              display: isDesktop ? "none" : "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "#0A7F6E",
-              border: "1px solid #0A7F6E",
-              borderRadius: "9px",
-              cursor: "pointer",
-              padding: 0,
-              transition: "opacity 0.2s ease",
-              color: "#ffffff",
-              boxShadow: "0 2px 8px rgba(10,127,110,0.3)"
+              position: "absolute", top: "50%", left: "16px", transform: "translateY(-50%)", zIndex: 40,
+              width: "38px", height: "38px", display: isDesktop ? "none" : "flex",
+              alignItems: "center", justifyContent: "center", background: "#0A7F6E",
+              border: "1px solid #0A7F6E", borderRadius: "9px", cursor: "pointer", padding: 0,
+              transition: "opacity 0.2s ease", color: "#ffffff", boxShadow: "0 2px 8px rgba(10,127,110,0.3)"
             }}
             className="hover:opacity-90"
           >
             <Menu size={20} />
           </button>
 
-          {/* Centered Heading and Description */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", paddingTop: "8px" }}>
             <h1 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: "clamp(15px, 4vw, 24px)", letterSpacing: "0.5px", margin: 0, lineHeight: 1.1, textTransform: "uppercase" }}>
               <span style={{ color: "#0f172a" }}>{getHeaderTitleParts().first} </span>
@@ -398,21 +305,14 @@ const UserDashboard = () => {
           </p>
         </header>
 
-        {/* Content Pane */}
         <main className="user-main" style={{ padding: "24px 12px 40px", minHeight: "100vh", background: "#f8fafc", overflowX: "hidden", boxSizing: "border-box" }}>
           <div style={{ maxWidth: "1300px", margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
             {activeTab === "dashboard" && (
               <div className="animate-fadeIn">
-                {/* Stats Row at Top */}
                 <div className="csw-stats">
-                  {/* Card 1: Total Orders */}
                   <StatCard 
-                    title="Total Orders"
-                    value={MOCK_ORDERS.length}
-                    badge="Active"
-                    accent="#0A7F6E"
-                    icon={<ShoppingBag size={20} />}
-                    delay={0}
+                    title="Total Orders" value={orders.length} badge="Active" accent="#0A7F6E"
+                    icon={<ShoppingBag size={20} />} delay={0}
                     vector={
                       <svg viewBox="0 0 200 50" fill="none" style={{ width: "100%", height: "50px", alignSelf: "flex-end" }} preserveAspectRatio="none">
                         <path d="M0,45 Q25,25 50,40 T100,15 T150,35 T200,5" stroke="#0A7F6E" strokeWidth="2.5" strokeLinecap="round" />
@@ -426,15 +326,9 @@ const UserDashboard = () => {
                       </svg>
                     }
                   />
-
-                  {/* Card 2: My Cart */}
                   <StatCard 
-                    title="My Cart"
-                    value={cartCount}
-                    badge="Items"
-                    accent="#ec4899"
-                    icon={<ShoppingCart size={20} />}
-                    delay={0.07}
+                    title="My Cart" value={cartCount} badge="Items" accent="#ec4899"
+                    icon={<ShoppingCart size={20} />} delay={0.07}
                     vector={
                       <svg viewBox="0 0 120 80" fill="none" style={{ width: "130px", height: "80px", alignSelf: "flex-end" }}>
                         <circle cx="95" cy="50" r="38" stroke="#ec4899" strokeWidth="1.5" strokeDasharray="3,3" opacity="0.8" />
@@ -449,28 +343,13 @@ const UserDashboard = () => {
                       </svg>
                     }
                   />
-
-                  {/* Card 3: Orders Delivered */}
                   <StatCard 
-                    title="Orders Delivered"
-                    value={deliveredCount}
-                    badge="Delivered"
-                    accent="#3B82F6"
-                    icon={<CheckCircle size={20} />}
-                    delay={0.14}
+                    title="Orders Delivered" value={deliveredCount} badge="Delivered" accent="#3B82F6"
+                    icon={<CheckCircle size={20} />} delay={0.14}
                     vector={
                       <svg viewBox="0 0 160 60" fill="none" style={{ width: "140px", height: "65px", alignSelf: "flex-end" }}>
                         {[12, 18, 15, 28, 22, 35, 28, 48].map((h, i) => (
-                          <rect 
-                            key={i} 
-                            x={10 + i * 16} 
-                            y={60 - h} 
-                            width="8" 
-                            height={h} 
-                            rx="2" 
-                            fill="#3B82F6" 
-                            opacity={0.3 + (i * 0.1)} 
-                          />
+                          <rect key={i} x={10 + i * 16} y={60 - h} width="8" height={h} rx="2" fill="#3B82F6" opacity={0.3 + (i * 0.1)} />
                         ))}
                         <circle cx="140" cy="15" r="3" fill="#3B82F6" opacity="0.8" />
                         <circle cx="125" cy="20" r="1.5" fill="#3B82F6" opacity="0.6" />
@@ -479,123 +358,67 @@ const UserDashboard = () => {
                   />
                 </div>
 
-                {/* Main Grid */}
                 <div className="csw-main-grid">
-                  {/* Left Column: Recent Orders */}
                   <div className="csw-left-col">
                     <Card titleParts={{ first: "RECENT", second: "ORDERS" }} sub="Latest product purchases" delay={0.2}>
-                      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch", marginLeft: "-4px", marginRight: "-4px", paddingLeft: "4px", paddingRight: "4px" }}>
-                        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "280px" }}>
-                          <thead>
-                            <tr>
-                              {["Order ID", "Date", "Items", "Status", "Amount"].map(h => (
-                                <th
-                                  key={h}
-                                  style={{
-                                    textAlign: h === "Amount" ? "right" : h === "Status" ? "center" : "left",
-                                    padding: "7px 10px",
-                                    fontSize: "10px",
-                                    fontWeight: 600,
-                                    color: "#64748b",
-                                    textTransform: "uppercase",
-                                    letterSpacing: "0.8px",
-                                    fontFamily: "'Poppins', sans-serif",
-                                    borderBottom: "1px solid #e2e8f0"
-                                  }}
-                                >
-                                  {h}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {MOCK_ORDERS.slice(0, 3).map((order) => (
-                              <tr
-                                key={order.id}
-                                className="csw-tr"
-                                style={{
-                                  borderBottom: "1px solid #f1f5f9",
-                                  transition: "background 0.2s ease"
-                                }}
-                              >
-                                <td style={{ padding: "12px 10px", fontSize: "12.5px", fontWeight: 700, color: "#0f172a", fontFamily: "'Poppins', sans-serif" }}>
-                                  {order.id}
-                                </td>
-                                <td style={{ padding: "12px 10px", fontSize: "12px", color: "#64748b", fontFamily: "'Poppins', sans-serif" }}>
-                                  {order.date}
-                                </td>
-                                <td style={{ padding: "12px 10px", fontSize: "12px", color: "#475569", fontFamily: "'Poppins', sans-serif" }}>
-                                  {order.items.map(i => `${i.name.split(" - ")[0]} (${i.size})`).join(", ")}
-                                </td>
-                                <td style={{ padding: "12px 10px", textAlign: "center" }}>
-                                  <span
-                                    style={{
-                                      padding: "3px 9px",
-                                      borderRadius: "20px",
-                                      fontSize: "10px",
-                                      fontWeight: 600,
-                                      background:
-                                        order.status === "Delivered"
-                                          ? "rgba(16,185,129,0.08)"
-                                          : order.status === "In Transit"
-                                          ? "rgba(59,130,246,0.08)"
-                                          : "rgba(245,158,11,0.08)",
-                                      color:
-                                        order.status === "Delivered"
-                                          ? "#10B981"
-                                          : order.status === "In Transit"
-                                          ? "#3B82F6"
-                                          : "#F59E0B",
-                                      border: `1px solid ${
-                                        order.status === "Delivered"
-                                          ? "rgba(16,185,129,0.2)"
-                                          : order.status === "In Transit"
-                                          ? "rgba(59,130,246,0.2)"
-                                          : "rgba(245,158,11,0.2)"
-                                      }`,
-                                      fontFamily: "'Poppins', sans-serif",
-                                      whiteSpace: "nowrap",
-                                    }}
-                                  >
-                                    {order.status}
-                                  </span>
-                                </td>
-                                <td style={{ padding: "12px 10px", textAlign: "right", fontSize: "13px", fontWeight: 800, color: "#0A7F6E", fontFamily: "'Montserrat', sans-serif" }}>
-                                  {order.total}
-                                </td>
+                      {orders.length === 0 ? (
+                        <p style={{ fontSize: "12.5px", color: "#64748b", textAlign: "center", padding: "24px 0" }}>No orders yet.</p>
+                      ) : (
+                        <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch", marginLeft: "-4px", marginRight: "-4px", paddingLeft: "4px", paddingRight: "4px" }}>
+                          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "280px" }}>
+                            <thead>
+                              <tr>
+                                {["Order ID", "Date", "Items", "Status", "Amount"].map(h => (
+                                  <th key={h} style={{ textAlign: h === "Amount" ? "right" : h === "Status" ? "center" : "left", padding: "7px 10px", fontSize: "10px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.8px", fontFamily: "'Poppins', sans-serif", borderBottom: "1px solid #e2e8f0" }}>
+                                    {h}
+                                  </th>
+                                ))}
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                            </thead>
+                            <tbody>
+                              {orders.slice(0, 3).map((order) => (
+                                <tr key={order._id || order.orderNumber} className="csw-tr" style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.2s ease" }}>
+                                  <td style={{ padding: "12px 10px", fontSize: "12.5px", fontWeight: 700, color: "#0f172a", fontFamily: "'Poppins', sans-serif" }}>
+                                    {order.orderNumber}
+                                  </td>
+                                  <td style={{ padding: "12px 10px", fontSize: "12px", color: "#64748b", fontFamily: "'Poppins', sans-serif" }}>
+                                    {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                                  </td>
+                                  <td style={{ padding: "12px 10px", fontSize: "12px", color: "#475569", fontFamily: "'Poppins', sans-serif" }}>
+                                    {order.items.map(i => `${i.name} (${i.size})`).join(", ")}
+                                  </td>
+                                  <td style={{ padding: "12px 10px", textAlign: "center" }}>
+                                    <span style={{
+                                      padding: "3px 9px", borderRadius: "20px", fontSize: "10px", fontWeight: 600,
+                                      background: order.status === "Delivered" ? "rgba(16,185,129,0.08)" : order.status === "In Transit" ? "rgba(59,130,246,0.08)" : "rgba(245,158,11,0.08)",
+                                      color: order.status === "Delivered" ? "#10B981" : order.status === "In Transit" ? "#3B82F6" : "#F59E0B",
+                                      border: `1px solid ${order.status === "Delivered" ? "rgba(16,185,129,0.2)" : order.status === "In Transit" ? "rgba(59,130,246,0.2)" : "rgba(245,158,11,0.2)"}`,
+                                      fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap",
+                                    }}>
+                                      {order.status}
+                                    </span>
+                                  </td>
+                                  <td style={{ padding: "12px 10px", textAlign: "right", fontSize: "13px", fontWeight: 800, color: "#0A7F6E", fontFamily: "'Montserrat', sans-serif" }}>
+                                    ₹{order.total.toLocaleString("en-IN")}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
 
                       <div style={{ display: "flex", justifyContent: "center" }}>
                         <button
                           onClick={() => setActiveTab("orders")}
                           style={{
-                            width: "fit-content",
-                            padding: "11px 28px",
-                            marginTop: "16px",
-                            background: "#F4F1EA",
-                            border: "1px solid #E4DFD5",
-                            borderRadius: "10px",
-                            color: "#5C5243",
-                            fontSize: "11px",
-                            fontWeight: 700,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.6px",
-                            cursor: "pointer",
-                            fontFamily: "'Poppins', sans-serif",
-                            transition: "all 0.22s ease",
+                            width: "fit-content", padding: "11px 28px", marginTop: "16px",
+                            background: "#F4F1EA", border: "1px solid #E4DFD5", borderRadius: "10px",
+                            color: "#5C5243", fontSize: "11px", fontWeight: 700, textTransform: "uppercase",
+                            letterSpacing: "0.6px", cursor: "pointer", fontFamily: "'Poppins', sans-serif", transition: "all 0.22s ease",
                           }}
-                          onMouseEnter={e => {
-                            e.target.style.background = "#EDE9DF";
-                            e.target.style.borderColor = "#D9D3C7";
-                          }}
-                          onMouseLeave={e => {
-                            e.target.style.background = "#F4F1EA";
-                            e.target.style.borderColor = "#E4DFD5";
-                          }}
+                          onMouseEnter={e => { e.target.style.background = "#EDE9DF"; e.target.style.borderColor = "#D9D3C7"; }}
+                          onMouseLeave={e => { e.target.style.background = "#F4F1EA"; e.target.style.borderColor = "#E4DFD5"; }}
                         >
                           View All Orders
                         </button>
@@ -603,7 +426,6 @@ const UserDashboard = () => {
                     </Card>
                   </div>
 
-                  {/* Right Column: Profile details */}
                   <div className="csw-right-col">
                     <Card titleParts={{ first: "PROFILE", second: "DETAILS" }} sub="Account configuration" delay={0.25}>
                       <div style={{ display: "flex", flexDirection: "column", gap: "2px", marginBottom: "16px" }}>
@@ -613,18 +435,7 @@ const UserDashboard = () => {
                           { label: "Phone", val: profile.phone },
                           { label: "Default Address", val: addresses.find(a => a.isDefault) ? `${addresses.find(a => a.isDefault).city}, ${addresses.find(a => a.isDefault).state}` : "None set" },
                         ].map((item, idx) => (
-                          <div
-                            key={idx}
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "flex-start",
-                              flexWrap: "wrap",
-                              gap: "4px",
-                              padding: "12px 0",
-                              borderBottom: idx < 3 ? "1px solid #f1f5f9" : "none",
-                            }}
-                          >
+                          <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "4px", padding: "12px 0", borderBottom: idx < 3 ? "1px solid #f1f5f9" : "none" }}>
                             <span style={{ fontSize: "10.5px", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.8px", fontFamily: "'Poppins', sans-serif", fontWeight: 600, flexShrink: 0 }}>
                               {item.label}
                             </span>
@@ -639,29 +450,13 @@ const UserDashboard = () => {
                         <button
                           onClick={() => setActiveTab("settings")}
                           style={{
-                            width: "fit-content",
-                            padding: "11px 28px",
-                            background: "linear-gradient(135deg, #0A7F6E, #0d9488)",
-                            border: "none",
-                            borderRadius: "10px",
-                            color: "#fff",
-                            fontSize: "11px",
-                            fontWeight: 700,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.6px",
-                            cursor: "pointer",
-                            fontFamily: "'Poppins', sans-serif",
-                            transition: "all 0.22s ease",
-                            boxShadow: "0 4px 12px rgba(10,127,110,0.15)",
+                            width: "fit-content", padding: "11px 28px", background: "linear-gradient(135deg, #0A7F6E, #0d9488)",
+                            border: "none", borderRadius: "10px", color: "#fff", fontSize: "11px", fontWeight: 700,
+                            textTransform: "uppercase", letterSpacing: "0.6px", cursor: "pointer", fontFamily: "'Poppins', sans-serif",
+                            transition: "all 0.22s ease", boxShadow: "0 4px 12px rgba(10,127,110,0.15)",
                           }}
-                          onMouseEnter={e => {
-                            e.target.style.transform = "translateY(-1px)";
-                            e.target.style.boxShadow = "0 6px 16px rgba(10,127,110,0.25)";
-                          }}
-                          onMouseLeave={e => {
-                            e.target.style.transform = "translateY(0)";
-                            e.target.style.boxShadow = "0 4px 12px rgba(10,127,110,0.15)";
-                          }}
+                          onMouseEnter={e => { e.target.style.transform = "translateY(-1px)"; e.target.style.boxShadow = "0 6px 16px rgba(10,127,110,0.25)"; }}
+                          onMouseLeave={e => { e.target.style.transform = "translateY(0)"; e.target.style.boxShadow = "0 4px 12px rgba(10,127,110,0.15)"; }}
                         >
                           Edit Profile Details
                         </button>
@@ -672,83 +467,30 @@ const UserDashboard = () => {
               </div>
             )}
 
-            {activeTab === "orders" && (
-              <OrderHistory orders={MOCK_ORDERS} />
-            )}
-
-            {activeTab === "cart" && (
-              <MyCart />
-            )}
-
-            {activeTab === "addresses" && (
-              <Addresses addresses={addresses} setAddresses={setAddresses} />
-            )}
-
-            {activeTab === "settings" && (
-              <EditProfile profile={profile} setProfile={setProfile} />
-            )}
+            {activeTab === "orders" && <OrderHistory orders={orders} />}
+            {activeTab === "cart" && <MyCart />}
+            {activeTab === "addresses" && <Addresses addresses={addresses} setAddresses={setAddresses} />}
+            {activeTab === "settings" && <EditProfile profile={profile} setProfile={setProfile} />}
           </div>
         </main>
       </div>
 
-      {/* Global CSS Style Rules */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
-        
-        .user-dashboard-root * {
-          box-sizing: border-box;
-        }
-
-        @keyframes csw-fadein {
-          from { opacity: 0; transform: translateY(14px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Stats Row Grid */
-        .csw-stats {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
-          margin-bottom: 24px;
-        }
-
-        /* 2 Column Content Layout */
-        .csw-main-grid {
-          display: grid;
-          grid-template-columns: 2fr 1fr;
-          gap: 16px;
-          margin-bottom: 24px;
-        }
-
-        /* Table hover style */
-        .csw-tr:hover td {
-          background: #f8fafc !important;
-        }
-
-        /* Responsive Breakpoints matching AdminDashboard.jsx */
+        .user-dashboard-root * { box-sizing: border-box; }
+        @keyframes csw-fadein { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .csw-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .csw-main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .csw-tr:hover td { background: #f8fafc !important; }
         @media (max-width: 1023px) {
-          .csw-stats {
-            grid-template-columns: 1fr 1fr !important;
-          }
-          .csw-main-grid {
-            grid-template-columns: 1fr !important;
-          }
+          .csw-stats { grid-template-columns: 1fr 1fr !important; }
+          .csw-main-grid { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 640px) {
-          .csw-stats {
-            grid-template-columns: 1fr !important;
-          }
-          .csw-main-grid {
-            grid-template-columns: 1fr !important;
-            gap: 12px !important;
-          }
-          .csw-left-col,
-          .csw-right-col {
-            min-width: 0 !important;
-            width: 100% !important;
-            overflow: hidden !important;
-            box-sizing: border-box !important;
-          }
+          .csw-stats { grid-template-columns: 1fr !important; }
+          .csw-main-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .csw-left-col, .csw-right-col { min-width: 0 !important; width: 100% !important; overflow: hidden !important; box-sizing: border-box !important; }
         }
       `}</style>
     </div>
