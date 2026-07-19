@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
 import API from "../../services/api";
 
-// ─── Hooks ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function useInView(threshold = 0.12) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -19,7 +19,7 @@ function useInView(threshold = 0.12) {
   return [ref, visible];
 }
 
-// ─── StatCard Subcomponent ───────────────────────────────────────────────────
+// â”€â”€â”€ StatCard Subcomponent â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const StatCard = ({ title, value, icon, accent, delay }) => {
   const [ref, visible] = useInView();
   const [hov, setHov] = useState(false);
@@ -74,7 +74,7 @@ const StatCard = ({ title, value, icon, accent, delay }) => {
   );
 };
 
-// ─── Star Renderer Helper ────────────────────────────────────────────────────
+// â”€â”€â”€ Star Renderer Helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const renderStars = (rating) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
@@ -96,7 +96,7 @@ const renderStars = (rating) => {
   return <div style={{ display: "inline-flex", alignItems: "center" }}>{stars}</div>;
 };
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const INITIAL_TESTIMONIALS = [
   {
     id: 1,
@@ -145,7 +145,7 @@ const DEFAULT_NEW_TESTIMONIAL = {
   time: "Just now"
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const AdminTestimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
 
@@ -191,6 +191,11 @@ const AdminTestimonials = () => {
       navigate("/admin");
     }
   }, [navigate]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setPageIn(true), 60);
+    return () => clearTimeout(t);
+  }, []);
 
   // Modals state
   const [viewingTestimonial, setViewingTestimonial] = useState(null);
@@ -320,7 +325,7 @@ const AdminTestimonials = () => {
           <title>Comfy Sport Wear - Testimonials Report</title>
           <style>
             body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; padding: 24px; }
-            h2 { color: #FF3B30; margin-bottom: 4px; }
+            h2 { color: #0A7F6E; margin-bottom: 4px; }
             p { color: #666; font-size: 13px; margin: 0 0 20px; }
             table { width: 100%; border-collapse: collapse; margin-top: 10px; }
             th { background: #f5f5f5; text-align: left; padding: 10px; font-size: 11px; border-bottom: 2px solid #ddd; text-transform: uppercase; }
@@ -372,11 +377,11 @@ const AdminTestimonials = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #050e1a; color: #fff; font-family: 'Poppins', sans-serif; }
+        body { background: #070C0B; color: #DDDFD2; font-family: 'Poppins', sans-serif; }
         
         .csw-topbar {
           position: fixed; top: 0; left: ${sidebarCollapsed ? 72 : 260}px; right: 0; height: 64px;
-          background: rgba(5, 14, 26, 0.92); backdrop-filter: blur(14px);
+          background: rgba(7, 12, 11, 0.92); backdrop-filter: blur(14px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.07);
           display: flex; align-items: center; justify-content: space-between;
           padding: 0 24px; gap: 12px; z-index: 30;
@@ -406,7 +411,7 @@ const AdminTestimonials = () => {
           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
         }
 
-        /* ── Input styling ── */
+        /* â”€â”€ Input styling â”€â”€ */
         .csw-input, .csw-select, .csw-textarea {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.12);
@@ -415,7 +420,7 @@ const AdminTestimonials = () => {
           width: 100%;
         }
         .csw-input:focus, .csw-select:focus, .csw-textarea:focus {
-          border-color: #FF3B30;
+          border-color: #0A7F6E;
         }
 
         .csw-select option {
@@ -432,7 +437,7 @@ const AdminTestimonials = () => {
           to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* ── Responsive ── */
+        /* â”€â”€ Responsive â”€â”€ */
         @media (max-width: 768px) {
           .csw-topbar { left: 0 !important; padding: 0 14px; }
           .csw-main { margin-left: 0 !important; padding: 76px 14px 32px; }
@@ -466,7 +471,7 @@ const AdminTestimonials = () => {
         .modal-body::-webkit-scrollbar-thumb { background: rgba(255, 59, 48, 0.3); border-radius: 2px; }
       `}</style>
 
-      <div style={{ minHeight: "100vh", background: "#050e1a", position: "relative", overflow: "hidden" }}>
+      <div style={{ minHeight: "100vh", background: "#070C0B", position: "relative", overflow: "hidden" }}>
         {/* Decorative Background SVGs */}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "600px", pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
           {/* Radial Glow 1 */}
@@ -484,7 +489,7 @@ const AdminTestimonials = () => {
           </svg>
         </div>
 
-        {/* ── Sidebar ── */}
+        {/* â”€â”€ Sidebar â”€â”€ */}
         <AdminSidebar
           activeKey="testimonials"
           isMobileOpen={mobileOpen}
@@ -492,7 +497,7 @@ const AdminTestimonials = () => {
           onCollapsedChange={setSidebarCollapsed}
         />
 
-        {/* ── Topbar ── */}
+        {/* â”€â”€ Topbar â”€â”€ */}
         <header className="csw-topbar">
           {/* Left: Hamburger + Title */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -533,7 +538,7 @@ const AdminTestimonials = () => {
                 width: "36px",
                 height: "36px",
                 borderRadius: "9px",
-                background: "linear-gradient(135deg,#FF3B30,#cc2020)",
+                background: "linear-gradient(135deg,#0A7F6E,#08695C)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -541,7 +546,7 @@ const AdminTestimonials = () => {
                 fontWeight: 800,
                 fontSize: "14px",
                 color: "#fff",
-                boxShadow: "0 0 10px rgba(255,59,48,0.3)",
+                boxShadow: "0 0 10px rgba(10,127,110,0.3)",
               }}
             >
               A
@@ -549,7 +554,7 @@ const AdminTestimonials = () => {
           </div>
         </header>
 
-        {/* ── Main Content ── */}
+        {/* â”€â”€ Main Content â”€â”€ */}
         <main className="csw-main" style={{ position: "relative", zIndex: 1 }}>
           {/* Header row */}
           <div
@@ -571,9 +576,9 @@ const AdminTestimonials = () => {
                   style={{
                     width: "4px",
                     height: "22px",
-                    background: "#FF3B30",
+                    background: "#0A7F6E",
                     borderRadius: "2px",
-                    boxShadow: "0 0 10px rgba(255,59,48,0.5)",
+                    boxShadow: "0 0 10px rgba(10,127,110,0.5)",
                   }}
                 />
                 <h2 style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: "20px", color: "#fff" }}>
@@ -590,7 +595,7 @@ const AdminTestimonials = () => {
               <button
                 onClick={() => setAddingTestimonial(DEFAULT_NEW_TESTIMONIAL)}
                 style={{
-                  background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                  background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                   border: "none",
                   color: "#fff",
                   borderRadius: "10px",
@@ -602,15 +607,15 @@ const AdminTestimonials = () => {
                   alignItems: "center",
                   gap: "6px",
                   transition: "background 0.2s, transform 0.2s",
-                  boxShadow: "0 4px 12px rgba(255,59,48,0.25)",
+                  boxShadow: "0 4px 12px rgba(10,127,110,0.25)",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-1px)";
-                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(255,59,48,0.35)";
+                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(10,127,110,0.35)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(255,59,48,0.25)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(10,127,110,0.25)";
                 }}
               >
                 <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -650,9 +655,9 @@ const AdminTestimonials = () => {
               <button
                 onClick={exportToPDF}
                 style={{
-                  background: "rgba(255,59,48,0.08)",
-                  border: "1px solid rgba(255,59,48,0.25)",
-                  color: "#FF3B30",
+                  background: "rgba(10,127,110,0.08)",
+                  border: "1px solid rgba(10,127,110,0.25)",
+                  color: "#0A7F6E",
                   borderRadius: "10px",
                   padding: "8px 16px",
                   fontSize: "12.5px",
@@ -663,8 +668,8 @@ const AdminTestimonials = () => {
                   gap: "6px",
                   transition: "background 0.2s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,59,48,0.18)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,59,48,0.08)")}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(10,127,110,0.18)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(10,127,110,0.08)")}
               >
                 <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                   <path d="M6 9V2h12v7" />
@@ -727,7 +732,7 @@ const AdminTestimonials = () => {
             <StatCard
               title="Average Rating"
               value={`${averageRating} / 5.0`}
-              accent="#FF3B30"
+              accent="#0A7F6E"
               delay={0.15}
               icon={
                 <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -824,7 +829,7 @@ const AdminTestimonials = () => {
             </div>
           </div>
 
-          {/* ── Desktop Table View ── */}
+          {/* â”€â”€ Desktop Table View â”€â”€ */}
           <div
             className="desktop-only"
             style={{
@@ -901,8 +906,8 @@ const AdminTestimonials = () => {
                             <button
                               onClick={() => handleDelete(t.id)}
                               style={{
-                                background: "rgba(255,59,48,0.07)",
-                                border: "1px solid rgba(255,59,48,0.2)",
+                                background: "rgba(10,127,110,0.07)",
+                                border: "1px solid rgba(10,127,110,0.2)",
                                 borderRadius: "8px",
                                 width: "32px",
                                 height: "32px",
@@ -910,7 +915,7 @@ const AdminTestimonials = () => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 cursor: "pointer",
-                                color: "#FF3B30",
+                                color: "#0A7F6E",
                                 transition: "all 0.2s",
                               }}
                             >
@@ -933,7 +938,7 @@ const AdminTestimonials = () => {
             )}
           </div>
 
-          {/* ── Mobile/Tablet Grid View ── */}
+          {/* â”€â”€ Mobile/Tablet Grid View â”€â”€ */}
           <div className="mobile-only">
             {sortedTestimonials.length > 0 ? (
               <div className="review-grid">
@@ -997,8 +1002,8 @@ const AdminTestimonials = () => {
                           <button
                             onClick={() => handleDelete(t.id)}
                             style={{
-                              background: "rgba(255,59,48,0.05)",
-                              border: "1px solid rgba(255,59,48,0.15)",
+                              background: "rgba(10,127,110,0.05)",
+                              border: "1px solid rgba(10,127,110,0.15)",
                               borderRadius: "8px",
                               width: "30px",
                               height: "30px",
@@ -1006,7 +1011,7 @@ const AdminTestimonials = () => {
                               alignItems: "center",
                               justifyContent: "center",
                               cursor: "pointer",
-                              color: "#FF3B30",
+                              color: "#0A7F6E",
                             }}
                           >
                             <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -1028,7 +1033,7 @@ const AdminTestimonials = () => {
           </div>
         </main>
 
-        {/* ── View Testimonial Detail Modal ── */}
+        {/* â”€â”€ View Testimonial Detail Modal â”€â”€ */}
         {viewingTestimonial && (
           <div
             style={{
@@ -1068,7 +1073,7 @@ const AdminTestimonials = () => {
                 }}
               >
                 <div>
-                  <span style={{ fontSize: "10px", color: "#FF3B30", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
+                  <span style={{ fontSize: "10px", color: "#0A7F6E", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
                     Testimonial Moderation Panel
                   </span>
                   <h3 style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: "16px", margin: "2px 0 0" }}>
@@ -1189,9 +1194,9 @@ const AdminTestimonials = () => {
                   <button
                     onClick={() => handleDelete(viewingTestimonial.id)}
                     style={{
-                      background: "rgba(255,59,48,0.07)",
-                      border: "1px solid rgba(255,59,48,0.25)",
-                      color: "#FF3B30",
+                      background: "rgba(10,127,110,0.07)",
+                      border: "1px solid rgba(10,127,110,0.25)",
+                      color: "#0A7F6E",
                       borderRadius: "10px",
                       padding: "10px 20px",
                       fontSize: "13px",
@@ -1207,7 +1212,7 @@ const AdminTestimonials = () => {
           </div>
         )}
 
-        {/* ── Edit Testimonial Modal ── */}
+        {/* â”€â”€ Edit Testimonial Modal â”€â”€ */}
         {editingTestimonial && (
           <div
             style={{
@@ -1354,7 +1359,7 @@ const AdminTestimonials = () => {
                   <button
                     type="submit"
                     style={{
-                      background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                      background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
                       border: "none",
                       borderRadius: "10px",
@@ -1362,7 +1367,7 @@ const AdminTestimonials = () => {
                       fontSize: "13px",
                       fontWeight: 600,
                       cursor: "pointer",
-                      boxShadow: "0 4px 16px rgba(255,59,48,0.35)",
+                      boxShadow: "0 4px 16px rgba(10,127,110,0.35)",
                     }}
                   >
                     Save Changes
@@ -1373,7 +1378,7 @@ const AdminTestimonials = () => {
           </div>
         )}
 
-        {/* ── Add Testimonial Modal ── */}
+        {/* â”€â”€ Add Testimonial Modal â”€â”€ */}
         {addingTestimonial && (
           <div
             style={{
@@ -1523,7 +1528,7 @@ const AdminTestimonials = () => {
                   <button
                     type="submit"
                     style={{
-                      background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                      background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
                       border: "none",
                       borderRadius: "10px",
@@ -1531,7 +1536,7 @@ const AdminTestimonials = () => {
                       fontSize: "13px",
                       fontWeight: 600,
                       cursor: "pointer",
-                      boxShadow: "0 4px 16px rgba(255,59,48,0.35)",
+                      boxShadow: "0 4px 16px rgba(10,127,110,0.35)",
                     }}
                   >
                     Record Review
@@ -1547,3 +1552,4 @@ const AdminTestimonials = () => {
 };
 
 export default AdminTestimonials;
+
