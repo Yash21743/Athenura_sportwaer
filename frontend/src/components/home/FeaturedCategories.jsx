@@ -399,8 +399,8 @@ const TRUST = [
 
 const IMG = {
   tracksuit: 'https://i.pinimg.com/1200x/dc/9d/43/dc9d43a46234fe8f2f8ab86588563c21.jpg',
-  jersey: 'https://i.pinimg.com/1200x/eb/58/cf/eb58cf21dd5638275c50183b67c9f451.jpg',
-  shorts: 'https://i.pinimg.com/474x/2e/34/8d/2e348d5802ad4e3460c7b23cea45f392.jpg',
+  jersey: 'https://i.pinimg.com/1200x/a4/36/73/a4367362e16b0936343c0b7628674b43.jpg',
+  shorts: 'https://i.pinimg.com/736x/69/37/9a/69379abcc3b27d9428ef6fbdcbb0ff77.jpg',
   gymBag: 'https://i.pinimg.com/736x/b3/2a/d6/b32ad682c86512bdd77f9159a9dcc291.jpg',
 };
 
@@ -481,8 +481,8 @@ const FeaturedCategories = () => {
                 <img className="card-img" src={IMG.jersey} alt="Men's Jersey" style={{ objectPosition: 'center top' }} />
                 <div className="card-overlay" />
                 <div className="card-body">
-                  <h3 className="card-title" style={{ fontSize: '1rem' }}>COMMON<br /><span>JERSEY</span></h3>
-                  <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
+                  <h3 className="card-title" style={{ fontSize: '1rem' }}>WOMEN<br /><span>JERSEY</span></h3>
+                  <Link to="/women" className="shop-link">Shop Now <ArrowSm /></Link>
                 </div>
               </div>
 
@@ -495,8 +495,8 @@ const FeaturedCategories = () => {
                 <img className="card-img" src={IMG.shorts} alt="Sports Shorts" />
                 <div className="card-overlay" />
                 <div className="card-body">
-                  <h3 className="card-title" style={{ fontSize: '1rem' }}>SPORTS<br /><span>JERSEY</span></h3>
-                  <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
+                  <h3 className="card-title" style={{ fontSize: '1rem' }}>KIDS<br /><span>JERSEY</span></h3>
+                  <Link to="/kids" className="shop-link">Shop Now <ArrowSm /></Link>
                 </div>
               </div>
             </div>
@@ -510,7 +510,7 @@ const FeaturedCategories = () => {
               <div className="card-overlay-h" />
               <div className="card-body">
                 <div className="card-label">Training Wear</div>
-                <h3 className="card-title">GYM<br /><span>TRAINING JERSEY</span></h3>
+                <h3 className="card-title">COOL<br /><span>TRENDING JERSEY</span></h3>
                 <p className="card-off">Up to <strong style={{ color: '#0A7F6E' }}>80% OFF</strong></p>
                 <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
               </div>

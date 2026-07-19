@@ -134,6 +134,12 @@ const Products = () => {
           backgroundRepeat: 'no-repeat',
         }} />
 
+        {/* Green tint overlay */}
+        <div className="absolute inset-0" style={{
+          background: 'linear-gradient(135deg, rgba(5,30,22,0.88) 0%, rgba(10,80,65,0.72) 50%, rgba(5,30,22,0.88) 100%)',
+          zIndex: 1,
+        }} />
+
         {/* Gradient overlays removed to fix the smoky look */}
 
         {/* Decorative red lines – left */}
@@ -162,7 +168,7 @@ const Products = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: 1, marginBottom: '8px', fontSize: 'clamp(30px, 5vw, 60px)', color: '#DDDFD2', textShadow: '0 0 60px rgba(10,127,110,0.2)' }}
+            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', lineHeight: 1, marginBottom: '8px', fontSize: 'clamp(30px, 5vw, 60px)', color: '#ffffff', textShadow: '0 2px 16px rgba(0,0,0,0.7), 0 0 40px rgba(0,0,0,0.5)' }}
           >
             Comfy sportswear
             <br />

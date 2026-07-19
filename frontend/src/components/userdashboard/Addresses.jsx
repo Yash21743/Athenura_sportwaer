@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { MapPin, Plus, Trash2, Pencil, X, Home, Briefcase, Phone, User } from "lucide-react";
 
 // Reusable card container matching clean light design
@@ -57,6 +57,22 @@ const Addresses = ({ addresses, setAddresses }) => {
     pinCode: "",
     phone: ""
   });
+  const formRef = useRef(null);
+  const [formWidth, setFormWidth] = useState(600);
+
+  useEffect(() => {
+    const el = formRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        setFormWidth(entry.contentRect.width);
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [showAddressForm]);
+
+  const isSmall = formWidth < 420;
 
   const handleAddAddress = (e) => {
     e.preventDefault();
@@ -157,8 +173,8 @@ const Addresses = ({ addresses, setAddresses }) => {
             </button>
           }
         >
-          <form onSubmit={handleAddAddress} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="max-sm:!grid-cols-1">
+          <form ref={formRef} onSubmit={handleAddAddress} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: isSmall ? "1fr" : "1fr 1fr", gap: "14px" }}>
               <div>
                 <label style={{ fontSize: "11px", color: "#64748b", fontWeight: 600, display: "block", marginBottom: "6px" }}>Full Name</label>
                 <input 
@@ -203,7 +219,7 @@ const Addresses = ({ addresses, setAddresses }) => {
                   placeholder="+91 98765 43210"
                 />
               </div>
-              <div style={{ gridColumn: "span 2" }} className="max-sm:!grid-column-auto">
+              <div style={{ gridColumn: isSmall ? "span 1" : "span 2" }}>
                 <label style={{ fontSize: "11px", color: "#64748b", fontWeight: 600, display: "block", marginBottom: "6px" }}>Address Line</label>
                 <input 
                   type="text" 
@@ -316,7 +332,7 @@ const Addresses = ({ addresses, setAddresses }) => {
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", paddingTop: "10px" }}>
+            <div style={{ display: "flex", flexDirection: isSmall ? "column" : "row", gap: "10px", justifyContent: isSmall ? "stretch" : "flex-end", paddingTop: "10px" }}>
               <button
                 type="button"
                 onClick={() => {
@@ -333,7 +349,8 @@ const Addresses = ({ addresses, setAddresses }) => {
                   fontWeight: 700,
                   textTransform: "uppercase",
                   letterSpacing: "0.5px",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  width: isSmall ? "100%" : "auto",
                 }}
               >
                 Cancel
@@ -351,7 +368,8 @@ const Addresses = ({ addresses, setAddresses }) => {
                   textTransform: "uppercase",
                   letterSpacing: "0.5px",
                   cursor: "pointer",
-                  boxShadow: "0 4px 12px rgba(10,127,110,0.2)"
+                  boxShadow: "0 4px 12px rgba(10,127,110,0.2)",
+                  width: isSmall ? "100%" : "auto",
                 }}
               >
                 {editingAddressId ? "Save Changes" : "Save Address"}

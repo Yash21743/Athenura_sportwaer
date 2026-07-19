@@ -100,9 +100,9 @@ const AddToBag = () => {
   const itemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const discountAmount = Math.round((subtotal * discountPercent) / 100);
-  const shippingCost = subtotal >= 2000 || subtotal === 0 ? 0 : 150;
-  const gstAmount = Math.round((subtotal - discountAmount) * 0.12); // 12% GST
-  const total = subtotal - discountAmount + shippingCost;
+  const shippingCost = 0;
+  const gstAmount = 0;
+  const total = subtotal - discountAmount;
 
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
@@ -442,24 +442,6 @@ const AddToBag = () => {
                       <span style={{ fontWeight: 600 }}>-₹{discountAmount}</span>
                     </div>
                   )}
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Estimated Shipping</span>
-                    <span style={{ color: shippingCost === 0 ? '#4ade80' : '#fff', fontWeight: shippingCost === 0 ? 600 : 500 }}>
-                      {shippingCost === 0 ? 'FREE' : `₹${shippingCost}`}
-                    </span>
-                  </div>
-                  
-                  {shippingCost > 0 && (
-                    <p style={{ fontSize: '10px', color: '#0A7F6E', marginTop: '-6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Info size={10} /> Add ₹{2000 - subtotal} more for free shipping
-                    </p>
-                  )}
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>GST (12% Included)</span>
-                    <span style={{ color: '#fff', fontWeight: 500 }}>₹{gstAmount}</span>
-                  </div>
                 </div>
 
                 {/* Total */}
@@ -606,10 +588,6 @@ const AddToBag = () => {
                       <span>-₹{discountAmount}</span>
                     </div>
                   )}
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Shipping</span>
-                    <span style={{ color: '#fff' }}>{shippingCost === 0 ? 'FREE' : `₹${shippingCost}`}</span>
-                  </div>
                 </div>
 
                 {/* Total */}

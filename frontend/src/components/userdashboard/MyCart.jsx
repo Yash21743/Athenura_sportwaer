@@ -64,8 +64,10 @@ const MyCart = () => {
     loadCart();
   }, []);
 
-  const handleRemove = (id) => {
-    const updated = cartItems.filter(item => item.id !== id);
+  const handleRemove = (id, size, color) => {
+    const updated = cartItems.filter(item => 
+      !((item._id || item.id) === id && item.size === size && item.color === color)
+    );
     setCartItems(updated);
     localStorage.setItem("csw_cart_items", JSON.stringify(updated));
     window.dispatchEvent(new Event("cartUpdated"));
@@ -76,8 +78,9 @@ const MyCart = () => {
 
   // Fetch product specifications from database
   const getProductDetails = (item) => {
+    const itemId = item._id || item.id;
     const prod = mockProducts.find(
-      p => p._id === item.id || p.name.toLowerCase() === item.name.toLowerCase()
+      p => p._id === itemId || p.name.toLowerCase() === item.name.toLowerCase()
     );
     if (prod) {
       return {
@@ -97,8 +100,8 @@ const MyCart = () => {
     <div style={{ animation: "csw-fadein 0.45s ease both", fontFamily: "'Poppins', sans-serif" }}>
       {cartItems.length === 0 ? (
         <Card>
-          <div style={{ textAlign: "center", padding: "40px 20px" }}>
-            <ShoppingBag size={48} className="mx-auto" style={{ color: "#94a3b8", marginBottom: "16px" }} />
+          <div style={{ textAlign: "center", padding: "40px 20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <ShoppingBag size={48} style={{ color: "#94a3b8", marginBottom: "16px", display: "block" }} />
             <h3 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 700, fontSize: "16px", color: "#0f172a", margin: 0 }}>Your Shopping Cart is empty</h3>
             <p style={{ color: "#64748b", fontSize: "12px", fontFamily: "'Poppins', sans-serif", marginTop: "6px", marginBottom: "20px" }}>
               Explore our high performance sportswear collection to add products.
@@ -128,11 +131,13 @@ const MyCart = () => {
         </Card>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          {cartItems.map((item) => {
+          {cartItems.map((item, index) => {
+            const itemId = item._id || item.id;
             const details = getProductDetails(item);
+            const itemKey = `${itemId}-${item.size || ''}-${item.color || ''}-${index}`;
             return (
               <div 
-                key={item.id}
+                key={itemKey}
                 style={{
                   background: "#ffffff",
                   border: "3px solid rgba(10, 127, 110, 0.22)",
@@ -189,7 +194,7 @@ const MyCart = () => {
                     </span>
                   </div>
                   <button 
-                    onClick={() => handleRemove(item.id)}
+                    onClick={() => handleRemove(itemId, item.size, item.color)}
                     style={{
                       background: "rgba(255,59,48,0.06)",
                       border: "none",

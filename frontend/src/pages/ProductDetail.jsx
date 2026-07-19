@@ -38,6 +38,8 @@ const ProductDetail = () => {
   const [inquiryCategory, setInquiryCategory] = useState('');
   const [inquiryQuantityRange, setInquiryQuantityRange] = useState('');
   const [inquiryPrinting, setInquiryPrinting] = useState('');
+  const [inquiryDeliveryDate, setInquiryDeliveryDate] = useState('');
+  const [inquiryAdditionalReq, setInquiryAdditionalReq] = useState('');
   const [inquirySubmitting, setInquirySubmitting] = useState(false);
   const [inquirySuccess, setInquirySuccess] = useState(false);
 
@@ -113,6 +115,8 @@ const ProductDetail = () => {
         category: inquiryCategory,
         quantityRange: inquiryQuantityRange,
         printing: inquiryPrinting,
+        deliveryDate: inquiryDeliveryDate,
+        additionalRequirements: inquiryAdditionalReq,
         size: selectedSize,
         color: product.colorNames ? product.colorNames[selectedColorIndex] : 'Default'
       };
@@ -131,6 +135,8 @@ const ProductDetail = () => {
       setInquiryCategory('');
       setInquiryQuantityRange('');
       setInquiryPrinting('');
+      setInquiryDeliveryDate('');
+      setInquiryAdditionalReq('');
 
     } catch (err) {
       setInquirySubmitting(false);
@@ -180,13 +186,20 @@ const ProductDetail = () => {
         (t) => (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
             <span>Added {quantity}x items to your bag!</span>
-            <Link
-              to="/cart"
-              onClick={() => toast.dismiss(t.id)}
-              style={{ color: '#0A7F6E', fontWeight: 800, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+            <button
+              onClick={() => {
+                toast.dismiss(t.id);
+                const loggedIn = localStorage.getItem('csw_is_logged_in') === 'true';
+                if (loggedIn) {
+                  navigate('/cart');
+                } else {
+                  window.dispatchEvent(new Event('showCartLoginPopup'));
+                }
+              }}
+              style={{ color: '#0A7F6E', fontWeight: 800, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.05em', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', padding: 0 }}
             >
               View Bag
-            </Link>
+            </button>
           </div>
         ),
         { duration: 4000 }
@@ -553,7 +566,7 @@ const ProductDetail = () => {
                       type="button"
                       onClick={() => alert("Proceeding to checkout")}
                       style={{ padding: '16px', background: '#0A7F6E', color: '#111111', border: 'none', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#cc2e25'}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#086053'}
                       onMouseLeave={(e) => e.currentTarget.style.background = '#0A7F6E'}
                     >
                       Buy Now
@@ -756,6 +769,40 @@ const ProductDetail = () => {
                               </button>
                             ))}
                           </div>
+                        </div>
+
+                        {/* Preferred Delivery Date */}
+                        <div className="pd-form-full">
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
+                            PREFERRED DELIVERY DATE
+                          </label>
+                          <input
+                            type="date"
+                            value={inquiryDeliveryDate}
+                            onChange={(e) => setInquiryDeliveryDate(e.target.value)}
+                            min={new Date().toISOString().split('T')[0]}
+                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: inquiryDeliveryDate ? '#111' : 'rgba(0,0,0,0.4)', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)', fontFamily: 'inherit' }}
+                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
+                          />
+                          <p style={{ marginTop: '6px', fontSize: '11px', color: 'rgba(0,0,0,0.38)', fontStyle: 'italic' }}>Optional — helps us plan production schedule</p>
+                        </div>
+
+                        {/* Additional Requirements */}
+                        <div className="pd-form-full">
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
+                            ADDITIONAL REQUIREMENTS
+                          </label>
+                          <textarea
+                            value={inquiryAdditionalReq}
+                            onChange={(e) => setInquiryAdditionalReq(e.target.value)}
+                            placeholder="Sizes breakdown, color preferences, reference designs, special instructions..."
+                            rows={4}
+                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: '#111', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)', resize: 'vertical', minHeight: '110px', fontFamily: 'inherit', lineHeight: 1.6 }}
+                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
+                          />
+                          <p style={{ marginTop: '6px', fontSize: '11px', color: 'rgba(0,0,0,0.38)', fontStyle: 'italic' }}>Optional — any special customization or delivery notes</p>
                         </div>
 
                         {/* Submit */}

@@ -63,6 +63,7 @@ const UserSidebar = ({ activeTab, setActiveTab, user = {}, isMobileOpen, onMobil
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("csw_is_logged_in");
     sessionStorage.clear();
     navigate("/");
   };
