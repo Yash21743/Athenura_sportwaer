@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
 import API from "../../services/api";
 
-// ─── Hooks ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function useInView(threshold = 0.12) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -19,7 +19,7 @@ function useInView(threshold = 0.12) {
   return [ref, visible];
 }
 
-// ─── StatCard Subcomponent ───────────────────────────────────────────────────
+// â”€â”€â”€ StatCard Subcomponent â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const StatCard = ({ title, value, icon, accent, delay }) => {
   const [ref, visible] = useInView();
   const [hov, setHov] = useState(false);
@@ -74,7 +74,7 @@ const StatCard = ({ title, value, icon, accent, delay }) => {
   );
 };
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const INITIAL_BULK_ORDERS = [
   {
     id: 1,
@@ -148,7 +148,7 @@ const DEFAULT_NEW_ORDER = {
   time: "Just now"
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const AdminBulkOrders = () => {
   const [orders, setOrders] = useState([]);
 
@@ -197,6 +197,11 @@ const AdminBulkOrders = () => {
       navigate("/admin");
     }
   }, [navigate]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setPageIn(true), 60);
+    return () => clearTimeout(t);
+  }, []);
 
   // Modals state
   const [viewingOrder, setViewingOrder] = useState(null);
@@ -327,7 +332,7 @@ const AdminBulkOrders = () => {
           <title>Comfy Sport Wear - B2B Bulk Orders Report</title>
           <style>
             body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; padding: 24px; }
-            h2 { color: #FF3B30; margin-bottom: 4px; }
+            h2 { color: #0A7F6E; margin-bottom: 4px; }
             p { color: #666; font-size: 13px; margin: 0 0 20px; }
             table { width: 100%; border-collapse: collapse; margin-top: 10px; }
             th { background: #f5f5f5; text-align: left; padding: 10px; font-size: 11px; border-bottom: 2px solid #ddd; text-transform: uppercase; }
@@ -382,11 +387,11 @@ const AdminBulkOrders = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #050e1a; color: #fff; font-family: 'Poppins', sans-serif; }
+        body { background: #070C0B; color: #DDDFD2; font-family: 'Poppins', sans-serif; }
         
         .csw-topbar {
           position: fixed; top: 0; left: ${sidebarCollapsed ? 72 : 260}px; right: 0; height: 64px;
-          background: rgba(5, 14, 26, 0.92); backdrop-filter: blur(14px);
+          background: rgba(7, 12, 11, 0.92); backdrop-filter: blur(14px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.07);
           display: flex; align-items: center; justify-content: space-between;
           padding: 0 24px; gap: 12px; z-index: 30;
@@ -416,7 +421,7 @@ const AdminBulkOrders = () => {
           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
         }
 
-        /* ── Input styling ── */
+        /* â”€â”€ Input styling â”€â”€ */
         .csw-input, .csw-select, .csw-textarea {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.12);
@@ -425,7 +430,7 @@ const AdminBulkOrders = () => {
           width: 100%;
         }
         .csw-input:focus, .csw-select:focus, .csw-textarea:focus {
-          border-color: #FF3B30;
+          border-color: #0A7F6E;
         }
 
         .csw-select option {
@@ -442,7 +447,7 @@ const AdminBulkOrders = () => {
           to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* ── Responsive ── */
+        /* â”€â”€ Responsive â”€â”€ */
         @media (max-width: 768px) {
           .csw-topbar { left: 0 !important; padding: 0 14px; }
           .csw-main { margin-left: 0 !important; padding: 76px 14px 32px; }
@@ -476,7 +481,7 @@ const AdminBulkOrders = () => {
         .modal-body::-webkit-scrollbar-thumb { background: rgba(255, 59, 48, 0.3); border-radius: 2px; }
       `}</style>
 
-      <div style={{ minHeight: "100vh", background: "#050e1a", position: "relative", overflow: "hidden" }}>
+      <div style={{ minHeight: "100vh", background: "#070C0B", position: "relative", overflow: "hidden" }}>
         {/* Decorative Background SVGs */}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "600px", pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
           {/* Radial Glow 1 */}
@@ -494,7 +499,7 @@ const AdminBulkOrders = () => {
           </svg>
         </div>
 
-        {/* ── Sidebar ── */}
+        {/* â”€â”€ Sidebar â”€â”€ */}
         <AdminSidebar
           activeKey="bulkorders"
           isMobileOpen={mobileOpen}
@@ -502,7 +507,7 @@ const AdminBulkOrders = () => {
           onCollapsedChange={setSidebarCollapsed}
         />
 
-        {/* ── Topbar ── */}
+        {/* â”€â”€ Topbar â”€â”€ */}
         <header className="csw-topbar">
           {/* Left: Hamburger + Title */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -543,7 +548,7 @@ const AdminBulkOrders = () => {
                 width: "36px",
                 height: "36px",
                 borderRadius: "9px",
-                background: "linear-gradient(135deg,#FF3B30,#cc2020)",
+                background: "linear-gradient(135deg,#0A7F6E,#08695C)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -551,7 +556,7 @@ const AdminBulkOrders = () => {
                 fontWeight: 800,
                 fontSize: "14px",
                 color: "#fff",
-                boxShadow: "0 0 10px rgba(255,59,48,0.3)",
+                boxShadow: "0 0 10px rgba(10,127,110,0.3)",
               }}
             >
               A
@@ -559,7 +564,7 @@ const AdminBulkOrders = () => {
           </div>
         </header>
 
-        {/* ── Main Content ── */}
+        {/* â”€â”€ Main Content â”€â”€ */}
         <main className="csw-main" style={{ position: "relative", zIndex: 1 }}>
           {/* Header row */}
           <div
@@ -581,9 +586,9 @@ const AdminBulkOrders = () => {
                   style={{
                     width: "4px",
                     height: "22px",
-                    background: "#FF3B30",
+                    background: "#0A7F6E",
                     borderRadius: "2px",
-                    boxShadow: "0 0 10px rgba(255,59,48,0.5)",
+                    boxShadow: "0 0 10px rgba(10,127,110,0.5)",
                   }}
                 />
                 <h2 style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: "20px", color: "#fff" }}>
@@ -600,7 +605,7 @@ const AdminBulkOrders = () => {
               <button
                 onClick={() => setAddingOrder(DEFAULT_NEW_ORDER)}
                 style={{
-                  background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                  background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                   border: "none",
                   color: "#fff",
                   borderRadius: "10px",
@@ -612,15 +617,15 @@ const AdminBulkOrders = () => {
                   alignItems: "center",
                   gap: "6px",
                   transition: "background 0.2s, transform 0.2s",
-                  boxShadow: "0 4px 12px rgba(255,59,48,0.25)",
+                  boxShadow: "0 4px 12px rgba(10,127,110,0.25)",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-1px)";
-                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(255,59,48,0.35)";
+                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(10,127,110,0.35)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(255,59,48,0.25)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(10,127,110,0.25)";
                 }}
               >
                 <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -660,9 +665,9 @@ const AdminBulkOrders = () => {
               <button
                 onClick={exportToPDF}
                 style={{
-                  background: "rgba(255,59,48,0.08)",
-                  border: "1px solid rgba(255,59,48,0.25)",
-                  color: "#FF3B30",
+                  background: "rgba(10,127,110,0.08)",
+                  border: "1px solid rgba(10,127,110,0.25)",
+                  color: "#0A7F6E",
                   borderRadius: "10px",
                   padding: "8px 16px",
                   fontSize: "12.5px",
@@ -673,8 +678,8 @@ const AdminBulkOrders = () => {
                   gap: "6px",
                   transition: "background 0.2s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,59,48,0.18)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,59,48,0.08)")}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(10,127,110,0.18)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(10,127,110,0.08)")}
               >
                 <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                   <path d="M6 9V2h12v7" />
@@ -713,7 +718,7 @@ const AdminBulkOrders = () => {
             <StatCard
               title="New Requests"
               value={newOrders}
-              accent="#FF3B30"
+              accent="#0A7F6E"
               delay={0.05}
               icon={
                 <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -822,7 +827,7 @@ const AdminBulkOrders = () => {
             </div>
           </div>
 
-          {/* ── Desktop Table View ── */}
+          {/* â”€â”€ Desktop Table View â”€â”€ */}
           <div
             className="desktop-only"
             style={{
@@ -910,8 +915,8 @@ const AdminBulkOrders = () => {
                             <button
                               onClick={() => handleDelete(o.id)}
                               style={{
-                                background: "rgba(255,59,48,0.07)",
-                                border: "1px solid rgba(255,59,48,0.2)",
+                                background: "rgba(10,127,110,0.07)",
+                                border: "1px solid rgba(10,127,110,0.2)",
                                 borderRadius: "8px",
                                 width: "32px",
                                 height: "32px",
@@ -919,7 +924,7 @@ const AdminBulkOrders = () => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 cursor: "pointer",
-                                color: "#FF3B30",
+                                color: "#0A7F6E",
                                 transition: "all 0.2s",
                               }}
                             >
@@ -942,7 +947,7 @@ const AdminBulkOrders = () => {
             )}
           </div>
 
-          {/* ── Mobile/Tablet Grid View ── */}
+          {/* â”€â”€ Mobile/Tablet Grid View â”€â”€ */}
           <div className="mobile-only">
             {sortedOrders.length > 0 ? (
               <div className="order-grid">
@@ -1014,8 +1019,8 @@ const AdminBulkOrders = () => {
                           <button
                             onClick={() => handleDelete(o.id)}
                             style={{
-                              background: "rgba(255,59,48,0.05)",
-                              border: "1px solid rgba(255,59,48,0.15)",
+                              background: "rgba(10,127,110,0.05)",
+                              border: "1px solid rgba(10,127,110,0.15)",
                               borderRadius: "8px",
                               width: "30px",
                               height: "30px",
@@ -1023,7 +1028,7 @@ const AdminBulkOrders = () => {
                               alignItems: "center",
                               justifyContent: "center",
                               cursor: "pointer",
-                              color: "#FF3B30",
+                              color: "#0A7F6E",
                             }}
                           >
                             <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -1045,7 +1050,7 @@ const AdminBulkOrders = () => {
           </div>
         </main>
 
-        {/* ── View Order Detail Modal ── */}
+        {/* â”€â”€ View Order Detail Modal â”€â”€ */}
         {viewingOrder && (
           <div
             style={{
@@ -1086,7 +1091,7 @@ const AdminBulkOrders = () => {
                 }}
               >
                 <div>
-                  <span style={{ fontSize: "10px", color: "#FF3B30", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
+                  <span style={{ fontSize: "10px", color: "#0A7F6E", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
                     B2B Order Specification
                   </span>
                   <h3 style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: "16px", margin: "2px 0 0" }}>
@@ -1187,7 +1192,7 @@ const AdminBulkOrders = () => {
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                         <polyline points="22,6 12,13 2,6" />
                       </svg>
-                      <a href={`mailto:${viewingOrder.email}`} style={{ color: "#FF3B30", fontSize: "13px", textDecoration: "none" }}>{viewingOrder.email}</a>
+                      <a href={`mailto:${viewingOrder.email}`} style={{ color: "#0A7F6E", fontSize: "13px", textDecoration: "none" }}>{viewingOrder.email}</a>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <svg width="14" height="14" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" viewBox="0 0 24 24">
@@ -1237,9 +1242,9 @@ const AdminBulkOrders = () => {
                   <button
                     onClick={() => handleDelete(viewingOrder.id)}
                     style={{
-                      background: "rgba(255,59,48,0.07)",
-                      border: "1px solid rgba(255,59,48,0.25)",
-                      color: "#FF3B30",
+                      background: "rgba(10,127,110,0.07)",
+                      border: "1px solid rgba(10,127,110,0.25)",
+                      color: "#0A7F6E",
                       borderRadius: "10px",
                       padding: "10px 20px",
                       fontSize: "13px",
@@ -1255,7 +1260,7 @@ const AdminBulkOrders = () => {
           </div>
         )}
 
-        {/* ── Edit Order Modal ── */}
+        {/* â”€â”€ Edit Order Modal â”€â”€ */}
         {editingOrder && (
           <div
             style={{
@@ -1472,7 +1477,7 @@ const AdminBulkOrders = () => {
                   <button
                     type="submit"
                     style={{
-                      background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                      background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
                       border: "none",
                       borderRadius: "10px",
@@ -1480,7 +1485,7 @@ const AdminBulkOrders = () => {
                       fontSize: "13px",
                       fontWeight: 600,
                       cursor: "pointer",
-                      boxShadow: "0 4px 16px rgba(255,59,48,0.35)",
+                      boxShadow: "0 4px 16px rgba(10,127,110,0.35)",
                     }}
                   >
                     Save Changes
@@ -1491,7 +1496,7 @@ const AdminBulkOrders = () => {
           </div>
         )}
 
-        {/* ── Add Order Modal ── */}
+        {/* â”€â”€ Add Order Modal â”€â”€ */}
         {addingOrder && (
           <div
             style={{
@@ -1714,7 +1719,7 @@ const AdminBulkOrders = () => {
                   <button
                     type="submit"
                     style={{
-                      background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                      background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
                       border: "none",
                       borderRadius: "10px",
@@ -1722,7 +1727,7 @@ const AdminBulkOrders = () => {
                       fontSize: "13px",
                       fontWeight: 600,
                       cursor: "pointer",
-                      boxShadow: "0 4px 16px rgba(255,59,48,0.35)",
+                      boxShadow: "0 4px 16px rgba(10,127,110,0.35)",
                     }}
                   >
                     Record Order
@@ -1738,3 +1743,4 @@ const AdminBulkOrders = () => {
 };
 
 export default AdminBulkOrders;
+

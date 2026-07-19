@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
 import API from "../../services/api";
 
-// ─── SVG Icon Components for Categories ──────────────────────────────────────
+// â”€â”€â”€ SVG Icon Components for Categories â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CategoryIcon = ({ type, size = 24, color = "currentColor" }) => {
   const icons = {
     shirt: (
@@ -69,7 +69,7 @@ const CategoryIcon = ({ type, size = 24, color = "currentColor" }) => {
   return icons[type] || icons.generic;
 };
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const INITIAL_CATEGORIES = [
   { id: 1, name: "Sports T-Shirts", slug: "sports-t-shirts", desc: "Performance dry-fit t-shirts for training and running.", iconType: "shirt", count: 24, status: "Active" },
   { id: 2, name: "Performance Jerseys", slug: "performance-jerseys", desc: "Custom and team sublimation jerseys for professional games.", iconType: "jersey", count: 18, status: "Active" },
@@ -89,7 +89,7 @@ const DEFAULT_FORM = {
   status: "Active",
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const AdminCategories = () => {
   const [categories, setCategories] = useState(() => {
     const saved = localStorage.getItem("csw_admin_categories");
@@ -109,6 +109,11 @@ const AdminCategories = () => {
       navigate("/admin");
     }
   }, [navigate]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setPageIn(true), 60);
+    return () => clearTimeout(t);
+  }, []);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -256,11 +261,11 @@ const AdminCategories = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #050e1a; color: #fff; font-family: 'Poppins', sans-serif; }
+        body { background: #070C0B; color: #DDDFD2; font-family: 'Poppins', sans-serif; }
         
         .csw-topbar {
           position: fixed; top: 0; left: ${sidebarCollapsed ? 72 : 260}px; right: 0; height: 64px;
-          background: rgba(5, 14, 26, 0.92); backdrop-filter: blur(14px);
+          background: rgba(7, 12, 11, 0.92); backdrop-filter: blur(14px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.07);
           display: flex; align-items: center; justify-content: space-between;
           padding: 0 24px; gap: 12px; z-index: 30;
@@ -295,7 +300,7 @@ const AdminCategories = () => {
           width: 44px; height: 44px; border-radius: 10px;
           background: rgba(255, 59, 48, 0.08); border: 1px solid rgba(255, 59, 48, 0.2);
           display: flex; align-items: center; justify-content: center;
-          color: #FF3B30; margin-bottom: 16px;
+          color: #0A7F6E; margin-bottom: 16px;
         }
 
         .csw-input, .csw-select, .csw-textarea {
@@ -306,7 +311,7 @@ const AdminCategories = () => {
           width: 100%;
         }
         .csw-input:focus, .csw-select:focus, .csw-textarea:focus {
-          border-color: #FF3B30;
+          border-color: #0A7F6E;
         }
 
         .csw-select option {
@@ -314,7 +319,7 @@ const AdminCategories = () => {
           color: #ffffff !important;
         }
 
-        /* ── Responsive breakpoints ── */
+        /* â”€â”€ Responsive breakpoints â”€â”€ */
         @media (max-width: 768px) {
           .csw-topbar { left: 0 !important; padding: 0 14px; }
           .csw-main { margin-left: 0 !important; padding: 76px 14px 32px; }
@@ -336,8 +341,8 @@ const AdminCategories = () => {
         }
       `}</style>
 
-      <div style={{ minHeight: "100vh", background: "#050e1a" }}>
-        {/* ── Sidebar ── */}
+      <div style={{ minHeight: "100vh", background: "#070C0B" }}>
+        {/* â”€â”€ Sidebar â”€â”€ */}
         <AdminSidebar
           activeKey="categories"
           isMobileOpen={mobileOpen}
@@ -345,7 +350,7 @@ const AdminCategories = () => {
           onCollapsedChange={setSidebarCollapsed}
         />
 
-        {/* ── Topbar ── */}
+        {/* â”€â”€ Topbar â”€â”€ */}
         <header className="csw-topbar">
           {/* Left: Mobile Toggle + Page Title */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -386,7 +391,7 @@ const AdminCategories = () => {
                 width: "36px",
                 height: "36px",
                 borderRadius: "9px",
-                background: "linear-gradient(135deg,#FF3B30,#cc2020)",
+                background: "linear-gradient(135deg,#0A7F6E,#08695C)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -394,7 +399,7 @@ const AdminCategories = () => {
                 fontWeight: 800,
                 fontSize: "14px",
                 color: "#fff",
-                boxShadow: "0 0 10px rgba(255,59,48,0.3)",
+                boxShadow: "0 0 10px rgba(10,127,110,0.3)",
               }}
             >
               A
@@ -402,7 +407,7 @@ const AdminCategories = () => {
           </div>
         </header>
 
-        {/* ── Main Content ── */}
+        {/* â”€â”€ Main Content â”€â”€ */}
         <main className="csw-main">
           {/* Page Header */}
           <div
@@ -424,9 +429,9 @@ const AdminCategories = () => {
                   style={{
                     width: "4px",
                     height: "22px",
-                    background: "#FF3B30",
+                    background: "#0A7F6E",
                     borderRadius: "2px",
-                    boxShadow: "0 0 10px rgba(255,59,48,0.5)",
+                    boxShadow: "0 0 10px rgba(10,127,110,0.5)",
                   }}
                 />
                 <h2 style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: "20px", color: "#fff" }}>
@@ -440,7 +445,7 @@ const AdminCategories = () => {
             <button
               onClick={openAddModal}
               style={{
-                background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                 color: "#fff",
                 border: "none",
                 borderRadius: "10px",
@@ -451,7 +456,7 @@ const AdminCategories = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                boxShadow: "0 4px 16px rgba(255,59,48,0.3)",
+                boxShadow: "0 4px 16px rgba(10,127,110,0.3)",
                 fontFamily: "'Poppins',sans-serif",
                 transition: "transform 0.2s",
               }}
@@ -544,8 +549,8 @@ const AdminCategories = () => {
                         fontWeight: 700,
                         padding: "2px 8px",
                         borderRadius: "20px",
-                        background: isActive ? "rgba(16,185,129,0.15)" : "rgba(255,59,48,0.15)",
-                        color: isActive ? "#10B981" : "#FF3B30",
+                        background: isActive ? "rgba(16,185,129,0.15)" : "rgba(10,127,110,0.15)",
+                        color: isActive ? "#10B981" : "#0A7F6E",
                       }}
                     >
                       {c.status}
@@ -559,7 +564,7 @@ const AdminCategories = () => {
                     <h3 style={{ fontFamily: "'Montserrat',sans-serif", fontSize: "15px", fontWeight: 700, marginBottom: "4px" }}>
                       {c.name}
                     </h3>
-                    <span style={{ fontSize: "11px", color: "#FF3B30", fontFamily: "monospace", display: "block", marginBottom: "10px" }}>
+                    <span style={{ fontSize: "11px", color: "#0A7F6E", fontFamily: "monospace", display: "block", marginBottom: "10px" }}>
                       /{c.slug}
                     </span>
 
@@ -597,7 +602,7 @@ const AdminCategories = () => {
                             color: "rgba(255,255,255,0.6)",
                             transition: "all 0.2s",
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = "#FF3B30")}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "#0A7F6E")}
                           onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
                         >
                           <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -608,8 +613,8 @@ const AdminCategories = () => {
                         <button
                           onClick={() => handleDelete(c.id)}
                           style={{
-                            background: "rgba(255,59,48,0.06)",
-                            border: "1px solid rgba(255,59,48,0.15)",
+                            background: "rgba(10,127,110,0.06)",
+                            border: "1px solid rgba(10,127,110,0.15)",
                             borderRadius: "8px",
                             width: "30px",
                             height: "30px",
@@ -617,11 +622,11 @@ const AdminCategories = () => {
                             alignItems: "center",
                             justifyContent: "center",
                             cursor: "pointer",
-                            color: "#FF3B30",
+                            color: "#0A7F6E",
                             transition: "all 0.2s",
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,59,48,0.15)")}
-                          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,59,48,0.06)")}
+                          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(10,127,110,0.15)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(10,127,110,0.06)")}
                         >
                           <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                             <polyline points="3 6 5 6 21 6" />
@@ -641,7 +646,7 @@ const AdminCategories = () => {
           </div>
         </main>
 
-        {/* ── Add / Edit Category Modal ── */}
+        {/* â”€â”€ Add / Edit Category Modal â”€â”€ */}
         {isModalOpen && (
           <div
             style={{
@@ -813,7 +818,7 @@ const AdminCategories = () => {
                   <button
                     type="submit"
                     style={{
-                      background: "linear-gradient(135deg,#FF3B30 0%,#cc2e25 100%)",
+                      background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
                       border: "none",
                       borderRadius: "10px",
@@ -821,7 +826,7 @@ const AdminCategories = () => {
                       fontSize: "13px",
                       fontWeight: 600,
                       cursor: "pointer",
-                      boxShadow: "0 4px 16px rgba(255,59,48,0.35)",
+                      boxShadow: "0 4px 16px rgba(10,127,110,0.35)",
                     }}
                   >
                     {editingCategory ? "Save Changes" : "Create Category"}
@@ -837,3 +842,4 @@ const AdminCategories = () => {
 };
 
 export default AdminCategories;
+
