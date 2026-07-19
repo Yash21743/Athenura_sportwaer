@@ -15,9 +15,10 @@ const DropPanel = ({ open, children }) => (
         exit={{ opacity: 0, y: 6 }}
         transition={{ duration: 0.13 }}
         style={{
-          position: 'absolute', top: 'calc(100% + 8px)', left: 0, zIndex: 100,
-          background: '#DDDFD2', border: '1px solid rgba(0,0,0,0.08)',
-          borderRadius: '16px', boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+          position: 'absolute', top: 'calc(100% + 10px)', left: 0, zIndex: 100,
+          background: 'rgba(255, 255, 255, 0.75)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+          border: '1px solid rgba(255, 255, 255, 0.9)',
+          borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
           overflow: 'hidden',
         }}
       >
@@ -58,20 +59,18 @@ const ProductFilter = ({
 
   const isAnyFilterActive = selectedCategory !== 'All' || priceRange < maxPriceLimit || selectedSizes.length > 0 || selectedStockStatuses.length > 0 || searchTerm.trim() !== '';
 
-  /* shared pill style */
   const pillBase = {
-    display: 'inline-flex', alignItems: 'center', gap: '6px',
-    height: '38px', padding: '0 16px', borderRadius: '999px',
-    fontSize: '13px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s ease',
+    display: 'inline-flex', alignItems: 'center', gap: '8px',
+    height: '42px', padding: '0 20px', borderRadius: '12px',
+    fontSize: '14px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease',
     fontFamily: 'Inter, Poppins, sans-serif',
-    border: '1px solid', background: 'transparent', 
-    whiteSpace: 'nowrap', flexShrink: 0,
+    border: '2px solid', whiteSpace: 'nowrap', flexShrink: 0,
   };
-  const pillInactive = { ...pillBase, borderColor: 'rgba(10,127,110,0.25)', background: 'rgba(10,127,110,0.04)', color: '#0A7F6E' };
-  const pillActive = { ...pillBase, borderColor: '#0A7F6E', background: '#0A7F6E', color: '#ffffff', fontWeight: 600 };
+  const pillInactive = { ...pillBase, borderColor: '#0A7F6E', background: '#ffffff', color: '#0A7F6E', boxShadow: 'none' };
+  const pillActive = { ...pillBase, borderColor: '#0A7F6E', background: '#0A7F6E', color: '#ffffff', boxShadow: 'none' };
   const pillCategory = (active) => active
-    ? { ...pillBase, borderColor: '#0A7F6E', background: '#0A7F6E', color: '#111111', fontWeight: 600 }
-    : { ...pillBase, borderColor: 'rgba(0,0,0,0.12)', color: 'rgba(0,0,0,0.65)' };
+    ? { ...pillBase, borderColor: '#0A7F6E', background: '#0A7F6E', color: '#ffffff' }
+    : { ...pillBase, borderColor: '#0A7F6E', background: '#ffffff', color: '#0A7F6E' };
 
   return (
     <div ref={containerRef} style={{ marginBottom: '12px', fontFamily: 'Poppins, sans-serif' }}>
@@ -112,11 +111,11 @@ const ProductFilter = ({
 
         {/* Price */}
         <div className="filter-dropdown-wrapper" style={{ position: 'relative' }}>
-          <button 
-            onClick={() => togglePanel('price')} 
+          <button
+            onClick={() => togglePanel('price')}
             style={priceRange < maxPriceLimit ? pillActive : pillInactive}
-            onMouseEnter={(e) => { if(priceRange === maxPriceLimit) { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.color = '#0A7F6E'; } }}
-            onMouseLeave={(e) => { if(priceRange === maxPriceLimit) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'; e.currentTarget.style.color = 'rgba(0,0,0,0.65)'; } }}
+            onMouseEnter={(e) => { if(priceRange === maxPriceLimit) { e.currentTarget.style.background = '#0A7F6E'; e.currentTarget.style.color = '#ffffff'; } }}
+            onMouseLeave={(e) => { if(priceRange === maxPriceLimit) { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#0A7F6E'; } }}
           >
             <span>Price{priceRange < maxPriceLimit ? `: ₹${priceRange.toLocaleString()}` : ''}</span>
             <ChevronDown size={14} style={{ transform: openPanel === 'price' ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
@@ -141,23 +140,23 @@ const ProductFilter = ({
 
         {/* Size */}
         <div className="filter-dropdown-wrapper" style={{ position: 'relative' }}>
-          <button 
-            onClick={() => togglePanel('size')} 
+          <button
+            onClick={() => togglePanel('size')}
             style={selectedSizes.length > 0 ? pillActive : pillInactive}
-            onMouseEnter={(e) => { if(selectedSizes.length === 0) { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.color = '#0A7F6E'; } }}
-            onMouseLeave={(e) => { if(selectedSizes.length === 0) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'; e.currentTarget.style.color = 'rgba(0,0,0,0.65)'; } }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#0A7F6E'; e.currentTarget.style.color = '#ffffff'; }}
+            onMouseLeave={(e) => { if(selectedSizes.length === 0) { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#0A7F6E'; } }}
           >
             <span>Size{selectedSizes.length > 0 ? ` · ${selectedSizes.length}` : ''}</span>
             <ChevronDown size={14} style={{ transform: openPanel === 'size' ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
           </button>
           <DropPanel open={openPanel === 'size'}>
             <div style={{ width: '220px', padding: '16px' }}>
-              <p style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>Select Sizes</p>
+              <p style={{ fontSize: '10px', fontWeight: 700, color: '#0A7F6E', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>Select Sizes</p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
                 {SIZES.map((sz) => {
                   const isSel = selectedSizes.includes(sz);
                   return (
-                    <button key={sz} onClick={() => handleSizeToggle(sz)} style={{ height: '38px', borderRadius: '10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', border: '1px solid', transition: 'all 0.15s', background: isSel ? '#0A7F6E' : 'rgba(0,0,0,0.03)', borderColor: isSel ? '#0A7F6E' : 'rgba(0,0,0,0.1)', color: isSel ? '#111111' : 'rgba(0,0,0,0.6)' }}>
+                    <button key={sz} onClick={() => handleSizeToggle(sz)} style={{ height: '38px', borderRadius: '10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', border: '1px solid', transition: 'all 0.15s', background: isSel ? '#0A7F6E' : 'rgba(0,0,0,0.03)', borderColor: isSel ? '#0A7F6E' : 'rgba(0,0,0,0.1)', color: isSel ? '#ffffff' : 'rgba(0,0,0,0.6)' }}>
                       {sz}
                     </button>
                   );
@@ -172,8 +171,8 @@ const ProductFilter = ({
           <button 
             onClick={() => togglePanel('stock')} 
             style={selectedStockStatuses.length > 0 ? pillActive : pillInactive}
-            onMouseEnter={(e) => { if(selectedStockStatuses.length === 0) { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.color = '#0A7F6E'; } }}
-            onMouseLeave={(e) => { if(selectedStockStatuses.length === 0) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'; e.currentTarget.style.color = 'rgba(0,0,0,0.65)'; } }}
+            onMouseEnter={(e) => { if(selectedStockStatuses.length === 0) { e.currentTarget.style.background = '#0A7F6E'; e.currentTarget.style.color = '#ffffff'; } }}
+            onMouseLeave={(e) => { if(selectedStockStatuses.length === 0) { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#0A7F6E'; } }}
           >
             <span>Availability{selectedStockStatuses.length > 0 ? ` · ${selectedStockStatuses.length}` : ''}</span>
             <ChevronDown size={14} style={{ transform: openPanel === 'stock' ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
@@ -200,12 +199,12 @@ const ProductFilter = ({
           </DropPanel>
         </div>
 
-        {/* Active size tags */}
+        {/* Active size/color tags */}
         <AnimatePresence>
           {selectedSizes.map((sz) => (
             <motion.button key={sz} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
               onClick={() => handleSizeToggle(sz)}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', height: '28px', padding: '0 10px', borderRadius: '999px', fontSize: '11px', fontWeight: 700, background: 'rgba(10,127,110,0.08)', border: '1px solid rgba(10,127,110,0.25)', color: '#0A7F6E', cursor: 'pointer' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', height: '28px', padding: '0 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 700, background: 'rgba(10,127,110,0.08)', border: '1px solid rgba(10,127,110,0.25)', color: '#0A7F6E', cursor: 'pointer' }}
             >
               {sz} <X size={10} />
             </motion.button>

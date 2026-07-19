@@ -134,15 +134,7 @@ const Products = () => {
           backgroundRepeat: 'no-repeat',
         }} />
 
-        {/* Gradient overlay just to fade the bottom into the page */}
-        <div className="absolute inset-0" style={{
-          background: 'linear-gradient(180deg, transparent 0%, transparent 60%, #DDDFD2 100%)',
-        }} />
-
-        {/* Red radial glow */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(10,127,110,0.12) 0%, transparent 70%)',
-        }} />
+        {/* Gradient overlays removed to fix the smoky look */}
 
         {/* Decorative red lines – left */}
         <svg className="absolute top-0 left-0 w-40 h-40 opacity-40" viewBox="0 0 200 200" fill="none">
