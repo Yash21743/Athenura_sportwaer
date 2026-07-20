@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
@@ -21,7 +20,12 @@ const productSchema = new mongoose.Schema({
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
-    required: [true, 'Category is required'],
+    default: null,
+  },
+  gender: {
+    type: String,
+    enum: ['Men', 'Women', 'Kids', 'Unisex'],
+    default: 'Unisex',
   },
   price: {
     type: Number,
@@ -67,6 +71,17 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  // ✅ ADDED: these were missing, so stock data from the admin form was silently dropped
+  stock: {
+    type: Number,
+    default: 0,
+    min: [0, 'Stock cannot be negative'],
+  },
+  stockStatus: {
+    type: String,
+    enum: ['In Stock', 'Low Stock', 'Out of Stock'],
+    default: 'In Stock',
+  },
   status: {
     type: String,
     enum: ['active', 'inactive', 'draft'],
@@ -99,7 +114,8 @@ const productSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-productSchema.pre('save', function (next) {
+// Async pre-save hook (no 'next' param needed — avoids the "next is not a function" crash)
+productSchema.pre('save', async function () {
   if (this.isModified('name') || this.isNew) {
     let baseSlug = this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     if (this.productCode) {
@@ -107,14 +123,25 @@ productSchema.pre('save', function (next) {
     }
     this.slug = baseSlug;
   }
-  if (this.availableSizes && this.availableSizes.length > 0) {
-    this.inStock = true;
+
+  // ✅ FIXED: inStock now derives from actual stock count, not just size availability
+  if (this.isModified('stock')) {
+    if (this.stock === 0) {
+      this.inStock = false;
+      this.stockStatus = 'Out of Stock';
+    } else if (this.stock <= 10) {
+      this.inStock = true;
+      this.stockStatus = 'Low Stock';
+    } else {
+      this.inStock = true;
+      this.stockStatus = 'In Stock';
+    }
   }
-  next();
 });
 
 productSchema.index({ name: 'text', description: 'text', productCode: 'text' });
 productSchema.index({ category: 1, status: 1 });
+productSchema.index({ gender: 1, status: 1 });
 productSchema.index({ price: 1 });
 
 module.exports = mongoose.model('Product', productSchema);

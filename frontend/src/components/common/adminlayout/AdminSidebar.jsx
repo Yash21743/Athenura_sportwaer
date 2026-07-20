@@ -26,15 +26,6 @@ const navItems = [
     ),
     key: "products",
   },
-//   {
-//     label: "Categories",
-//     icon: (
-//       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-//         <path d="M3 5h8M3 10h5M3 15h8M3 20h5M13 5l4 4-4 4M21 9h-4" />
-//       </svg>
-//     ),
-//     key: "categories",
-//   },
   {
     label: "Leads",
     icon: (
@@ -74,7 +65,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
 
-  // Notify parent whenever collapsed state changes
   useEffect(() => {
     if (onCollapsedChange) onCollapsedChange(collapsed);
   }, [collapsed, onCollapsedChange]);
@@ -88,7 +78,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
     const routeMap = {
       dashboard: "/admin/dashboard",
       products: "/admin/products",
-      categories: "/admin/categories",
       leads: "/admin/leads",
       bulkorders: "/admin/bulk-orders",
       testimonials: "/admin/testimonials",
@@ -102,7 +91,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
 
   return (
     <>
-      {/* Mobile Overlay */}
       <div
         onClick={onMobileClose}
         style={{
@@ -116,7 +104,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
         }}
       />
 
-      {/* Sidebar */}
       <aside
         style={{
           position: "fixed",
@@ -137,7 +124,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
         }}
         className="admin-sidebar"
       >
-        {/* Brand Header */}
         <div
           style={{
             padding: collapsed ? "24px 16px" : "24px 20px",
@@ -160,7 +146,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
             />
           </Link>
 
-          {/* Collapse Toggle (desktop only) */}
           <button
             onClick={() => setCollapsed(!collapsed)}
             style={{
@@ -186,7 +171,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
           </button>
         </div>
 
-        {/* Navigation */}
         <nav style={{ flex: 1, padding: "12px 10px", display: "flex", flexDirection: "column", gap: "4px" }}>
           {navItems.map((item, idx) => {
             const isActive = activeKey === item.key;
@@ -223,7 +207,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                   animation: mounted ? `slideIn 0.4s ease ${idx * 0.05}s both` : "none",
                 }}
               >
-                {/* Icon */}
                 <span
                   style={{
                     flexShrink: 0,
@@ -235,7 +218,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                   {item.icon}
                 </span>
 
-                {/* Label */}
                 <span
                   style={{
                     fontWeight: isActive ? 600 : 400,
@@ -252,7 +234,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                   {item.label}
                 </span>
 
-                {/* Active indicator bar */}
                 {isActive && (
                   <div
                     style={{
@@ -269,7 +250,6 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                   />
                 )}
 
-                {/* Tooltip for collapsed state */}
                 {collapsed && (
                   <div
                     style={{
@@ -313,14 +293,12 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
           })}
         </nav>
 
-        {/* Bottom User Section */}
         <div
           style={{
             padding: "14px 10px",
             borderTop: "1px solid rgba(255,255,255,0.08)",
           }}
         >
-          {/* Logout */}
           <button
             onClick={() => {
               sessionStorage.removeItem("csw_admin_session");

@@ -5,24 +5,11 @@ import AdminSidebar from "../common/adminlayout/AdminSidebar";
 import API from "../../services/api";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const FALLBACK_CATEGORIES = [
-  "Sports T-Shirts",
-  "Performance Jerseys",
-  "Team Uniforms",
-  "Sports Shorts",
-  "Track Pants",
-  "Hoodies",
-  "Tracksuits",
-  "Custom Team Kits",
-  "Accessories",
-];
-
-const GENDERS = ["Men", "Women", "Unisex"];
+const GENDERS = ["Men", "Women", "Kids", "Unisex"];   // ✅ ADDED Kids
 
 const DEFAULT_FORM = {
   name: "",
   code: "",
-  category: "",
   gender: "Unisex",
   price: "",
   stock: "",
@@ -35,9 +22,7 @@ const DEFAULT_FORM = {
 // ─── Component ────────────────────────────────────────────────────────────────
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
-  const [apiCategories, setApiCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("All");
   const [genderFilter, setGenderFilter] = useState("All");
   const [stockFilter, setStockFilter] = useState("All");
   const [sortBy, setSortBy] = useState("none");
@@ -54,22 +39,6 @@ const AdminProducts = () => {
     }
   }, [navigate]);
 
-  // Category options: prefer real categories from backend, fallback to static list
-  const categoryOptions = apiCategories.length > 0
-    ? apiCategories.map((c) => c.name)
-    : FALLBACK_CATEGORIES;
-
-  const fetchCategories = async () => {
-    try {
-      const res = await API.get('/categories/admin/all');
-      if (res.data?.data) {
-        setApiCategories(res.data.data);
-      }
-    } catch (err) {
-      console.warn("Failed to fetch categories list.", err);
-    }
-  };
-
   const fetchProducts = async () => {
     try {
       const response = await API.get('/products/admin/all');
@@ -79,7 +48,6 @@ const AdminProducts = () => {
           ...p,
           id: p._id,
           code: p.productCode || p.code || '',
-          category: typeof p.category === 'object' && p.category ? p.category.name : p.category,
           gender: p.gender || 'Unisex',
           stock: p.stock || 0,
           stockStatus: p.stockStatus || (p.inStock ? "In Stock" : "Out of Stock"),
@@ -98,7 +66,6 @@ const AdminProducts = () => {
 
   useEffect(() => {
     fetchProducts();
-    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -126,15 +93,14 @@ const AdminProducts = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Filter & Sort Products
+  // Filter & Sort Products (Removed Category Filter)
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.code.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === "All" || p.category === categoryFilter;
     const matchesGender = genderFilter === "All" || p.gender === genderFilter;
     const matchesStock = stockFilter === "All" || p.stockStatus === stockFilter;
-    return matchesSearch && matchesCategory && matchesGender && matchesStock;
+    return matchesSearch && matchesGender && matchesStock;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -150,19 +116,18 @@ const AdminProducts = () => {
   // Modal Handlers
   const openAddModal = () => {
     setEditingProduct(null);
-    setFormData({ ...DEFAULT_FORM, category: categoryOptions[0] || "" });
+    setFormData({ ...DEFAULT_FORM });
     setImagePreview(null);
     setImageFile(null);
     setIsModalOpen(true);
   };
 
   const openEditModal = (product, e) => {
-    e.stopPropagation(); // Prevent opening detail view when clicking edit icon
+    e.stopPropagation(); 
     setEditingProduct(product);
     setFormData({
       name: product.name,
       code: product.code,
-      category: product.category,
       gender: product.gender || "Unisex",
       price: product.price,
       stock: product.stock,
@@ -216,7 +181,7 @@ const AdminProducts = () => {
   };
 
   const handleDelete = async (id, e) => {
-    e.stopPropagation(); // Prevent opening detail view
+    e.stopPropagation(); 
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         await API.delete(`/products/${id}`);
@@ -230,17 +195,11 @@ const AdminProducts = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     const priceNum = parseFloat(formData.price) || 0;
     const stockNum = parseInt(formData.stock, 10) || 0;
-    const selectedCategoryObject = apiCategories.find(c => c.name === formData.category);
-    const categoryId = selectedCategoryObject ? selectedCategoryObject._id : null;
 
-    if (!categoryId) {
-      toast.error("Please select a valid category (categories are loaded from the backend).");
-      return;
-    }
     if (!formData.gender) {
       toast.error("Please select a gender (Men / Women / Unisex).");
       return;
@@ -253,7 +212,6 @@ const AdminProducts = () => {
     const fields = {
       name: formData.name,
       productCode: formData.code,
-      category: categoryId,
       gender: formData.gender,
       price: priceNum,
       stock: stockNum,
@@ -269,25 +227,22 @@ const AdminProducts = () => {
     setSubmitting(true);
     try {
       let payload;
-      let config = {};
 
       if (imageFile) {
-        // New image selected -> send as multipart/form-data so backend (multer) receives the file
         const fd = new FormData();
         Object.entries(fields).forEach(([key, value]) => fd.append(key, value));
         fd.append('images', imageFile);
         payload = fd;
-        config = { headers: { 'Content-Type': 'multipart/form-data' } };
+        // ✅ DO NOT set headers here. Axios handles it automatically.
       } else {
-        // No new image -> plain JSON is enough
         payload = fields;
       }
 
       if (editingProduct) {
-        await API.put(`/products/${editingProduct.id}`, payload, config);
+        await API.put(`/products/${editingProduct.id}`, payload);
         toast.success("Product updated successfully!");
       } else {
-        await API.post('/products', payload, config);
+        await API.post('/products', payload);
         toast.success("Product created successfully!");
       }
       fetchProducts();
@@ -302,7 +257,6 @@ const AdminProducts = () => {
 
   return (
     <>
-      {/* ── Stylesheet overrides ── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -331,7 +285,7 @@ const AdminProducts = () => {
           background: rgba(255, 255, 255, 0.03);
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 16px; overflow: hidden;
-          transition: all 0.3s ease; display: flex; flexDirection: column;
+          transition: all 0.3s ease; display: flex; flex-direction: column;
           cursor: pointer;
         }
         .product-card:hover {
@@ -348,10 +302,9 @@ const AdminProducts = () => {
 
         .status-badge {
           position: absolute; top: 12px; right: 12px;
-          padding: 3px 9px; borderRadius: 20px; fontSize: 10px; fontWeight: 700;
+          padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700;
         }
 
-        /* ── Input & Select styling ── */
         .csw-input, .csw-select, .csw-textarea {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.12);
@@ -363,14 +316,12 @@ const AdminProducts = () => {
           border-color: #0A7F6E;
         }
 
-        /* Explicit Select option dark mode fix */
         .csw-select option {
           background-color: #0d1f35 !important;
           color: #ffffff !important;
           padding: 8px;
         }
 
-        /* ── Responsive ── */
         @media(max-width:768px){
           .csw-topbar { left: 0 !important; padding: 0 14px; }
           .csw-main { margin-left: 0 !important; padding: 76px 14px 32px; }
@@ -379,7 +330,7 @@ const AdminProducts = () => {
 
         .table-view { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .table-view th {
-          text-align: left; padding: 12px 16px; font-size: 11px; fontWeight: 600;
+          text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 600;
           color: rgba(255, 255, 255, 0.4); text-transform: uppercase; letter-spacing: 0.8px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.07);
         }
@@ -392,14 +343,12 @@ const AdminProducts = () => {
           background: rgba(255, 255, 255, 0.02);
         }
 
-        /* Modal custom scroll */
         .modal-body::-webkit-scrollbar { width: 4px; }
         .modal-body::-webkit-scrollbar-track { background: transparent; }
         .modal-body::-webkit-scrollbar-thumb { background: rgba(10, 127, 110, 0.3); border-radius: 2px; }
       `}</style>
 
       <div style={{ minHeight: "100vh", background: "#070C0B" }}>
-        {/* ── Sidebar ── */}
         <AdminSidebar
           activeKey="products"
           isMobileOpen={mobileOpen}
@@ -407,7 +356,6 @@ const AdminProducts = () => {
           onCollapsedChange={setSidebarCollapsed}
         />
 
-        {/* ── Topbar ── */}
         <header className="csw-topbar">
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <button
@@ -462,9 +410,7 @@ const AdminProducts = () => {
           </div>
         </header>
 
-        {/* ── Main Content ── */}
         <main className="csw-main">
-          {/* Section Header */}
           <div
             style={{
               display: "flex",
@@ -526,7 +472,7 @@ const AdminProducts = () => {
             </button>
           </div>
 
-          {/* Filters Bar */}
+          {/* Filters Bar - Removed Category Filter */}
           <div
             style={{
               background: "rgba(255,255,255,0.02)",
@@ -541,7 +487,6 @@ const AdminProducts = () => {
               marginBottom: "24px",
             }}
           >
-            {/* Search Input */}
             <div
               style={{
                 position: "relative",
@@ -565,7 +510,6 @@ const AdminProducts = () => {
             </div>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", flex: "1 1 auto", justifyContent: "flex-end" }}>
-              {/* Gender Filter */}
               <div style={{ minWidth: "120px", flex: "1 1 120px", maxWidth: "150px" }}>
                 <select
                   className="csw-select"
@@ -580,24 +524,6 @@ const AdminProducts = () => {
                 </select>
               </div>
 
-              {/* Category Filter Commented Out */}
-              {/* <div style={{ minWidth: "150px", flex: "1 1 150px", maxWidth: "200px" }}>
-                <select
-                  className="csw-select"
-                  style={{ fontSize: "12px" }}
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                >
-                  <option value="All">All Categories</option>
-                  {categoryOptions.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </div> */}
-
-              {/* Stock Status Filter */}
               <div style={{ minWidth: "130px", flex: "1 1 130px", maxWidth: "160px" }}>
                 <select
                   className="csw-select"
@@ -612,7 +538,6 @@ const AdminProducts = () => {
                 </select>
               </div>
 
-              {/* Sorting Filter */}
               <div style={{ minWidth: "150px", flex: "1 1 150px", maxWidth: "200px" }}>
                 <select
                   className="csw-select"
@@ -632,7 +557,7 @@ const AdminProducts = () => {
             </div>
           </div>
 
-          {/* ── Desktop Table View ── */}
+          {/* ── Desktop Table View (Removed Category Column) ── */}
           <div
             className="desktop-only"
             style={{
@@ -650,7 +575,6 @@ const AdminProducts = () => {
                     <th>Product</th>
                     <th>Code</th>
                     <th>Gender</th>
-                    <th>Category</th>
                     <th>Price</th>
                     <th>Stock</th>
                     <th style={{ textAlign: "right" }}>Actions</th>
@@ -708,7 +632,6 @@ const AdminProducts = () => {
                             {p.gender || "Unisex"}
                           </span>
                         </td>
-                        <td style={{ color: "rgba(255,255,255,0.55)" }}>{p.category}</td>
                         <td style={{ fontWeight: 700, fontFamily: "'Montserrat',sans-serif" }}>₹{p.price}</td>
                         <td>
                           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
@@ -1107,40 +1030,18 @@ const AdminProducts = () => {
                   </div>
                 </div>
 
-                {/* Category & Fabric */}
-                <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
-                  {/* Category Field Commented Out */}
-                  {/* <div style={{ flex: "1 1 200px" }}>
-                    <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
-                      Category *
-                    </label>
-                    <select
-                      className="csw-select"
-                      name="category"
-                      required
-                      value={formData.category}
-                      onChange={handleInputChange}
-                    >
-                      <option value="" disabled>Select category</option>
-                      {categoryOptions.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
-                  </div> */}
-                  <div style={{ flex: "1 1 100%" }}>
-                    <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
-                      Fabric Details
-                    </label>
-                    <input
-                      className="csw-input"
-                      name="fabric"
-                      placeholder="e.g. 100% Dry-Fit Polyester"
-                      value={formData.fabric}
-                      onChange={handleInputChange}
-                    />
-                  </div>
+                {/* Fabric Details */}
+                <div style={{ flex: "1 1 100%" }}>
+                  <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
+                    Fabric Details
+                  </label>
+                  <input
+                    className="csw-input"
+                    name="fabric"
+                    placeholder="e.g. 100% Dry-Fit Polyester"
+                    value={formData.fabric}
+                    onChange={handleInputChange}
+                  />
                 </div>
 
                 {/* Price & Stock */}
@@ -1305,7 +1206,7 @@ const AdminProducts = () => {
           </div>
         )}
 
-        {/* ── View Product Details Modal ── */}
+        {/* ── View Product Details Modal (Removed Category Row) ── */}
         {viewingProduct && (
           <div
             style={{
@@ -1420,10 +1321,6 @@ const AdminProducts = () => {
                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Gender</span>
                       <span style={{ fontWeight: 600, fontSize: "13px" }}>{viewingProduct.gender || "Unisex"}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
-                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Category</span>
-                      <span style={{ fontWeight: 600, fontSize: "13px" }}>{viewingProduct.category}</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Price</span>

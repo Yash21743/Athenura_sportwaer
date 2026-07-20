@@ -23,7 +23,8 @@ const WomensProducts = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await API.get('/products');
+        // "Women" section — Unisex products automatically included by backend
+        const response = await API.get('/products?gender=Women');
         const list = response.data?.data || response.data;
         if (
           list &&
@@ -31,7 +32,6 @@ const WomensProducts = () => {
           list.length > 0 &&
           list[0]._id
         ) {
-          // Temporarily just showing all products, but prioritizing those with 'women' in name/tags if any existed
           setProducts(list.filter((p) => p.status !== 'inactive'));
         } else throw new Error('Empty or invalid response');
       } catch {
@@ -140,10 +140,6 @@ const WomensProducts = () => {
           background: 'linear-gradient(135deg, rgba(5,30,22,0.88) 0%, rgba(10,80,65,0.72) 50%, rgba(5,30,22,0.88) 100%)',
           zIndex: 1,
         }} />
-
-        {/* Gradient overlays removed to fix the smoky look */}
-
-
 
         {/* Content */}
         <div style={{ maxWidth: '860px', margin: '0 auto', padding: '100px 48px', position: 'relative', zIndex: 10, textAlign: 'center', width: '100%' }}>
