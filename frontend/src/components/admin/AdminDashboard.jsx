@@ -757,6 +757,7 @@ const AdminDashboard = () => {
       if (statsRes.data?.success) {
         setStatsData(statsRes.data.data);
       }
+      
       const actRes = await API.get('/dashboard/recent-activities');
       if (actRes.data?.success) {
         // Map backend activities format to frontend expectation
@@ -765,6 +766,35 @@ const AdminDashboard = () => {
           time: new Date(act.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }));
         setLiveActivity(normalized);
+      }
+
+      // Fetch and set recent leads
+      const leadsRes = await API.get('/inquiries');
+      if (leadsRes.data?.success && Array.isArray(leadsRes.data.data)) {
+        const normalizedLeads = leadsRes.data.data.slice(0, 5).map(l => ({
+          id: l._id,
+          name: l.name,
+          org: l.organizationName || l.org || '',
+          product: typeof l.product === 'object' && l.product ? l.product.name : (l.productName || 'General'),
+          qty: l.quantity || 1,
+          status: l.status === 'new' ? 'New' : (l.status === 'contacted' ? 'Follow Up' : 'Converted'),
+          time: new Date(l.createdAt).toLocaleDateString() || 'Recently',
+        }));
+        setLiveLeads(normalizedLeads);
+      }
+
+      // Fetch and set recent products
+      const productsRes = await API.get('/products/admin/all');
+      if (productsRes.data?.success && Array.isArray(productsRes.data.data)) {
+        const normalizedProducts = productsRes.data.data.slice(0, 5).map(p => ({
+          id: p._id,
+          name: p.name,
+          category: typeof p.category === 'object' && p.category ? p.category.name : p.category,
+          price: p.price || 0,
+          stockStatus: p.stockStatus || (p.inStock ? "In Stock" : "Out of Stock"),
+          stock: p.stock || 0
+        }));
+        setLiveProducts(normalizedProducts);
       }
     } catch (err) {
       console.warn("Failed to fetch live dashboard stats.", err);

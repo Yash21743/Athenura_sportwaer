@@ -63,11 +63,19 @@ exports.getProduct = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    const relatedProducts = await Product.find({
-      category: product.category._id,
-      _id: { $ne: product._id },
-      status: 'active',
-    }).limit(8).select('name slug price images featuredImage');
+    let relatedProducts = [];
+    if (product.category) {
+      relatedProducts = await Product.find({
+        category: product.category._id,
+        _id: { $ne: product._id },
+        status: 'active',
+      }).limit(8).select('name slug price images featuredImage');
+    } else {
+      relatedProducts = await Product.find({
+        _id: { $ne: product._id },
+        status: 'active',
+      }).limit(8).select('name slug price images featuredImage');
+    }
 
     res.status(200).json({ success: true, data: product, relatedProducts });
   } catch (error) {

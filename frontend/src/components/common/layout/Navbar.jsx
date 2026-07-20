@@ -956,11 +956,7 @@ export default function Navbar({ cartCount }) {
           <div className="desktop-account-wrap" ref={accountRef}>
             <motion.button
               type="button"
-
-              className="icon-btn"
-
               className={`icon-btn${accountOpen ? " active" : ""}`}
-
               aria-label="My Account"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}

@@ -13,7 +13,7 @@ const stockConf = {
 
 const ProductCard = ({ product, viewMode = 'grid' }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const { _id, name, code, category, price, sizes, images, stockStatus } = product;
+  const { _id, name, code, category, price, sizes = [], images, stockStatus } = product;
   const description = stripHtml(product.description);
   const img1 = images?.[0] || '';
   const img2 = images?.[1] || images?.[0] || '';

@@ -6,9 +6,10 @@ const { buildFilter, buildPagination, paginationMeta, isValidObjectId } = requir
 
 exports.createInquiry = async (req, res, next) => {
   try {
-    const { name, email, productName, quantity, message } = req.body;
+    const { name, email, productName, quantity, message, size, color } = req.body;
     const mobileNumber = req.body.mobileNumber || req.body.phone;
     const productId = req.body.productId || req.body.product;
+    const organizationName = req.body.organizationName || req.body.organization;
 
     if (!name || !mobileNumber || !email) {
       return res.status(400).json({ success: false, message: 'Name, mobile number, and email are required' });
@@ -32,6 +33,9 @@ exports.createInquiry = async (req, res, next) => {
       product: productId || undefined,
       quantity: quantity ? parseInt(quantity) : undefined,
       message: message ? message.trim() : '',
+      organizationName: organizationName ? organizationName.trim() : undefined,
+      size: size ? size.trim() : undefined,
+      color: color ? color.trim() : undefined,
       status: 'new',
     });
 

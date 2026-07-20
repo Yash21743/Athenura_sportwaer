@@ -38,6 +38,18 @@ const inquirySchema = new mongoose.Schema({
     trim: true,
     maxlength: [1000, 'Message cannot exceed 1000 characters'],
   },
+  organizationName: {
+    type: String,
+    trim: true,
+  },
+  size: {
+    type: String,
+    trim: true,
+  },
+  color: {
+    type: String,
+    trim: true,
+  },
   status: {
     type: String,
     enum: ['new', 'contacted', 'in-progress', 'quoted', 'converted', 'closed', 'spam'],
