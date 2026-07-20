@@ -35,7 +35,6 @@ const DEFAULT_FORM = {
 // ─── Component ────────────────────────────────────────────────────────────────
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
-  const [apiCategories, setApiCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [genderFilter, setGenderFilter] = useState("All");
@@ -98,7 +97,6 @@ const AdminProducts = () => {
 
   useEffect(() => {
     fetchProducts();
-    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -157,7 +155,7 @@ const AdminProducts = () => {
   };
 
   const openEditModal = (product, e) => {
-    e.stopPropagation(); // Prevent opening detail view when clicking edit icon
+    e.stopPropagation(); 
     setEditingProduct(product);
     setFormData({
       name: product.name,
@@ -216,7 +214,7 @@ const AdminProducts = () => {
   };
 
   const handleDelete = async (id, e) => {
-    e.stopPropagation(); // Prevent opening detail view
+    e.stopPropagation(); 
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         await API.delete(`/products/${id}`);
@@ -230,12 +228,10 @@ const AdminProducts = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     const priceNum = parseFloat(formData.price) || 0;
     const stockNum = parseInt(formData.stock, 10) || 0;
-    const selectedCategoryObject = apiCategories.find(c => c.name === formData.category);
-    const categoryId = selectedCategoryObject ? selectedCategoryObject._id : null;
 
     if (!categoryId) {
       toast.error("Please select a valid category (categories are loaded from the backend).");
@@ -302,7 +298,6 @@ const AdminProducts = () => {
 
   return (
     <>
-      {/* ── Stylesheet overrides ── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -331,7 +326,7 @@ const AdminProducts = () => {
           background: rgba(255, 255, 255, 0.03);
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 16px; overflow: hidden;
-          transition: all 0.3s ease; display: flex; flexDirection: column;
+          transition: all 0.3s ease; display: flex; flex-direction: column;
           cursor: pointer;
         }
         .product-card:hover {
@@ -348,10 +343,9 @@ const AdminProducts = () => {
 
         .status-badge {
           position: absolute; top: 12px; right: 12px;
-          padding: 3px 9px; borderRadius: 20px; fontSize: 10px; fontWeight: 700;
+          padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700;
         }
 
-        /* ── Input & Select styling ── */
         .csw-input, .csw-select, .csw-textarea {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.12);
@@ -363,14 +357,12 @@ const AdminProducts = () => {
           border-color: #0A7F6E;
         }
 
-        /* Explicit Select option dark mode fix */
         .csw-select option {
           background-color: #0d1f35 !important;
           color: #ffffff !important;
           padding: 8px;
         }
 
-        /* ── Responsive ── */
         @media(max-width:768px){
           .csw-topbar { left: 0 !important; padding: 0 14px; }
           .csw-main { margin-left: 0 !important; padding: 76px 14px 32px; }
@@ -379,7 +371,7 @@ const AdminProducts = () => {
 
         .table-view { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .table-view th {
-          text-align: left; padding: 12px 16px; font-size: 11px; fontWeight: 600;
+          text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 600;
           color: rgba(255, 255, 255, 0.4); text-transform: uppercase; letter-spacing: 0.8px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.07);
         }
@@ -392,7 +384,6 @@ const AdminProducts = () => {
           background: rgba(255, 255, 255, 0.02);
         }
 
-        /* Modal custom scroll */
         .modal-body::-webkit-scrollbar { width: 4px; }
         .modal-body::-webkit-scrollbar-track { background: transparent; }
         .modal-body::-webkit-scrollbar-thumb { background: rgba(10, 127, 110, 0.3); border-radius: 2px; }
@@ -407,7 +398,6 @@ const AdminProducts = () => {
           onCollapsedChange={setSidebarCollapsed}
         />
 
-        {/* ── Topbar ── */}
         <header className="csw-topbar">
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <button
@@ -462,9 +452,7 @@ const AdminProducts = () => {
           </div>
         </header>
 
-        {/* ── Main Content ── */}
         <main className="csw-main">
-          {/* Section Header */}
           <div
             style={{
               display: "flex",
@@ -526,7 +514,7 @@ const AdminProducts = () => {
             </button>
           </div>
 
-          {/* Filters Bar */}
+          {/* Filters Bar - Removed Category Filter */}
           <div
             style={{
               background: "rgba(255,255,255,0.02)",
@@ -541,7 +529,6 @@ const AdminProducts = () => {
               marginBottom: "24px",
             }}
           >
-            {/* Search Input */}
             <div
               style={{
                 position: "relative",
@@ -585,8 +572,8 @@ const AdminProducts = () => {
                 <select
                   className="csw-select"
                   style={{ fontSize: "12px" }}
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  value={genderFilter}
+                  onChange={(e) => setGenderFilter(e.target.value)}
                 >
                   <option value="All">All Categories</option>
                   {categoryOptions.map((cat) => (
@@ -597,7 +584,6 @@ const AdminProducts = () => {
                 </select>
               </div> */}
 
-              {/* Stock Status Filter */}
               <div style={{ minWidth: "130px", flex: "1 1 130px", maxWidth: "160px" }}>
                 <select
                   className="csw-select"
@@ -612,7 +598,6 @@ const AdminProducts = () => {
                 </select>
               </div>
 
-              {/* Sorting Filter */}
               <div style={{ minWidth: "150px", flex: "1 1 150px", maxWidth: "200px" }}>
                 <select
                   className="csw-select"
@@ -632,7 +617,7 @@ const AdminProducts = () => {
             </div>
           </div>
 
-          {/* ── Desktop Table View ── */}
+          {/* ── Desktop Table View (Removed Category Column) ── */}
           <div
             className="desktop-only"
             style={{
@@ -1143,6 +1128,20 @@ const AdminProducts = () => {
                   </div>
                 </div>
 
+                {/* Fabric Details */}
+                <div style={{ flex: "1 1 100%" }}>
+                  <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
+                    Fabric Details
+                  </label>
+                  <input
+                    className="csw-input"
+                    name="fabric"
+                    placeholder="e.g. 100% Dry-Fit Polyester"
+                    value={formData.fabric}
+                    onChange={handleInputChange}
+                  />
+                </div>
+
                 {/* Price & Stock */}
                 <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
                   <div style={{ flex: "1 1 200px" }}>
@@ -1305,7 +1304,7 @@ const AdminProducts = () => {
           </div>
         )}
 
-        {/* ── View Product Details Modal ── */}
+        {/* ── View Product Details Modal (Removed Category Row) ── */}
         {viewingProduct && (
           <div
             style={{

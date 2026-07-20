@@ -233,7 +233,10 @@ const styles = `
   top: calc(var(--nav-h) + 40px);
   left: 0;
   right: 0;
-  overflow: hidden;
+  bottom: 0;
+  max-height: calc(100vh - var(--nav-h) - 40px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: #d6d7cb;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
@@ -567,7 +570,7 @@ const styles = `
   }
 }
 
-.search-wrap {
+.nav-search-wrap {
   position: relative;
 }
 
@@ -578,6 +581,7 @@ const styles = `
   top: calc(var(--nav-h) + 40px + 10px);
   width: auto;
   max-width: none;
+  box-sizing: border-box;
   background: #ffffff;
   border-radius: 14px;
   box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
@@ -601,10 +605,13 @@ const styles = `
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .search-dropdown-input {
   flex: 1;
+  min-width: 0;
   height: 42px;
   padding: 0 0.85rem;
   border: 1px solid rgba(0, 0, 0, 0.12);
@@ -614,6 +621,7 @@ const styles = `
   font-family: inherit;
   color: #000000;
   outline: none;
+  box-sizing: border-box;
   transition: border 0.2s ease;
 }
 
@@ -679,10 +687,16 @@ export default function Navbar({ cartCount }) {
   const [registerPassword, setRegisterPassword] = useState("")
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("")
   const [registerStatus, setRegisterStatus] = useState("idle")
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    try { return localStorage.getItem('csw_is_logged_in') === 'true' } catch { return false }
+  })
+  const [showCartToast, setShowCartToast] = useState(false)
+  const [redirectAfterLogin, setRedirectAfterLogin] = useState(false)
 
   const accountRef = useRef(null)
   const searchRef = useRef(null)
+  const cartRef = useRef(null)
+  const mobilePanelRef = useRef(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -695,18 +709,37 @@ export default function Navbar({ cartCount }) {
     }
   }
 
+  const handleCartClick = () => {
+    if (isLoggedIn) {
+      navigate('/cart')
+    } else {
+      setShowCartToast(true)
+      setTimeout(() => setShowCartToast(false), 3500)
+    }
+  }
+
   const handleSignInSubmit = (e) => {
     e.preventDefault()
     console.log("Sign in attempt:", { email: signInEmail, password: signInPassword })
+    localStorage.setItem('csw_is_logged_in', 'true')
     setIsLoggedIn(true)
     setShowSignInForm(false)
+    setAccountOpen(false)
     setSignInEmail("")
     setSignInPassword("")
+    if (redirectAfterLogin) {
+      navigate('/cart')
+    }
   }
 
   const handleLogout = () => {
+    localStorage.removeItem('csw_is_logged_in')
     setIsLoggedIn(false)
     setAccountOpen(false)
+    setMobileOpen(false)
+    if (location.pathname === '/cart' || location.pathname === '/add-to-bag') {
+      navigate('/')
+    }
   }
 
   const resetRegisterForm = () => {
@@ -732,7 +765,14 @@ export default function Navbar({ cartCount }) {
       password: registerPassword,
     })
     setRegisterStatus("success")
-    setTimeout(() => setRegisterStatus("goToLogin"), 1500)
+    localStorage.setItem('csw_is_logged_in', 'true')
+    setIsLoggedIn(true)
+    setTimeout(() => {
+      setRegisterStatus("goToLogin")
+      if (redirectAfterLogin) {
+        navigate('/cart')
+      }
+    }, 1500)
   }
   const updateCartCount = () => {
     try {
@@ -754,9 +794,17 @@ export default function Navbar({ cartCount }) {
     updateCartCount();
     window.addEventListener('cartUpdated', updateCartCount);
     window.addEventListener('storage', updateCartCount);
+
+    const handleShowCartPopup = () => {
+      setShowCartToast(true);
+      setTimeout(() => setShowCartToast(false), 3500);
+    };
+    window.addEventListener('showCartLoginPopup', handleShowCartPopup);
+
     return () => {
       window.removeEventListener('cartUpdated', updateCartCount);
       window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('showCartLoginPopup', handleShowCartPopup);
     };
   }, []);
 
@@ -776,7 +824,9 @@ export default function Navbar({ cartCount }) {
 
   useEffect(() => {
     const onClick = (e) => {
-      if (accountRef.current && !accountRef.current.contains(e.target)) {
+      const insideAccount = accountRef.current && accountRef.current.contains(e.target)
+      const insideMobilePanel = mobilePanelRef.current && mobilePanelRef.current.contains(e.target)
+      if (!insideAccount && !insideMobilePanel) {
         setAccountOpen(false)
         setShowSignInForm(false)
         setShowRegisterForm(false)
@@ -787,6 +837,9 @@ export default function Navbar({ cartCount }) {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setSearchOpen(false)
 
+      }
+      if (cartRef.current && !cartRef.current.contains(e.target)) {
+        setShowCartToast(false)
       }
     }
     document.addEventListener("mousedown", onClick)
@@ -892,7 +945,7 @@ export default function Navbar({ cartCount }) {
         </motion.ul>
 
         <div className="nav-actions">
-          <div className="search-wrap" ref={searchRef}>
+          <div className="nav-search-wrap" ref={searchRef}>
             <motion.button
               type="button"
               className={`icon-btn${searchOpen ? " active" : ""}`}
@@ -930,13 +983,14 @@ export default function Navbar({ cartCount }) {
             </AnimatePresence>
           </div>
 
-          <Link to="/cart" style={{ textDecoration: 'none' }}>
+          <div style={{ position: 'relative' }} ref={cartRef}>
             <motion.button
               type="button"
               className={`icon-btn${location.pathname === "/cart" ? " active" : ""}`}
               aria-label={`Cart, ${cartItemsCount} items`}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
+              onClick={handleCartClick}
             >
               <ShoppingBag size={20} />
               {cartItemsCount > 0 && (
@@ -951,7 +1005,103 @@ export default function Navbar({ cartCount }) {
                 </motion.span>
               )}
             </motion.button>
-          </Link>
+
+            {/* Cart login-required dropdown */}
+            <AnimatePresence>
+              {showCartToast && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 12px)',
+                    right: 0,
+                    zIndex: 9999,
+                    background: '#ffffff',
+                    borderRadius: '16px',
+                    padding: '1rem 1.1rem',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(20,168,137,0.10)',
+                    border: '1px solid rgba(20,168,137,0.18)',
+                    width: 'clamp(260px, 80vw, 310px)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
+                  }}
+                >
+                  {/* Top row: icon + text */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
+                    <div style={{
+                      width: '36px', height: '36px', borderRadius: '10px',
+                      background: 'linear-gradient(135deg,#0a3d33,#14a889)',
+                      display: 'grid', placeItems: 'center', flexShrink: 0,
+                    }}>
+                      <ShoppingBag size={17} color="#fff" />
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#111', lineHeight: 1.3 }}>
+                        Sign in to view your cart
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.48)', marginTop: '0.1rem' }}>
+                        Please sign in or register to continue.
+                      </div>
+                    </div>
+                  </div>
+                  {/* Bottom row: buttons */}
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      onClick={() => {
+                        setShowCartToast(false);
+                        setRedirectAfterLogin(true);
+                        if (window.innerWidth < 900) {
+                          setMobileOpen(true);
+                          setMobileAccountOpen(true);
+                          setShowSignInForm(true);
+                          setShowRegisterForm(false);
+                        } else {
+                          setAccountOpen(true);
+                          setShowSignInForm(true);
+                          setShowRegisterForm(false);
+                        }
+                      }}
+                      style={{
+                        flex: 1, padding: '0.5rem 0', borderRadius: '8px',
+                        border: '1.5px solid #14a889', background: 'transparent',
+                        color: '#14a889', fontWeight: 600, fontSize: '0.82rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowCartToast(false);
+                        setRedirectAfterLogin(true);
+                        if (window.innerWidth < 900) {
+                          setMobileOpen(true);
+                          setMobileAccountOpen(true);
+                          setShowRegisterForm(true);
+                          setShowSignInForm(false);
+                        } else {
+                          setAccountOpen(true);
+                          setShowRegisterForm(true);
+                          setShowSignInForm(false);
+                        }
+                      }}
+                      style={{
+                        flex: 1, padding: '0.5rem 0', borderRadius: '8px', border: 'none',
+                        background: 'linear-gradient(135deg,#0a3d33,#14a889)', color: '#fff',
+                        fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer',
+                      }}
+                    >
+                      Register
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           <div className="desktop-account-wrap" ref={accountRef}>
             <motion.button
@@ -960,7 +1110,10 @@ export default function Navbar({ cartCount }) {
               aria-label="My Account"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setAccountOpen((v) => !v)}
+              onClick={() => {
+                setAccountOpen((v) => !v);
+                setRedirectAfterLogin(false);
+              }}
             >
               <User size={20} />
             </motion.button>
@@ -1107,7 +1260,10 @@ export default function Navbar({ cartCount }) {
                           <button
                             type="button"
                             className="desktop-account-item"
-                            onClick={() => setShowSignInForm(true)}
+                            onClick={() => {
+                              setRedirectAfterLogin(false);
+                              setShowSignInForm(true);
+                            }}
                           >
                             <LogIn size={17} />
                             Sign in
@@ -1115,21 +1271,30 @@ export default function Navbar({ cartCount }) {
                           <button
                             type="button"
                             className="desktop-account-item"
-                            onClick={() => setShowRegisterForm(true)}
+                            onClick={() => {
+                              setRedirectAfterLogin(false);
+                              setShowRegisterForm(true);
+                            }}
                           >
                             <UserPlus size={17} />
                             Register
                           </button>
                         </>
                       ) : (
-                        <button
-                          type="button"
-                          className="desktop-account-item"
-                          onClick={handleLogout}
-                        >
-                          <LogIn size={17} style={{ transform: "rotate(180deg)" }} />
-                          Logout
-                        </button>
+                        <>
+                          <Link to="/dashboard" className="desktop-account-item" onClick={() => setAccountOpen(false)}>
+                            <User size={17} />
+                            View Profile
+                          </Link>
+                          <button
+                            type="button"
+                            className="desktop-account-item"
+                            onClick={handleLogout}
+                          >
+                            <LogIn size={17} style={{ transform: "rotate(180deg)" }} />
+                            Logout
+                          </button>
+                        </>
                       )}
 
                       <Link to="/cart" className="desktop-account-item" onClick={() => setAccountOpen(false)}>
@@ -1177,6 +1342,7 @@ export default function Navbar({ cartCount }) {
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
+              ref={mobilePanelRef}
               className="mobile-panel"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
@@ -1197,7 +1363,10 @@ export default function Navbar({ cartCount }) {
                     type="button"
                     className="mobile-account-head"
                     data-open={mobileAccountOpen}
-                    onClick={() => setMobileAccountOpen((v) => !v)}
+                    onClick={() => {
+                      setMobileAccountOpen((v) => !v);
+                      setRedirectAfterLogin(false);
+                    }}
                   >
                     My Account
                     <ChevronDown size={18} />
@@ -1338,7 +1507,10 @@ export default function Navbar({ cartCount }) {
                                 <button
                                   type="button"
                                   className="mobile-account-item"
-                                  onClick={() => setShowSignInForm(true)}
+                                  onClick={() => {
+                                    setRedirectAfterLogin(false);
+                                    setShowSignInForm(true);
+                                  }}
                                 >
                                   <LogIn size={17} />
                                   Sign in
@@ -1346,21 +1518,30 @@ export default function Navbar({ cartCount }) {
                                 <button
                                   type="button"
                                   className="mobile-account-item"
-                                  onClick={() => setShowRegisterForm(true)}
+                                  onClick={() => {
+                                    setRedirectAfterLogin(false);
+                                    setShowRegisterForm(true);
+                                  }}
                                 >
                                   <UserPlus size={17} />
                                   Register
                                 </button>
                               </>
                             ) : (
-                              <button
-                                type="button"
-                                className="mobile-account-item"
-                                onClick={handleLogout}
-                              >
-                                <LogIn size={17} style={{ transform: "rotate(180deg)" }} />
-                                Logout
-                              </button>
+                              <>
+                                <Link to="/dashboard" className="mobile-account-item" onClick={() => setMobileOpen(false)}>
+                                  <User size={17} />
+                                  View Profile
+                                </Link>
+                                <button
+                                  type="button"
+                                  className="mobile-account-item"
+                                  onClick={handleLogout}
+                                >
+                                  <LogIn size={17} style={{ transform: "rotate(180deg)" }} />
+                                  Logout
+                                </button>
+                              </>
                             )}
 
                             <Link to="/cart" className="mobile-account-item" onClick={() => setMobileOpen(false)}>
@@ -1398,6 +1579,7 @@ export default function Navbar({ cartCount }) {
         )}
       </AnimatePresence>
     </header>
+
   )
 }
 

@@ -1,4 +1,3 @@
-
 const Product = require('../models/Product');
 const { buildFilter, buildSort, buildPagination, paginationMeta, isValidObjectId } = require('../utils/helpers');
 
@@ -7,6 +6,10 @@ exports.getProducts = async (req, res, next) => {
     const allowedFields = ['search', 'category', 'minPrice', 'maxPrice', 'size', 'color', 'isFeatured', 'inStock'];
     const filter = buildFilter(req.query, allowedFields);
     filter.status = 'active';
+
+    if (req.query.gender) {
+      filter.gender = { $in: [req.query.gender, 'Unisex'] };
+    }
 
     const { page, limit, skip } = buildPagination(req.query.page, req.query.limit);
     const sort = buildSort(req.query.sort);
@@ -29,7 +32,7 @@ exports.getProducts = async (req, res, next) => {
 
 exports.getAdminProducts = async (req, res, next) => {
   try {
-    const allowedFields = ['search', 'category', 'status'];
+    const allowedFields = ['search', 'category', 'status', 'gender'];
     const filter = buildFilter(req.query, allowedFields);
 
     const { page, limit, skip } = buildPagination(req.query.page, req.query.limit);
@@ -88,7 +91,6 @@ exports.getAdminProduct = async (req, res, next) => {
     if (!isValidObjectId(req.params.id)) {
       return res.status(400).json({ success: false, message: 'Invalid product ID' });
     }
-
     const product = await Product.findById(req.params.id).populate('category', 'name');
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
@@ -105,7 +107,8 @@ exports.createProduct = async (req, res, next) => {
       name, description, category, price, compareAtPrice,
       productCode, fabricDetails, availableSizes, availableColors,
       isFeatured, status, sizeChart, specifications,
-      shippingInfo, returnPolicy, weight,
+      shippingInfo, returnPolicy, weight, gender,
+      stock, stockStatus,   // ✅ ADDED — these were being silently dropped before
     } = req.body;
 
     let images = [];
@@ -123,11 +126,14 @@ exports.createProduct = async (req, res, next) => {
     const product = await Product.create({
       name,
       description,
-      category,
+      category: category || null,
+      gender: gender || 'Unisex',
       price: parseFloat(price),
       compareAtPrice: compareAtPrice ? parseFloat(compareAtPrice) : undefined,
       productCode,
       fabricDetails,
+      stock: stock !== undefined && stock !== '' ? parseInt(stock, 10) : 0,   // ✅ ADDED
+      stockStatus: stockStatus || undefined,                                  // ✅ ADDED (schema hook will recompute anyway)
       availableSizes: availableSizes ? availableSizes.split(',').map(s => s.trim()) : [],
       availableColors: availableColors ? availableColors.split(',').map(c => c.trim()) : [],
       images,
@@ -143,6 +149,10 @@ exports.createProduct = async (req, res, next) => {
 
     res.status(201).json({ success: true, data: product });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ success: false, message: 'Product Code already exists. Please use a unique code.' });
+    }
+    console.error('CREATE PRODUCT ERROR:', error);
     next(error);
   }
 };
@@ -160,9 +170,15 @@ exports.updateProduct = async (req, res, next) => {
 
     const updateData = { ...req.body };
 
+    if (updateData.category === '') {
+      updateData.category = null;
+    }
     if (updateData.price) updateData.price = parseFloat(updateData.price);
     if (updateData.compareAtPrice) updateData.compareAtPrice = parseFloat(updateData.compareAtPrice);
     if (updateData.weight) updateData.weight = parseFloat(updateData.weight);
+    if (updateData.stock !== undefined && updateData.stock !== '') {   // ✅ ADDED
+      updateData.stock = parseInt(updateData.stock, 10);
+    }
 
     if (updateData.availableSizes && typeof updateData.availableSizes === 'string') {
       updateData.availableSizes = updateData.availableSizes.split(',').map(s => s.trim());
@@ -198,6 +214,21 @@ exports.updateProduct = async (req, res, next) => {
       }
     }
 
+    // ✅ NOTE: findByIdAndUpdate does NOT run document middleware (pre('save')) by default,
+    // so stock→stockStatus recompute won't fire here. We do it manually below instead.
+    if (updateData.stock !== undefined) {
+      if (updateData.stock === 0) {
+        updateData.inStock = false;
+        updateData.stockStatus = 'Out of Stock';
+      } else if (updateData.stock <= 10) {
+        updateData.inStock = true;
+        updateData.stockStatus = 'Low Stock';
+      } else {
+        updateData.inStock = true;
+        updateData.stockStatus = 'In Stock';
+      }
+    }
+
     product = await Product.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
@@ -205,6 +236,10 @@ exports.updateProduct = async (req, res, next) => {
 
     res.status(200).json({ success: true, data: product });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ success: false, message: 'Product Code already exists. Please use a unique code.' });
+    }
+    console.error('UPDATE PRODUCT ERROR:', error);
     next(error);
   }
 };
@@ -222,11 +257,13 @@ exports.deleteProduct = async (req, res, next) => {
 
     if (product.images && product.images.length > 0) {
       const cloudinary = require('../config/cloudinary');
-      const publicIds = product.images.map(img => img.publicId);
-      try {
-        await cloudinary.api.delete_resources(publicIds);
-      } catch (e) {
-        console.error('Cloudinary delete error:', e.message);
+      const publicIds = product.images.map(img => img.publicId).filter(Boolean);
+      if (publicIds.length > 0) {
+        try {
+          await cloudinary.api.delete_resources(publicIds);
+        } catch (e) {
+          console.error('Cloudinary delete error:', e.message);
+        }
       }
     }
 

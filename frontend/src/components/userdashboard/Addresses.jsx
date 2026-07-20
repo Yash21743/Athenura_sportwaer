@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { MapPin, Plus, Trash2, Pencil, X, Home, Briefcase, Phone, User } from "lucide-react";
+import toast from "react-hot-toast";
+import API from "../../services/api";
 
 // Reusable card container matching clean light design
 const Card = ({ children, title, sub, action, accent }) => {
@@ -48,60 +50,81 @@ const Card = ({ children, title, sub, action, accent }) => {
 const Addresses = ({ addresses, setAddresses }) => {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const [newAddress, setNewAddress] = useState({
-    type: "Home",
-    fullName: "",
-    addressLine: "",
-    city: "",
-    state: "",
-    pinCode: "",
-    phone: ""
+    type: "Home", fullName: "", addressLine: "", city: "", state: "", pinCode: "", phone: ""
   });
+  const formRef = useRef(null);
+  const [formWidth, setFormWidth] = useState(600);
 
-  const handleAddAddress = (e) => {
+  useEffect(() => {
+    const el = formRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      for (const entry of entries) setFormWidth(entry.contentRect.width);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [showAddressForm]);
+
+  const isSmall = formWidth < 420;
+
+  // ✅ Hits the backend instead of mutating local state directly
+  const handleAddAddress = async (e) => {
     e.preventDefault();
     if (!newAddress.fullName || !newAddress.addressLine || !newAddress.city || !newAddress.pinCode) return;
-    
-    if (editingAddressId) {
-      setAddresses(addresses.map(addr => addr.id === editingAddressId ? { ...addr, ...newAddress } : addr));
+
+    setSubmitting(true);
+    try {
+      if (editingAddressId) {
+        const res = await API.put(`/addresses/${editingAddressId}`, newAddress);
+        setAddresses(addresses.map(a => a._id === editingAddressId ? res.data.data : a));
+        toast.success("Address updated successfully!");
+      } else {
+        const res = await API.post("/addresses", newAddress);
+        setAddresses([...addresses, res.data.data]);
+        toast.success("Address added successfully!");
+      }
+      setShowAddressForm(false);
       setEditingAddressId(null);
-    } else {
-      setAddresses([
-        ...addresses,
-        {
-          id: Date.now(),
-          isDefault: addresses.length === 0,
-          ...newAddress
-        }
-      ]);
+      setNewAddress({ type: "Home", fullName: "", addressLine: "", city: "", state: "", pinCode: "", phone: "" });
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to save address.");
+    } finally {
+      setSubmitting(false);
     }
-    setShowAddressForm(false);
-    setNewAddress({ type: "Home", fullName: "", addressLine: "", city: "", state: "", pinCode: "", phone: "" });
   };
 
   const handleEditClick = (addr) => {
-    setEditingAddressId(addr.id);
+    // ✅ FIX: Mongo documents use _id, not id
+    setEditingAddressId(addr._id);
     setNewAddress({
-      type: addr.type,
-      fullName: addr.fullName,
-      addressLine: addr.addressLine,
-      city: addr.city,
-      state: addr.state,
-      pinCode: addr.pinCode,
-      phone: addr.phone
+      type: addr.type, fullName: addr.fullName, addressLine: addr.addressLine,
+      city: addr.city, state: addr.state, pinCode: addr.pinCode, phone: addr.phone
     });
     setShowAddressForm(true);
   };
 
-  const handleDeleteAddress = (id) => {
-    setAddresses(addresses.filter(addr => addr.id !== id));
+  const handleDeleteAddress = async (id) => {
+    try {
+      await API.delete(`/addresses/${id}`);
+      setAddresses(addresses.filter(addr => addr._id !== id));
+      toast.success("Address deleted.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete address.");
+    }
   };
 
-  const handleSetDefaultAddress = (id) => {
-    setAddresses(addresses.map(addr => ({
-      ...addr,
-      isDefault: addr.id === id
-    })));
+  const handleSetDefaultAddress = async (id) => {
+    try {
+      await API.patch(`/addresses/${id}/default`);
+      setAddresses(addresses.map(addr => ({ ...addr, isDefault: addr._id === id })));
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to set default address.");
+    }
   };
 
   return (
@@ -157,8 +180,8 @@ const Addresses = ({ addresses, setAddresses }) => {
             </button>
           }
         >
-          <form onSubmit={handleAddAddress} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="max-sm:!grid-cols-1">
+          <form ref={formRef} onSubmit={handleAddAddress} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: isSmall ? "1fr" : "1fr 1fr", gap: "14px" }}>
               <div>
                 <label style={{ fontSize: "11px", color: "#64748b", fontWeight: 600, display: "block", marginBottom: "6px" }}>Full Name</label>
                 <input 
@@ -203,7 +226,7 @@ const Addresses = ({ addresses, setAddresses }) => {
                   placeholder="+91 98765 43210"
                 />
               </div>
-              <div style={{ gridColumn: "span 2" }} className="max-sm:!grid-column-auto">
+              <div style={{ gridColumn: isSmall ? "span 1" : "span 2" }}>
                 <label style={{ fontSize: "11px", color: "#64748b", fontWeight: 600, display: "block", marginBottom: "6px" }}>Address Line</label>
                 <input 
                   type="text" 
@@ -316,7 +339,7 @@ const Addresses = ({ addresses, setAddresses }) => {
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", paddingTop: "10px" }}>
+            <div style={{ display: "flex", flexDirection: isSmall ? "column" : "row", gap: "10px", justifyContent: isSmall ? "stretch" : "flex-end", paddingTop: "10px" }}>
               <button
                 type="button"
                 onClick={() => {
@@ -333,13 +356,15 @@ const Addresses = ({ addresses, setAddresses }) => {
                   fontWeight: 700,
                   textTransform: "uppercase",
                   letterSpacing: "0.5px",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  width: isSmall ? "100%" : "auto",
                 }}
               >
                 Cancel
               </button>
               <button
                 type="submit"
+                disabled={submitting}
                 style={{
                   padding: "10px 20px",
                   background: "linear-gradient(135deg, #0A7F6E, #0d9488)",
@@ -350,11 +375,14 @@ const Addresses = ({ addresses, setAddresses }) => {
                   fontWeight: 700,
                   textTransform: "uppercase",
                   letterSpacing: "0.5px",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 12px rgba(10,127,110,0.2)"
+                  cursor: submitting ? "not-allowed" : "pointer",
+                  boxShadow: "0 4px 12px rgba(10,127,110,0.2)",
+                  width: isSmall ? "100%" : "auto",
+                  opacity: submitting ? 0.7 : 1,
                 }}
               >
-                {editingAddressId ? "Save Changes" : "Save Address"}
+                {/* ✅ FIX: show a saving state so the user gets feedback during the API call */}
+                {submitting ? "Saving..." : editingAddressId ? "Save Changes" : "Save Address"}
               </button>
             </div>
           </form>
@@ -365,7 +393,8 @@ const Addresses = ({ addresses, setAddresses }) => {
       <div className="csw-stats" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
         {addresses.map((addr) => (
           <div 
-            key={addr.id} 
+            // ✅ FIX: Mongo documents use _id, not id
+            key={addr._id} 
             style={{
               background: "#ffffff",
               border: addr.isDefault 
@@ -436,7 +465,7 @@ const Addresses = ({ addresses, setAddresses }) => {
               <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
                 {!addr.isDefault && (
                   <button 
-                    onClick={() => handleSetDefaultAddress(addr.id)}
+                    onClick={() => handleSetDefaultAddress(addr._id)}
                     style={{
                       background: "transparent",
                       border: "none",
@@ -478,7 +507,7 @@ const Addresses = ({ addresses, setAddresses }) => {
 
                 {/* Delete Button */}
                 <button 
-                  onClick={() => handleDeleteAddress(addr.id)}
+                  onClick={() => handleDeleteAddress(addr._id)}
                   title="Delete Address"
                   style={{
                     background: "rgba(255,59,48,0.05)",

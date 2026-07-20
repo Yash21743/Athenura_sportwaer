@@ -233,7 +233,7 @@ const styles = `
     padding: 14px 16px;
     background: #08201dff;
     border-radius: 12px;
-    border-bottom: 5px solid #15a092ff;
+    border-bottom: 5px solid #21897bff;
     box-shadow: 0 4px 18px rgba(0,0,0,0.18);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     cursor: default;
@@ -360,28 +360,28 @@ const styles = `
 
 const TruckIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <rect x="1" y="3" width="13" height="13" rx="1" stroke="#0A7F6E" strokeWidth="1.6" />
-    <path d="M14 8h4.2L21 11.5V16h-7V8z" stroke="#0A7F6E" strokeWidth="1.6" strokeLinejoin="round" />
-    <circle cx="5.5" cy="18.5" r="2" stroke="#0A7F6E" strokeWidth="1.6" />
-    <circle cx="17.5" cy="18.5" r="2" stroke="#0A7F6E" strokeWidth="1.6" />
+    <rect x="1" y="3" width="13" height="13" rx="1" stroke="#22d3bb" strokeWidth="1.6" />
+    <path d="M14 8h4.2L21 11.5V16h-7V8z" stroke="#22d3bb" strokeWidth="1.6" strokeLinejoin="round" />
+    <circle cx="5.5" cy="18.5" r="2" stroke="#22d3bb" strokeWidth="1.6" />
+    <circle cx="17.5" cy="18.5" r="2" stroke="#22d3bb" strokeWidth="1.6" />
   </svg>
 );
 const LockIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <rect x="3" y="11" width="18" height="11" rx="2" stroke="#0A7F6E" strokeWidth="1.6" />
-    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#0A7F6E" strokeWidth="1.6" strokeLinecap="round" />
-    <circle cx="12" cy="16" r="1.5" fill="#0A7F6E" />
+    <rect x="3" y="11" width="18" height="11" rx="2" stroke="#22d3bb" strokeWidth="1.6" />
+    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#22d3bb" strokeWidth="1.6" strokeLinecap="round" />
+    <circle cx="12" cy="16" r="1.5" fill="#22d3bb" />
   </svg>
 );
 const MoneyIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="9" stroke="#0A7F6E" strokeWidth="1.6" />
-    <path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 010 3H11a1.5 1.5 0 000 3H15" stroke="#0A7F6E" strokeWidth="1.6" strokeLinecap="round" />
+    <circle cx="12" cy="12" r="9" stroke="#22d3bb" strokeWidth="1.6" />
+    <path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 010 3H11a1.5 1.5 0 000 3H15" stroke="#22d3bb" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
 const ChatIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#0A7F6E" strokeWidth="1.6" strokeLinejoin="round" />
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#22d3bb" strokeWidth="1.6" strokeLinejoin="round" />
   </svg>
 );
 const ArrowSm = () => (
@@ -399,8 +399,8 @@ const TRUST = [
 
 const IMG = {
   tracksuit: 'https://i.pinimg.com/1200x/dc/9d/43/dc9d43a46234fe8f2f8ab86588563c21.jpg',
-  jersey: 'https://i.pinimg.com/1200x/eb/58/cf/eb58cf21dd5638275c50183b67c9f451.jpg',
-  shorts: 'https://i.pinimg.com/474x/2e/34/8d/2e348d5802ad4e3460c7b23cea45f392.jpg',
+  jersey: 'https://i.pinimg.com/1200x/a4/36/73/a4367362e16b0936343c0b7628674b43.jpg',
+  shorts: 'https://i.pinimg.com/736x/69/37/9a/69379abcc3b27d9428ef6fbdcbb0ff77.jpg',
   gymBag: 'https://i.pinimg.com/736x/b3/2a/d6/b32ad682c86512bdd77f9159a9dcc291.jpg',
 };
 
@@ -481,8 +481,8 @@ const FeaturedCategories = () => {
                 <img className="card-img" src={IMG.jersey} alt="Men's Jersey" style={{ objectPosition: 'center top' }} />
                 <div className="card-overlay" />
                 <div className="card-body">
-                  <h3 className="card-title" style={{ fontSize: '1rem' }}>COMMON<br /><span>JERSEY</span></h3>
-                  <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
+                  <h3 className="card-title" style={{ fontSize: '1rem' }}>WOMEN<br /><span>JERSEY</span></h3>
+                  <Link to="/women" className="shop-link">Shop Now <ArrowSm /></Link>
                 </div>
               </div>
 
@@ -495,8 +495,8 @@ const FeaturedCategories = () => {
                 <img className="card-img" src={IMG.shorts} alt="Sports Shorts" />
                 <div className="card-overlay" />
                 <div className="card-body">
-                  <h3 className="card-title" style={{ fontSize: '1rem' }}>SPORTS<br /><span>JERSEY</span></h3>
-                  <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
+                  <h3 className="card-title" style={{ fontSize: '1rem' }}>KIDS<br /><span>JERSEY</span></h3>
+                  <Link to="/kids" className="shop-link">Shop Now <ArrowSm /></Link>
                 </div>
               </div>
             </div>
@@ -510,7 +510,7 @@ const FeaturedCategories = () => {
               <div className="card-overlay-h" />
               <div className="card-body">
                 <div className="card-label">Training Wear</div>
-                <h3 className="card-title">GYM<br /><span>TRAINING JERSEY</span></h3>
+                <h3 className="card-title">COOL<br /><span>TRENDING JERSEY</span></h3>
                 <p className="card-off">Up to <strong style={{ color: '#0A7F6E' }}>80% OFF</strong></p>
                 <Link to="/products" className="shop-link">Shop Now <ArrowSm /></Link>
               </div>

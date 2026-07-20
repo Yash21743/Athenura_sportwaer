@@ -14,7 +14,7 @@ import herophn3 from '../../assets/images/herophn3.png';
 // Tablet background slides
 import herotab1 from '../../assets/images/herotab1.png';
 import herotab2 from '../../assets/images/herotab2.png';
-import herotab3 from '../../assets/images/herotab3.png';
+import herotab3 from '../../assets/images/heroktab.png';
 
 const DESKTOP_SLIDES = [{ img: hero1 }, { img: hero2 }, { img: hero3 }];
 const MOBILE_SLIDES = [{ img: hero1phn }, { img: herophn2 }, { img: herophn3 }];
@@ -228,13 +228,13 @@ const styles = `
       object-position: top center;
     }
 
-    /* stronger overlay top-to-bottom so text is readable on top */
+    /* overlay — enough to keep text readable, but face stays visible */
     .hero-overlay {
       background: linear-gradient(
         180deg,
-        rgba(5, 20, 18, 0.88) 0%,
-        rgba(5, 20, 18, 0.70) 45%,
-        rgba(5, 20, 18, 0.20) 75%,
+        rgba(5, 20, 18, 0.72) 0%,
+        rgba(5, 20, 18, 0.30) 35%,
+        rgba(5, 20, 18, 0.08) 65%,
         transparent 100%
       );
     }
@@ -302,6 +302,26 @@ const styles = `
     }
     .hero-container { padding: 60px 28px 55px 24px; }
     .hero-left { max-width: 520px; }
+
+    /* "Wear Your Strength" — left-aligned in tablet range */
+    .divider-line {
+      justify-content: flex-start;
+    }
+    .divider-line .line-left {
+      width: 35px;
+      flex: none;
+    }
+    .divider-line .line-right {
+      flex: 1;
+    }
+  }
+
+  /* 630px – 850px: shorten right divider line */
+  @media (min-width: 630px) and (max-width: 850px) {
+    .divider-line .line-right {
+      flex: none;
+      width: 80px;
+    }
   }
 `;
 

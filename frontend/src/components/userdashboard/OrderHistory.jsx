@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { CheckCircle, Truck, Clock } from "lucide-react";
 
 // Reusable card container matching UserDashboard clean light design
@@ -45,6 +45,16 @@ const Card = ({ children, title, sub, action, accent }) => {
   );
 };
 
+// ✅ Formats an ISO date string (order.createdAt) into "Jul 12, 2026"
+const formatOrderDate = (isoDate) => {
+  if (!isoDate) return "—";
+  return new Date(isoDate).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
 const OrderHistory = ({ orders }) => {
   return (
     <div style={{ animation: "csw-fadein 0.45s ease both" }}>
@@ -61,9 +71,14 @@ const OrderHistory = ({ orders }) => {
       ) : (
         orders.map((order) => {
           const accent = order.status === "Delivered" ? "#10B981" : order.status === "In Transit" ? "#3B82F6" : "#F59E0B";
+          // ✅ FIX: real orders have _id (Mongo ObjectId) and orderNumber (e.g. "#CS-82049"),
+          // not the flat `order.id` the mock data used.
+          const orderKey = order._id;
+          const orderLabel = order.orderNumber || order._id;
+
           return (
             <div 
-              key={order.id}
+              key={orderKey}
               style={{
                 background: "#ffffff",
                 border: "1px solid #e2e8f0",
@@ -92,10 +107,11 @@ const OrderHistory = ({ orders }) => {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", borderBottom: "1px solid #f1f5f9", paddingBottom: "12px" }}>
                 <div>
                   <h3 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: "14.5px", color: "#0f172a", letterSpacing: "0.2px", margin: 0 }}>
-                    Order {order.id}
+                    Order {orderLabel}
                   </h3>
                   <p style={{ color: "#64748b", fontSize: "11px", fontFamily: "'Poppins', sans-serif", marginTop: "2px", margin: 0 }}>
-                    Placed on {order.date}
+                    {/* ✅ FIX: format the real ISO date instead of relying on a pre-formatted mock string */}
+                    Placed on {formatOrderDate(order.createdAt)}
                   </p>
                 </div>
                 <span
@@ -168,7 +184,9 @@ const OrderHistory = ({ orders }) => {
                           <span style={{ color: "#cbd5e1" }}>•</span>
                           <span>Qty: <strong style={{ color: "#334155" }}>{item.qty}</strong></span>
                           <span style={{ color: "#cbd5e1" }}>•</span>
-                          <span>Price: <strong style={{ color: "#334155" }}>{item.price}</strong></span>
+                          {/* ✅ FIX: item.price is a plain number from the backend (e.g. 1299),
+                              not a formatted string like "₹1,299" — format it here instead */}
+                          <span>Price: <strong style={{ color: "#334155" }}>₹{item.price.toLocaleString("en-IN")}</strong></span>
                         </div>
                       </div>
                     </div>
@@ -178,8 +196,10 @@ const OrderHistory = ({ orders }) => {
 
                     {/* Calculated Line Item Price */}
                     <div style={{ textAlign: "right", flexShrink: 0 }}>
+                      {/* ✅ FIX: item.price is already a number — no need to strip currency
+                          symbols with .replace(), which crashed on a non-string value */}
                       <span className="oh-item-total" style={{ fontWeight: 700, color: "#0f172a", fontFamily: "'Montserrat', sans-serif" }}>
-                        ₹{(parseInt(item.price.replace(/[^\d]/g, "")) * item.qty).toLocaleString("en-IN")}
+                        ₹{(item.price * item.qty).toLocaleString("en-IN")}
                       </span>
                     </div>
                   </div>
@@ -217,7 +237,8 @@ const OrderHistory = ({ orders }) => {
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <span style={{ fontSize: "11.5px", color: "#64748b", fontFamily: "'Poppins', sans-serif" }}>Tracking ID:</span>
                   <code style={{ fontSize: "11px", fontWeight: 700, color: "#475569", fontFamily: "monospace", background: "#e2e8f0", padding: "2px 6px", borderRadius: "4px" }}>
-                    ATH-TRK-{order.id.replace(/[^\d]/g, "")}
+                    {/* ✅ FIX: order.id doesn't exist on real orders — use _id (last 6 chars for brevity) */}
+                    ATH-TRK-{order._id.slice(-6).toUpperCase()}
                   </code>
                 </div>
               </div>
@@ -236,8 +257,9 @@ const OrderHistory = ({ orders }) => {
                 <span style={{ fontSize: "10.5px", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.8px", fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
                   Total Paid Amount
                 </span>
+                {/* ✅ FIX: order.total is a plain number from the backend, not a pre-formatted string */}
                 <span style={{ fontSize: "16px", fontWeight: 800, color: "#0A7F6E", fontFamily: "'Montserrat', sans-serif" }}>
-                  {order.total}
+                  ₹{order.total.toLocaleString("en-IN")}
                 </span>
               </div>
             </div>

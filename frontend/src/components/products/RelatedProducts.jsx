@@ -3,6 +3,17 @@ import ProductCard from './ProductCard';
 import { mockProducts } from '../../services/mockProducts';
 import API from '../../services/api';
 
+// ✅ Normalize backend product shape → what ProductCard expects
+const normalizeProduct = (p) => ({
+  ...p,
+  code: p.productCode || p.code || '',
+  sizes: p.availableSizes || p.sizes || [],
+  colors: p.availableColors || p.colors || [],
+  images: (p.images || []).map((img) => (typeof img === 'object' ? img.url : img)),
+  category: typeof p.category === 'object' && p.category ? p.category.name : p.category,
+  stockStatus: p.stockStatus || (p.inStock ? 'In Stock' : 'Out of Stock'),
+});
+
 const RelatedProducts = ({ category, currentProductId }) => {
   const [related, setRelated] = useState([]);
 
@@ -11,11 +22,15 @@ const RelatedProducts = ({ category, currentProductId }) => {
       let allProducts = mockProducts;
       try {
         const response = await API.get('/products');
-        if (response.data && response.data.length > 0) {
-          allProducts = response.data.filter(p => p.isActive !== false);
+        // ✅ FIX: actual products are under response.data.data, not response.data
+        const list = response.data?.data;
+        if (Array.isArray(list) && list.length > 0) {
+          allProducts = list
+            .filter((p) => p.status !== 'inactive')
+            .map(normalizeProduct);
         }
       } catch (err) {
-        // Fallback silently
+        // Fallback silently to mockProducts
       }
 
       let filtered = allProducts.filter(

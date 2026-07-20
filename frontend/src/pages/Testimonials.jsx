@@ -28,17 +28,26 @@ const styles = `
   position: relative;
   padding: 8rem 1.5rem 6rem;
   overflow: hidden;
-  background: linear-gradient(120deg, #06251f, #0a3d33, #051612);
+  background: linear-gradient(120deg, rgba(6,37,31,0.13), rgba(10,61,51,0.13), rgba(5,22,18,0.13)), url('https://i.ibb.co/78V22C6/Chat-GPT-Image-Jul-18-2026-01-31-03-PM.png');
+  background-size: cover;
+  background-position: center;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 480px;
 }
-.tm-hero-glow {
-  position: absolute; inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    600px circle at var(--mx, 50%) var(--my, 30%),
-    rgba(20,168,137,0.18), transparent 60%
-  );
-  transition: background 0.1s ease;
+
+@media (min-width: 600px) {
+  .tm-hero {
+    min-height: 540px;
+  }
+}
+
+@media (min-width: 900px) {
+  .tm-hero {
+    min-height: 627px;
+  }
 }
 .tm-hero-noise {
   position: absolute; inset: 0; opacity: 0.03; pointer-events: none;
@@ -775,8 +784,6 @@ function ReviewForm({ onNewSubmission }) {
 }
 
 export default function TestimonialsPage() {
-  const heroRef = useRef(null);
-  const [glow, setGlow] = useState({ x: 50, y: 30 });
   const [activeTab, setActiveTab] = useState("All");
   const [testimonials, setTestimonials] = useState([]);
   const [showAll, setShowAll] = useState(false);
@@ -821,20 +828,6 @@ export default function TestimonialsPage() {
     setShowAll(false);
   }, [activeTab]);
 
-  const handleMouseMove = (e) => {
-    const rect = heroRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    setGlow({
-      x: ((e.clientX - rect.left) / rect.width) * 100,
-      y: ((e.clientY - rect.top) / rect.height) * 100,
-    });
-  };
-
-  const glowStyle = useMemo(
-    () => ({ "--mx": `${glow.x}%`, "--my": `${glow.y}%` }),
-    [glow]
-  );
-
   const approvedList = useMemo(() => testimonials.filter(t => t.status === "Approved"), [testimonials]);
 
   const filteredList = useMemo(() => {
@@ -871,12 +864,9 @@ export default function TestimonialsPage() {
       <style>{styles}</style>
 
       <header
-        ref={heroRef}
         className="tm-hero"
-        onMouseMove={handleMouseMove}
         aria-label="Testimonials hero"
       >
-        <div className="tm-hero-glow" style={glowStyle} aria-hidden="true" />
         <div className="tm-hero-noise" aria-hidden="true" />
         <div className="tm-hero-inner">
           <FadeUp delay={0}>

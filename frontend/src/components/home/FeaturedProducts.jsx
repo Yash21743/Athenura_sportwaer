@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 import amuBl from '../../assets/ath.jersey/amu_bl.jpeg';
@@ -795,6 +795,7 @@ const styles = `
 `;
 
 const FeaturedProducts = () => {
+  const navigate = useNavigate();
   const [wishlist, setWishlist] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
@@ -886,13 +887,20 @@ const FeaturedProducts = () => {
         (t) => (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
             <span>Added {quantity}x items to your bag!</span>
-            <Link
-              to="/cart"
-              onClick={() => toast.dismiss(t.id)}
-              style={{ color: '#0A7F6E', fontWeight: 800, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+            <button
+              onClick={() => {
+                toast.dismiss(t.id);
+                const loggedIn = localStorage.getItem('csw_is_logged_in') === 'true';
+                if (loggedIn) {
+                  navigate('/cart');
+                } else {
+                  window.dispatchEvent(new Event('showCartLoginPopup'));
+                }
+              }}
+              style={{ color: '#0A7F6E', fontWeight: 800, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.05em', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', padding: 0 }}
             >
               View Bag
-            </Link>
+            </button>
           </div>
         ),
         { duration: 4000 }

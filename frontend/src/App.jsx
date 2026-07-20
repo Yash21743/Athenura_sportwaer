@@ -10,11 +10,15 @@ import Footer from './components/common/layout/Footer';
 import Home from './pages/Home';
 import About from './pages/About';
 import Products from './pages/Products';
+import WomensProducts from './pages/WomensProducts';
+import KidsProducts from './pages/KidsProducts';
 import ProductDetail from './pages/ProductDetail';
 import BulkOrder from './pages/BulkOrder';
 import Contact from './pages/Contact';
 import Testimonials from './pages/Testimonials';
 import FAQ from './pages/FAQ';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
 import AddToBag from './pages/AddToBag';
 import NotFound from './pages/NotFound';
 
@@ -61,14 +65,18 @@ function App() {
                   <Route path="/"                element={<Home />} />
                   <Route path="/about"           element={<About />} />
                   <Route path="/products"        element={<Products />} />
+                  <Route path="/women"           element={<WomensProducts />} />
+                  <Route path="/kids"            element={<KidsProducts />} />
                   <Route path="/products/:id"    element={<ProductDetail />} />
                   <Route path="/bulk-orders"     element={<BulkOrder />} />
                   <Route path="/testimonials"    element={<Testimonials />} />
                   <Route path="/faq"             element={<FAQ />} />
                   <Route path="/contact"         element={<Contact />} />
-                  <Route path="/cart"            element={<AddToBag />} />
-                  <Route path="/add-to-bag"      element={<AddToBag />} />
-                  <Route path="*"                element={<NotFound />} />
+                  <Route path="/cart"               element={<AddToBag />} />
+                  <Route path="/add-to-bag"         element={<AddToBag />} />
+                  <Route path="/privacy-policy"       element={<PrivacyPolicy />} />
+                  <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                  <Route path="*"                   element={<NotFound />} />
                 </Routes>
               </main>
               <Footer />
