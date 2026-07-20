@@ -32,7 +32,7 @@ const styles = `
   position: relative;
   padding: 7rem 1.5rem 6rem;
   overflow: hidden;
-  background: linear-gradient(120deg, rgba(6,37,31,0.13), rgba(10,61,51,0.13), rgba(5,22,18,0.13)), url('https://i.ibb.co/zTpqD8bp/Chat-GPT-Image-Jul-18-2026-01-27-01-PM.png');
+  background: linear-gradient(120deg, rgba(6,37,31,0.13), rgba(10,61,51,0.13), rgba(5,22,18,0.13)), url('https://i.ibb.co/chyFjkpD/Chat-GPT-Image-Jul-20-2026-11-44-24-PM.png');
   background-size: cover;
   background-position: center;
   text-align: center;
