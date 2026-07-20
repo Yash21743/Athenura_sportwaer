@@ -1,8 +1,5 @@
-﻿import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-
-import { Menu, ShoppingBag, User, X, LogIn, Package, Settings, ChevronDown, UserPlus } from "lucide-react"
-
 import { Menu, ShoppingBag, User, X, LogIn, Package, Settings, ChevronDown, UserPlus, Search } from "lucide-react"
 
 import { Link, NavLink as RouterNavLink, useLocation, useNavigate } from "react-router-dom"
@@ -570,11 +567,6 @@ const styles = `
   }
 }
 
-`
-const OFFERS = [
-  { text: "Black Friday Sale up to 70% off. Use code:", code: "SALE70", cta: "Shop Now", href: "/products" },
-
-
 .search-wrap {
   position: relative;
 }
@@ -742,47 +734,6 @@ export default function Navbar({ cartCount }) {
     setRegisterStatus("success")
     setTimeout(() => setRegisterStatus("goToLogin"), 1500)
   }
-
-  const handleSignInSubmit = (e) => {
-    e.preventDefault()
-    console.log("Sign in attempt:", { email: signInEmail, password: signInPassword })
-    setIsLoggedIn(true)
-    setShowSignInForm(false)
-    setSignInEmail("")
-    setSignInPassword("")
-  }
-
-  const handleLogout = () => {
-    setIsLoggedIn(false)
-    setAccountOpen(false)
-  }
-
-  const resetRegisterForm = () => {
-    setRegisterName("")
-    setRegisterNumber("")
-    setRegisterEmail("")
-    setRegisterPassword("")
-    setRegisterConfirmPassword("")
-    setRegisterStatus("idle")
-  }
-
-  const handleRegisterSubmit = (e) => {
-    e.preventDefault()
-    if (registerPassword !== registerConfirmPassword) {
-      alert("Passwords do not match")
-      return
-    }
-    // TODO: wire this up to your actual registration logic
-    console.log("Register attempt:", {
-      name: registerName,
-      number: registerNumber,
-      email: registerEmail,
-      password: registerPassword,
-    })
-    setRegisterStatus("success")
-    setTimeout(() => setRegisterStatus("goToLogin"), 1500)
-  }
-
   const updateCartCount = () => {
     try {
       const stored = localStorage.getItem('csw_cart_items');
@@ -1190,9 +1141,6 @@ export default function Navbar({ cartCount }) {
                         Cart
                       </Link>
                     </>
-
-                      </>
-
                   )}
                 </motion.div>
               )}
@@ -1424,9 +1372,6 @@ export default function Navbar({ cartCount }) {
                               Cart
                             </Link>
                           </>
-
-                            </>
-
                         )}
                       </motion.div>
                     )}

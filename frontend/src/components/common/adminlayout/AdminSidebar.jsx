@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion"
 import logo from "../../../assets/images/comfy_logo4.png";
-import { motion } from "framer-motion";
-import logo from "../../../assets/images/ath.logo.jpeg";
 
 
 const navItems = [
@@ -236,19 +234,12 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                   width: "100%",
                   textAlign: "left",
                   background: isActive
-
-                    ? "linear-gradient(135deg, #0A7F6E 0%, #08695C 100%)"
-
                     ? "linear-gradient(135deg, rgba(23, 184, 147, 0.18) 0%, rgba(11, 122, 99, 0.12) 100%)"
-
                     : isHovered
                     ? "rgba(23, 184, 147, 0.07)"
                     : "transparent",
                   color: isActive ? "#17B893" : isHovered ? "#F4FBF9" : "rgba(244, 251, 249, 0.55)",
                   transition: "all 0.22s cubic-bezier(0.4,0,0.2,1)",
-
-                  boxShadow: isActive ? "0 4px 16px rgba(10,127,110,0.35)" : "none",
-
                   boxShadow: isActive ? "0 4px 16px rgba(23, 184, 147, 0.15), inset 0 1px 0 rgba(23, 184, 147, 0.1)" : "none",
 
                   transform: isActive ? "translateX(2px)" : isHovered ? "translateX(2px)" : "translateX(0)",
@@ -264,11 +255,7 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                   style={{
                     flexShrink: 0,
                     display: "flex",
-
-                    color: isActive ? "#fff" : isHovered ? "#0A7F6E" : "rgba(255,255,255,0.55)",
-
                     color: isActive ? "#17B893" : isHovered ? "#17B893" : "rgba(244, 251, 249, 0.4)",
-
                     transition: "color 0.22s ease",
                   }}
                 >
@@ -328,13 +315,8 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                       opacity: isHovered ? 1 : 0,
                       pointerEvents: "none",
                       transition: "opacity 0.2s ease",
-
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
-                      border: "1px solid rgba(10,127,110,0.3)",
-
                       boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
                       border: "1px solid rgba(23, 184, 147, 0.2)",
-
                       zIndex: 100,
                       fontFamily: "'Manrope', sans-serif",
                     }}
@@ -380,37 +362,22 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
               gap: "12px",
               padding: "10px 14px",
               borderRadius: "10px",
-
-              border: "1px solid rgba(10,127,110,0.25)",
-              cursor: "pointer",
-              width: "100%",
-              background: "rgba(10,127,110,0.07)",
-              color: "#0A7F6E",
-
               border: "1px solid rgba(248, 113, 113, 0.18)",
               cursor: "pointer",
               width: "100%",
               background: "rgba(248, 113, 113, 0.06)",
               color: "#F87171",
-
               justifyContent: collapsed ? "center" : "flex-start",
               transition: "all 0.22s ease",
               fontFamily: "'Manrope', sans-serif",
             }}
             onMouseEnter={e => {
-
-              e.currentTarget.style.background = "rgba(10,127,110,0.18)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = "rgba(10,127,110,0.07)";
-
               e.currentTarget.style.background = "rgba(248, 113, 113, 0.14)";
               e.currentTarget.style.borderColor = "rgba(248, 113, 113, 0.3)";
             }}
             onMouseLeave={e => {
               e.currentTarget.style.background = "rgba(248, 113, 113, 0.06)";
               e.currentTarget.style.borderColor = "rgba(248, 113, 113, 0.18)";
-
             }}
           >
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -445,14 +412,8 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
 
         .admin-sidebar::-webkit-scrollbar { width: 4px; }
         .admin-sidebar::-webkit-scrollbar-track { background: transparent; }
-
-        .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(10,127,110,0.3); border-radius: 2px; }
-
-        .collapse-btn:hover { background: rgba(10,127,110,0.18) !important; }
-
         .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(23, 184, 147, 0.2); border-radius: 2px; }
         .admin-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(23, 184, 147, 0.35); }
-
         .collapse-btn:hover {
           background: rgba(23, 184, 147, 0.16) !important;
           border-color: rgba(23, 184, 147, 0.3) !important;

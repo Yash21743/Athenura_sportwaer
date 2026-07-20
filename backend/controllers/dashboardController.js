@@ -67,13 +67,26 @@ exports.getRecentActivities = async (req, res, next) => {
 
 exports.getInquiryTrend = async (req, res, next) => {
   try {
-    const data = [
-      { m: "Jan", v: 38 }, { m: "Feb", v: 52 }, { m: "Mar", v: 45 },
-      { m: "Apr", v: 70 }, { m: "May", v: 88 }, { m: "Jun", v: 65 },
-      { m: "Jul", v: 94 }, { m: "Aug", v: 110 }, { m: "Sep", v: 78 },
-      { m: "Oct", v: 130 }, { m: "Nov", v: 115 }, { m: "Dec", v: 142 }
-    ];
-    res.status(200).json({ success: true, data });
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const trendData = monthNames.map(m => ({ m, v: 0 }));
+
+    const aggregation = await Inquiry.aggregate([
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    aggregation.forEach(item => {
+      const monthIndex = item._id - 1;
+      if (monthIndex >= 0 && monthIndex < 12) {
+        trendData[monthIndex].v = item.count;
+      }
+    });
+
+    res.status(200).json({ success: true, data: trendData });
   } catch (error) {
     next(error);
   }

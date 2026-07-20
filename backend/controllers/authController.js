@@ -138,11 +138,11 @@ exports.setupAdmin = async (req, res, next) => {
       });
     }
 
-    const existingAdmin = await User.findOne({ role: "admin" });
+    const existingAdmin = await User.findOne({ email: email.toLowerCase().trim() });
     if (existingAdmin) {
       return res.status(400).json({
         success: false,
-        message: "Admin already exists. Use login instead.",
+        message: "Admin account with this email already exists.",
       });
     }
 

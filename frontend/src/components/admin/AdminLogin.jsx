@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import logo from "../../assets/images/comfy_logo2.jpeg";
 import logo from "../../assets/images/comfy_logo.png";
 import API from "../../services/api";
 
@@ -645,8 +644,6 @@ transform: translateX(-12px);
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
           <div style={{
             position: "absolute", top: "-120px", left: "8%", width: "420px", height: "420px",
-
-            borderRadius: "50%", background: "radial-gradient(circle, rgba(10, 127, 110, 0.12) 0%, transparent 72%)
             borderRadius: "50%", background: "radial-gradient(circle, rgba(23, 184, 147, 0.10) 0%, transparent 72%)",
             filter: "blur(50px)",
           }} />
@@ -654,14 +651,6 @@ transform: translateX(-12px);
             position: "absolute", bottom: "-140px", right: "6%", width: "460px", height: "460px",
 
             borderRadius: "50%", background: "radial-gradient(circle, rgba(221, 223, 210, 0.08) 0%, transparent 78%)",
-            filter: "blur(60px)",
-          }} />
-          <svg width="100%" height="100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", inset: 0, opacity: 0.06 }}>
-            <ellipse cx="200" cy="700" rx="500" ry="320" fill="none" stroke="#0A7F6E" strokeWidth="2" />
-            <ellipse cx="200" cy="700" rx="420" ry="260" fill="none" stroke="#DDDFD2" strokeWidth="2" />
-            <ellipse cx="1050" cy="80" rx="480" ry="300" fill="none" stroke="#0A7F6E" strokeWidth="2" />
-
-            borderRadius: "50%", background: "radial-gradient(circle, rgba(11, 122, 99, 0.35) 0%, transparent 78%)",
             filter: "blur(60px)",
           }} />
           <svg width="100%" height="100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", inset: 0, opacity: 0.06 }}>

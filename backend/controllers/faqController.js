@@ -1,37 +1,110 @@
+const Faq = require("../models/Faq");
+
+// @desc    Get all FAQs
+// @route   GET /api/faqs
+// @access  Public
 exports.getFaqs = async (req, res, next) => {
   try {
-    const faqs = [
-      {
-        id: 1,
-        question: "What is your minimum order quantity (MOQ) for bulk orders?",
-        answer: "Our minimum order quantity for custom sublimated jerseys is 20 units. For other catalog apparel, it ranges from 15 to 30 units depending on the complexity of customization."
-      },
-      {
-        id: 2,
-        question: "Can I request custom fabric samples before committing to a team order?",
-        answer: "Yes, absolutely! We can ship fabric swatches and fit samples to your school, academy, or club for a nominal deposit, which is fully refundable upon placing your bulk order."
-      },
-      {
-        id: 3,
-        question: "What customization methods do you offer?",
-        answer: "We offer professional full-sublimation printing, high-density embroidery, screen printing, and premium heat-pressed vinyl transfers to match your team style and budget."
-      },
-      {
-        id: 4,
-        question: "What is your production and delivery timeline?",
-        answer: "Standard production takes 12 to 18 business days from final design approval. Domestic shipping within India takes an additional 3 to 5 business days."
-      },
-      {
-        id: 5,
-        question: "Do you offer free graphic design support for custom team kits?",
-        answer: "Yes! Our in-house design team provides free 3D mockups and helps refine your logo or color scheme once a bulk order inquiry is initiated."
-      }
-    ];
+    const { category } = req.query;
+    const query = {};
+    if (category && category !== "All") {
+      query.category = category;
+    }
+
+    const faqs = await Faq.find(query).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
       count: faqs.length,
-      data: faqs
+      data: faqs,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Create a new FAQ
+// @route   POST /api/faqs
+// @access  Private/Admin
+exports.createFaq = async (req, res, next) => {
+  try {
+    const { question, answer, category } = req.body;
+
+    if (!question || !answer) {
+      return res.status(400).json({
+        success: false,
+        message: "Question and answer are required",
+      });
+    }
+
+    const faq = await Faq.create({
+      question,
+      answer,
+      category: category || "General",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "FAQ created successfully",
+      data: faq,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update an FAQ
+// @route   PUT /api/faqs/:id
+// @access  Private/Admin
+exports.updateFaq = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { question, answer, category } = req.body;
+
+    let faq = await Faq.findById(id);
+    if (!faq) {
+      return res.status(404).json({
+        success: false,
+        message: "FAQ not found",
+      });
+    }
+
+    if (question) faq.question = question;
+    if (answer) faq.answer = answer;
+    if (category) faq.category = category;
+
+    await faq.save();
+
+    res.status(200).json({
+      success: true,
+      message: "FAQ updated successfully",
+      data: faq,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete an FAQ
+// @route   DELETE /api/faqs/:id
+// @access  Private/Admin
+exports.deleteFaq = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const faq = await Faq.findById(id);
+    if (!faq) {
+      return res.status(404).json({
+        success: false,
+        message: "FAQ not found",
+      });
+    }
+
+    await faq.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "FAQ deleted successfully",
     });
   } catch (error) {
     next(error);

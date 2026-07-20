@@ -27,9 +27,6 @@ import AdminCategories from './components/admin/AdminCategories';
 import AdminLeads from './components/admin/AdminLeads';
 import AdminBulkOrders from './components/admin/AdminBulkOrders';
 import AdminTestimonials from './components/admin/AdminTestimonials';
-import AdminRegister from './components/admin/AdminRegister';
-
-
 // User Dashboard
 import UserDashboard from './components/userdashboard/UserDashboard';
 
