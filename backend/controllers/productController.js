@@ -67,9 +67,14 @@ exports.getProduct = async (req, res, next) => {
     }
 
     let relatedProducts = [];
-    if (product.category && product.category._id) {
+    if (product.category) {
       relatedProducts = await Product.find({
         category: product.category._id,
+        _id: { $ne: product._id },
+        status: 'active',
+      }).limit(8).select('name slug price images featuredImage');
+    } else {
+      relatedProducts = await Product.find({
         _id: { $ne: product._id },
         status: 'active',
       }).limit(8).select('name slug price images featuredImage');

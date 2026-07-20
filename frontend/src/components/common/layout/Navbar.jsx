@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Menu, ShoppingBag, User, X, LogIn, Package, Settings, ChevronDown, UserPlus, Search } from "lucide-react"
+
 import { Link, NavLink as RouterNavLink, useLocation, useNavigate } from "react-router-dom"
 import logo from "../../../assets/images/comfy_logo4.png"
 
@@ -66,6 +67,8 @@ const styles = `
   border: none;
   transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
   white-space: nowrap;
+
+
 }
 
 .nav-link::after {
@@ -79,6 +82,7 @@ const styles = `
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 0.25s ease;
+
 }
 
 .nav-link:hover,
@@ -644,12 +648,18 @@ const styles = `
 }
 `
 const OFFERS = [
+
   { text: "Free shipping on orders over ₹999.", code: null, cta: "Shop Now", href: "/products" },
   { text: "New arrivals just dropped. Use code:", code: "NEW10", cta: "Explore", href: "/products" },
 ]
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
+
+  { label: "Products", href: "/products" },
+  { label: "Men", href: "/men" },
+  { label: "Women", href: "/women" },
+  { label: "Kids", href: "/kids" },
   { label: "About", href: "/about" },
   { label: "Men", href: "/products" },
   { label: "Women", href: "/women" },
@@ -764,7 +774,6 @@ export default function Navbar({ cartCount }) {
       }
     }, 1500)
   }
-
   const updateCartCount = () => {
     try {
       const stored = localStorage.getItem('csw_cart_items');
@@ -822,9 +831,12 @@ export default function Navbar({ cartCount }) {
         setShowSignInForm(false)
         setShowRegisterForm(false)
         resetRegisterForm()
+
+
       }
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setSearchOpen(false)
+
       }
       if (cartRef.current && !cartRef.current.contains(e.target)) {
         setShowCartToast(false)
@@ -1238,6 +1250,13 @@ export default function Navbar({ cartCount }) {
                     <>
                       {!isLoggedIn ? (
                         <>
+
+
+                          <Link to="/profile" className="desktop-account-item" onClick={() => setAccountOpen(false)}>
+                            <User size={17} />
+                            View Profile
+                          </Link>
+
                           <button
                             type="button"
                             className="desktop-account-item"
@@ -1277,7 +1296,12 @@ export default function Navbar({ cartCount }) {
                           </button>
                         </>
                       )}
-                      </>
+
+                      <Link to="/cart" className="desktop-account-item" onClick={() => setAccountOpen(false)}>
+                        <ShoppingBag size={17} />
+                        Cart
+                      </Link>
+                    </>
                   )}
                 </motion.div>
               )}
@@ -1474,6 +1498,12 @@ export default function Navbar({ cartCount }) {
                           <>
                             {!isLoggedIn ? (
                               <>
+
+                                <Link to="/profile" className="mobile-account-item" onClick={() => setMobileOpen(false)}>
+                                  <User size={17} />
+                                  View Profile
+                                </Link>
+
                                 <button
                                   type="button"
                                   className="mobile-account-item"
@@ -1513,7 +1543,12 @@ export default function Navbar({ cartCount }) {
                                 </button>
                               </>
                             )}
-                            </>
+
+                            <Link to="/cart" className="mobile-account-item" onClick={() => setMobileOpen(false)}>
+                              <ShoppingBag size={17} />
+                              Cart
+                            </Link>
+                          </>
                         )}
                       </motion.div>
                     )}

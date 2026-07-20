@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 // Layout
@@ -24,16 +24,17 @@ import NotFound from './pages/NotFound';
 
 // Admin Pages
 import AdminLogin from './components/admin/AdminLogin';
+import AdminRegister from './components/admin/AdminRegister';
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminProducts from './components/admin/AdminProducts';
 import AdminCategories from './components/admin/AdminCategories';
 import AdminLeads from './components/admin/AdminLeads';
 import AdminBulkOrders from './components/admin/AdminBulkOrders';
 import AdminTestimonials from './components/admin/AdminTestimonials';
-import AdminRegister from './components/admin/AdminRegister';
-
 // User Dashboard
 import UserDashboard from './components/userdashboard/UserDashboard';
+
+
 
 
 function ScrollToTop() {
@@ -88,7 +89,7 @@ function App() {
         <Route path="/admin/register"          element={<AdminRegister />} />
         <Route path="/admin/dashboard"         element={<AdminDashboard />} />
         <Route path="/admin/products"          element={<AdminProducts />} />
-        <Route path="/admin/categories"        element={<AdminCategories />} />
+        <Route path="/admin/categories"        element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/leads"             element={<AdminLeads />} />
         <Route path="/admin/bulk-orders"       element={<AdminBulkOrders />} />
         <Route path="/admin/testimonials"      element={<AdminTestimonials />} />

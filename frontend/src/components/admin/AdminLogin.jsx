@@ -72,6 +72,7 @@ const AdminLogin = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #070C0B; color: #DDDFD2; font-family: 'Manrope', sans-serif; 
         body { background: #050B0A; color: #F4FBF9; font-family: 'Manrope', sans-serif; }
 
         @keyframes pulseGlow {
@@ -107,6 +108,7 @@ const AdminLogin = () => {
           display: flex;
           align-items: center;
           justify-content: center;
+          background: #070C0B;
           background: #050B0A;
           position: relative;
           padding: 20px;
@@ -114,8 +116,13 @@ const AdminLogin = () => {
         }
 
         .auth-card {
+
+          background: rgba(10, 20, 18, 0.6);
+          border: 1px solid rgba(221, 223, 210, 0.15);
+
           background: rgba(12, 25, 23, 0.55);
           border: 1px solid rgba(23, 184, 147, 0.16);
+
           backdrop-filter: blur(18px);
           -webkit-backdrop-filter: blur(18px);
           border-radius: 20px;
@@ -139,7 +146,11 @@ const AdminLogin = () => {
           left: 15%;
           right: 15%;
           height: 2px;
+
+          background: linear-gradient(90deg, transparent, #0A7F6E, transparent);
+
           background: linear-gradient(90deg, transparent, #17B893, transparent);
+
           border-radius: 0 0 2px 2px;
           filter: blur(0.5px);
           animation: pulseGlow 3s ease-in-out infinite;
@@ -148,23 +159,40 @@ const AdminLogin = () => {
         .auth-header {
           display: flex;
           align-items: center;
+
+          justify-content: center;
+          margin-bottom: 22px;
+
           gap: 14px;
           margin-bottom: 20px;
+
           transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
         }
 
         .auth-header.visible {
           opacity: 1;
+
+          transform: translateY(0);
+
           transform: translateX(0);
         }
 
         .auth-header.hidden {
           opacity: 0;
-          transform: translateX(-12px);
+
+          transform: translateY(-12px);
+transform: translateX(-12px);
+
         }
 
         .logo-badge {
           flex-shrink: 0;
+
+          width: 70px;
+          height: 84px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           width: 52px;
           height: 52px;
           border-radius: 50%;
@@ -175,11 +203,43 @@ const AdminLogin = () => {
           align-items: center;
           justify-content: center;
           overflow: hidden;
+
         }
 
         .logo-badge img {
           width: 100%;
           height: 100%;
+
+          object-fit: contain;
+        }
+
+        .pulse-divider {
+          width: 100%;
+          height: 22px;
+          margin-bottom: 22px;
+          display: block;
+          transition: opacity 0.5s ease 0.2s;
+        }
+
+        .pulse-divider.visible { opacity: 1; }
+        .pulse-divider.hidden { opacity: 0; }
+
+        .pulse-path {
+          fill: none;
+          stroke: url(#pulseGradient);
+          stroke-width: 1.6;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          stroke-dasharray: 6 10;
+          animation: pulseFlow 3.2s linear infinite;
+        }
+
+        .field-group {
+          margin-bottom: 15px;
+          transition: opacity 0.45s cubic-bezier(0.4,0,0.2,1), transform 0.45s cubic-bezier(0.4,0,0.2,1);
+        }
+
+
           object-fit: cover;
           border-radius: 50%;
         }
@@ -227,6 +287,7 @@ const AdminLogin = () => {
           transition: opacity 0.45s cubic-bezier(0.4,0,0.2,1), transform 0.45s cubic-bezier(0.4,0,0.2,1);
         }
 
+
         .field-group.visible { opacity: 1; transform: translateY(0); }
         .field-group.hidden { opacity: 0; transform: translateY(14px); }
 
@@ -236,12 +297,18 @@ const AdminLogin = () => {
           font-size: 9.5px;
           letter-spacing: 1.2px;
           text-transform: uppercase;
+
+          color: rgba(221, 223, 210, 0.4);
           color: rgba(244, 251, 249, 0.4);
           margin-bottom: 6px;
           transition: color 0.25s ease;
         }
 
+
+        .field-label.focused { color: #0A7F6E; }
+
         .field-label.focused { color: rgba(23, 184, 147, 0.7); }
+
 
         .field-wrap { position: relative; }
 
@@ -251,20 +318,34 @@ const AdminLogin = () => {
           top: 50%;
           transform: translateY(-50%);
           display: flex;
+
+          color: rgba(221, 223, 210, 0.35);
+
           color: rgba(244, 251, 249, 0.35);
+
           pointer-events: none;
           transition: color 0.25s ease, transform 0.25s ease;
         }
 
         .field-icon.focused {
+
+          color: #0A7F6E;
+
           color: #17B893;
+
           transform: translateY(-50%) scale(1.1);
         }
 
         .auth-input {
+
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(221, 223, 210, 0.15);
+          color: #DDDFD2;
+
           background: rgba(255, 255, 255, 0.04);
           border: 1px solid rgba(255, 255, 255, 0.1);
           color: #F4FBF9;
+
           border-radius: 10px;
           padding: 11px 14px;
           padding-left: 40px;
@@ -274,6 +355,95 @@ const AdminLogin = () => {
           width: 100%;
           font-size: 13.5px;
           box-sizing: border-box;
+
+        }
+
+        .auth-input::placeholder { color: rgba(221, 223, 210, 0.22); }
+
+        .auth-input:focus {
+          background: rgba(10, 127, 110, 0.04);
+          border-color: #0A7F6E;
+          box-shadow: 0 0 0 3px rgba(10, 127, 110, 0.15);
+        }
+
+        .auth-input:-webkit-autofill,
+        .auth-input:-webkit-autofill:hover,
+        .auth-input:-webkit-autofill:focus {
+          -webkit-text-fill-color: #DDDFD2 !important;
+          -webkit-box-shadow: 0 0 0px 1000px rgba(10, 20, 18, 0.95) inset !important;
+          border-color: #0A7F6E !important;
+          transition: background-color 5000s ease-in-out 0s !important;
+        }
+
+        .toggle-visibility {
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: rgba(221, 223, 210, 0.4);
+          cursor: pointer;
+          display: flex;
+          padding: 4px;
+          transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .toggle-visibility:hover {
+          color: #0A7F6E;
+          transform: translateY(-50%) scale(1.15);
+        }
+
+        .toggle-visibility.active { color: #0A7F6E; }
+
+        .toggle-visibility:focus-visible {
+          outline: 2px solid #0A7F6E;
+          outline-offset: 2px;
+        }
+
+        .auth-btn {
+          background: linear-gradient(135deg, #0A7F6E 0%, #064E44 100%);
+          border: none;
+          color: #DDDFD2;
+          border-radius: 10px;
+          padding: 13px;
+          font-weight: 700;
+          font-size: 12.5px;
+          letter-spacing: 0.6px;
+          text-transform: uppercase;
+          font-family: 'Manrope', sans-serif;
+          cursor: pointer;
+          transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, opacity 0.3s ease;
+          width: 100%;
+          box-shadow: 0 4px 16px rgba(10, 127, 110, 0.25);
+          margin-top: 6px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .auth-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 28px rgba(10, 127, 110, 0.45);
+        }
+
+        .auth-btn:active:not(:disabled) { transform: translateY(1px); }
+
+        .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .auth-btn:focus-visible {
+          outline: 2px solid #0A7F6E;
+          outline-offset: 2px;
+        }
+
+        .auth-btn-shimmer {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+          border-radius: 10px;
+          animation: shimmer 1.8s ease-in-out infinite;
+        }
+
+
         }
 
         .auth-input::placeholder { color: rgba(244, 251, 249, 0.22); }
@@ -361,6 +531,7 @@ const AdminLogin = () => {
           animation: shimmer 1.8s ease-in-out infinite;
         }
 
+
         .auth-error {
           background: rgba(239, 68, 68, 0.1);
           border: 1px solid rgba(239, 68, 68, 0.25);
@@ -381,7 +552,11 @@ const AdminLogin = () => {
           justify-content: space-between;
           margin-top: 22px;
           padding-top: 16px;
+
+          border-top: 1px dashed rgba(221, 223, 210, 0.15);
+
           border-top: 1px dashed rgba(255, 255, 255, 0.08);
+
           opacity: 0;
           transform: translateY(8px);
           transition: opacity 0.5s ease, transform 0.5s ease;
@@ -394,7 +569,11 @@ const AdminLogin = () => {
           font-size: 9.5px;
           letter-spacing: 1px;
           text-transform: uppercase;
+
+          color: rgba(221, 223, 210, 0.3);
+
           color: rgba(244, 251, 249, 0.3);
+
           display: flex;
           align-items: center;
           gap: 5px;
@@ -404,7 +583,11 @@ const AdminLogin = () => {
           width: 4px;
           height: 4px;
           border-radius: 50%;
+
+          background: #0A7F6E;
+
           background: #17B893;
+
           display: inline-block;
           animation: dotPulse 2s ease-in-out infinite;
         }
@@ -415,19 +598,31 @@ const AdminLogin = () => {
         .footer-link {
           font-family: 'Manrope', sans-serif;
           font-size: 12px;
+
+          color: rgba(221, 223, 210, 0.5);
+
           color: rgba(244, 251, 249, 0.5);
+
           text-decoration: none;
           transition: color 0.2s ease, transform 0.2s ease;
           display: inline-block;
         }
 
         .footer-link:hover {
+
+          color: #0A7F6E;
+
           color: #17B893;
+
           transform: translateX(-2px);
         }
 
         .footer-link:focus-visible {
+
+          outline: 2px solid #0A7F6E;
+
           outline: 2px solid #17B893;
+
           outline-offset: 2px;
         }
 
@@ -454,13 +649,15 @@ const AdminLogin = () => {
           }} />
           <div style={{
             position: "absolute", bottom: "-140px", right: "6%", width: "460px", height: "460px",
-            borderRadius: "50%", background: "radial-gradient(circle, rgba(11, 122, 99, 0.35) 0%, transparent 78%)",
+
+            borderRadius: "50%", background: "radial-gradient(circle, rgba(221, 223, 210, 0.08) 0%, transparent 78%)",
             filter: "blur(60px)",
           }} />
           <svg width="100%" height="100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", inset: 0, opacity: 0.06 }}>
             <ellipse cx="200" cy="700" rx="500" ry="320" fill="none" stroke="#17B893" strokeWidth="2" />
             <ellipse cx="200" cy="700" rx="420" ry="260" fill="none" stroke="#17B893" strokeWidth="2" />
             <ellipse cx="1050" cy="80" rx="480" ry="300" fill="none" stroke="#17B893" strokeWidth="2" />
+
           </svg>
         </div>
 
@@ -471,18 +668,29 @@ const AdminLogin = () => {
             <div className="logo-badge">
               <img src={logo} alt="Comfy Sportswear" />
             </div>
+
+
             <div>
               <div className="brand-eyebrow">Ops Console</div>
               <div className="brand-name">COMFY SPORTSWEAR</div>
             </div>
+
           </div>
 
           <svg className={`pulse-divider ${pageIn ? "visible" : "hidden"}`} viewBox="0 0 400 22" preserveAspectRatio="none">
             <defs>
               <linearGradient id="pulseGradient" x1="0" y1="0" x2="1" y2="0">
+
+                <stop offset="0%" stopColor="#0A7F6E" stopOpacity="0" />
+                <stop offset="30%" stopColor="#0A7F6E" stopOpacity="1" />
+                <stop offset="50%" stopColor="#DDDFD2" stopOpacity="1" />
+                <stop offset="70%" stopColor="#0A7F6E" stopOpacity="1" />
+                <stop offset="100%" stopColor="#0A7F6E" stopOpacity="0" />
+
                 <stop offset="0%" stopColor="#17B893" stopOpacity="0" />
                 <stop offset="50%" stopColor="#17B893" stopOpacity="1" />
                 <stop offset="100%" stopColor="#17B893" stopOpacity="0" />
+
               </linearGradient>
             </defs>
             <path className="pulse-path" d="M0,11 L60,11 L75,3 L90,19 L105,11 L340,11 L355,3 L370,19 L385,11 L400,11" />

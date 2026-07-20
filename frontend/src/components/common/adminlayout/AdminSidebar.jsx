@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion"
 import logo from "../../../assets/images/comfy_logo4.png";
 
+
 const navItems = [
   {
     label: "Dashboard",
@@ -26,6 +27,15 @@ const navItems = [
     ),
     key: "products",
   },
+//   {
+//     label: "Categories",
+//     icon: (
+//       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+//         <path d="M3 5h8M3 10h5M3 15h8M3 20h5M13 5l4 4-4 4M21 9h-4" />
+//       </svg>
+//     ),
+//     key: "categories",
+//   },
   {
     label: "Leads",
     icon: (
@@ -127,7 +137,11 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
         <div
           style={{
             padding: collapsed ? "24px 16px" : "24px 20px",
+
             borderBottom: "1px solid rgba(10,127,110,0.2)",
+
+            borderBottom: "1px solid rgba(23, 184, 147, 0.12)",
+
             display: "flex",
             alignItems: "center",
             gap: "12px",
@@ -199,7 +213,8 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
                     : "transparent",
                   color: isActive ? "#fff" : isHovered ? "#fff" : "rgba(255,255,255,0.65)",
                   transition: "all 0.22s cubic-bezier(0.4,0,0.2,1)",
-                  boxShadow: isActive ? "0 4px 16px rgba(10,127,110,0.35)" : "none",
+                  boxShadow: isActive ? "0 4px 16px rgba(23, 184, 147, 0.15), inset 0 1px 0 rgba(23, 184, 147, 0.1)" : "none",
+
                   transform: isActive ? "translateX(2px)" : isHovered ? "translateX(2px)" : "translateX(0)",
                   justifyContent: collapsed ? "center" : "flex-start",
                   position: "relative",
@@ -358,9 +373,14 @@ const AdminSidebar = ({ activeKey, onNavigate, isMobileOpen, onMobileClose, onCo
 
         .admin-sidebar::-webkit-scrollbar { width: 4px; }
         .admin-sidebar::-webkit-scrollbar-track { background: transparent; }
-        .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(10,127,110,0.3); border-radius: 2px; }
+        .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(23, 184, 147, 0.2); border-radius: 2px; }
+        .admin-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(23, 184, 147, 0.35); }
+        .collapse-btn:hover {
+          background: rgba(23, 184, 147, 0.16) !important;
+          border-color: rgba(23, 184, 147, 0.3) !important;
+          color: #17B893 !important;
+        }
 
-        .collapse-btn:hover { background: rgba(10,127,110,0.18) !important; }
 
         @media (max-width: 768px) {
           .admin-sidebar {

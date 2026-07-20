@@ -5,11 +5,24 @@ import AdminSidebar from "../common/adminlayout/AdminSidebar";
 import API from "../../services/api";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const GENDERS = ["Men", "Women", "Kids", "Unisex"];   // ✅ ADDED Kids
+const FALLBACK_CATEGORIES = [
+  "Sports T-Shirts",
+  "Performance Jerseys",
+  "Team Uniforms",
+  "Sports Shorts",
+  "Track Pants",
+  "Hoodies",
+  "Tracksuits",
+  "Custom Team Kits",
+  "Accessories",
+];
+
+const GENDERS = ["Men", "Women", "Unisex"];
 
 const DEFAULT_FORM = {
   name: "",
   code: "",
+  category: "",
   gender: "Unisex",
   price: "",
   stock: "",
@@ -23,6 +36,7 @@ const DEFAULT_FORM = {
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
   const [genderFilter, setGenderFilter] = useState("All");
   const [stockFilter, setStockFilter] = useState("All");
   const [sortBy, setSortBy] = useState("none");
@@ -39,6 +53,22 @@ const AdminProducts = () => {
     }
   }, [navigate]);
 
+  // Category options: prefer real categories from backend, fallback to static list
+  const categoryOptions = apiCategories.length > 0
+    ? apiCategories.map((c) => c.name)
+    : FALLBACK_CATEGORIES;
+
+  const fetchCategories = async () => {
+    try {
+      const res = await API.get('/categories/admin/all');
+      if (res.data?.data) {
+        setApiCategories(res.data.data);
+      }
+    } catch (err) {
+      console.warn("Failed to fetch categories list.", err);
+    }
+  };
+
   const fetchProducts = async () => {
     try {
       const response = await API.get('/products/admin/all');
@@ -48,6 +78,7 @@ const AdminProducts = () => {
           ...p,
           id: p._id,
           code: p.productCode || p.code || '',
+          category: typeof p.category === 'object' && p.category ? p.category.name : p.category,
           gender: p.gender || 'Unisex',
           stock: p.stock || 0,
           stockStatus: p.stockStatus || (p.inStock ? "In Stock" : "Out of Stock"),
@@ -93,14 +124,15 @@ const AdminProducts = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Filter & Sort Products (Removed Category Filter)
+  // Filter & Sort Products
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.code.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === "All" || p.category === categoryFilter;
     const matchesGender = genderFilter === "All" || p.gender === genderFilter;
     const matchesStock = stockFilter === "All" || p.stockStatus === stockFilter;
-    return matchesSearch && matchesGender && matchesStock;
+    return matchesSearch && matchesCategory && matchesGender && matchesStock;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -116,7 +148,7 @@ const AdminProducts = () => {
   // Modal Handlers
   const openAddModal = () => {
     setEditingProduct(null);
-    setFormData({ ...DEFAULT_FORM });
+    setFormData({ ...DEFAULT_FORM, category: categoryOptions[0] || "" });
     setImagePreview(null);
     setImageFile(null);
     setIsModalOpen(true);
@@ -128,6 +160,7 @@ const AdminProducts = () => {
     setFormData({
       name: product.name,
       code: product.code,
+      category: product.category,
       gender: product.gender || "Unisex",
       price: product.price,
       stock: product.stock,
@@ -200,6 +233,10 @@ const AdminProducts = () => {
     const priceNum = parseFloat(formData.price) || 0;
     const stockNum = parseInt(formData.stock, 10) || 0;
 
+    if (!categoryId) {
+      toast.error("Please select a valid category (categories are loaded from the backend).");
+      return;
+    }
     if (!formData.gender) {
       toast.error("Please select a gender (Men / Women / Unisex).");
       return;
@@ -212,6 +249,7 @@ const AdminProducts = () => {
     const fields = {
       name: formData.name,
       productCode: formData.code,
+      category: categoryId,
       gender: formData.gender,
       price: priceNum,
       stock: stockNum,
@@ -227,22 +265,25 @@ const AdminProducts = () => {
     setSubmitting(true);
     try {
       let payload;
+      let config = {};
 
       if (imageFile) {
+        // New image selected -> send as multipart/form-data so backend (multer) receives the file
         const fd = new FormData();
         Object.entries(fields).forEach(([key, value]) => fd.append(key, value));
         fd.append('images', imageFile);
         payload = fd;
-        // ✅ DO NOT set headers here. Axios handles it automatically.
+        config = { headers: { 'Content-Type': 'multipart/form-data' } };
       } else {
+        // No new image -> plain JSON is enough
         payload = fields;
       }
 
       if (editingProduct) {
-        await API.put(`/products/${editingProduct.id}`, payload);
+        await API.put(`/products/${editingProduct.id}`, payload, config);
         toast.success("Product updated successfully!");
       } else {
-        await API.post('/products', payload);
+        await API.post('/products', payload, config);
         toast.success("Product created successfully!");
       }
       fetchProducts();
@@ -349,6 +390,7 @@ const AdminProducts = () => {
       `}</style>
 
       <div style={{ minHeight: "100vh", background: "#070C0B" }}>
+        {/* ── Sidebar ── */}
         <AdminSidebar
           activeKey="products"
           isMobileOpen={mobileOpen}
@@ -510,6 +552,7 @@ const AdminProducts = () => {
             </div>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", flex: "1 1 auto", justifyContent: "flex-end" }}>
+              {/* Gender Filter */}
               <div style={{ minWidth: "120px", flex: "1 1 120px", maxWidth: "150px" }}>
                 <select
                   className="csw-select"
@@ -523,6 +566,23 @@ const AdminProducts = () => {
                   ))}
                 </select>
               </div>
+
+              {/* Category Filter Commented Out */}
+              {/* <div style={{ minWidth: "150px", flex: "1 1 150px", maxWidth: "200px" }}>
+                <select
+                  className="csw-select"
+                  style={{ fontSize: "12px" }}
+                  value={genderFilter}
+                  onChange={(e) => setGenderFilter(e.target.value)}
+                >
+                  <option value="All">All Categories</option>
+                  {categoryOptions.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div> */}
 
               <div style={{ minWidth: "130px", flex: "1 1 130px", maxWidth: "160px" }}>
                 <select
@@ -575,6 +635,7 @@ const AdminProducts = () => {
                     <th>Product</th>
                     <th>Code</th>
                     <th>Gender</th>
+                    <th>Category</th>
                     <th>Price</th>
                     <th>Stock</th>
                     <th style={{ textAlign: "right" }}>Actions</th>
@@ -632,6 +693,7 @@ const AdminProducts = () => {
                             {p.gender || "Unisex"}
                           </span>
                         </td>
+                        <td style={{ color: "rgba(255,255,255,0.55)" }}>{p.category}</td>
                         <td style={{ fontWeight: 700, fontFamily: "'Montserrat',sans-serif" }}>₹{p.price}</td>
                         <td>
                           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
@@ -1030,6 +1092,42 @@ const AdminProducts = () => {
                   </div>
                 </div>
 
+                {/* Category & Fabric */}
+                <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+                  {/* Category Field Commented Out */}
+                  {/* <div style={{ flex: "1 1 200px" }}>
+                    <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
+                      Category *
+                    </label>
+                    <select
+                      className="csw-select"
+                      name="category"
+                      required
+                      value={formData.category}
+                      onChange={handleInputChange}
+                    >
+                      <option value="" disabled>Select category</option>
+                      {categoryOptions.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+                    </select>
+                  </div> */}
+                  <div style={{ flex: "1 1 100%" }}>
+                    <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
+                      Fabric Details
+                    </label>
+                    <input
+                      className="csw-input"
+                      name="fabric"
+                      placeholder="e.g. 100% Dry-Fit Polyester"
+                      value={formData.fabric}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+
                 {/* Fabric Details */}
                 <div style={{ flex: "1 1 100%" }}>
                   <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
@@ -1321,6 +1419,10 @@ const AdminProducts = () => {
                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Gender</span>
                       <span style={{ fontWeight: 600, fontSize: "13px" }}>{viewingProduct.gender || "Unisex"}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
+                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Category</span>
+                      <span style={{ fontWeight: 600, fontSize: "13px" }}>{viewingProduct.category}</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "8px" }}>
                       <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>Price</span>

@@ -13,18 +13,7 @@ const stockConf = {
 
 const ProductCard = ({ product, viewMode = 'grid' }) => {
   const [isHovered, setIsHovered] = useState(false);
-
-  // ✅ FIX: destructure only the fields that are safe as-is,
-  // then normalize the ones that can arrive as `null` (not just
-  // `undefined`) using `||` — destructuring defaults do NOT
-  // catch `null`, only `undefined`, so this prevents .slice()/.map()
-  // crashes when a product comes from mock data or a partially
-  // populated API record with explicit nulls.
-  const { _id, name, category, price, stockStatus } = product;
-  const code = product.code || '';
-  const sizes = product.sizes || [];
-  const images = product.images || [];
-
+  const { _id, name, code, category, price, sizes = [], images, stockStatus } = product;
   const description = stripHtml(product.description);
   const img1 = images[0] || '';
   const img2 = images[1] || images[0] || '';
