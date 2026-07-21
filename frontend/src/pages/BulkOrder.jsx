@@ -28,7 +28,7 @@ const styles = `
   position: relative;
   padding: 7rem 1.5rem 6rem;
   overflow: hidden;
-  background: linear-gradient(120deg, rgba(6,37,31,0.13), rgba(10,61,51,0.13), rgba(5,22,18,0.13)), url('https://i.ibb.co/zHszBhFQ/Chat-GPT-Image-Jul-18-2026-01-20-04-PM.png');
+  background: linear-gradient(120deg, rgba(6,37,31,0.13), rgba(10,61,51,0.13), rgba(5,22,18,0.13)), url('https://i.ibb.co/SXdTx2SM/Chat-GPT-Image-Jul-21-2026-12-20-01-AM.png');
   background-size: cover;
   background-position: center;
   text-align: center;
@@ -322,6 +322,35 @@ const styles = `
 .bo-radio-label input { display: none; }
 .bo-radio-label.selected { border-color: var(--red); background: rgba(20,168,137,0.07); color: var(--red); font-weight: 600; }
 
+/* size grid with qty */
+.bo-size-grid { display: flex; gap: 1rem; flex-wrap: wrap; }
+.bo-size-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+}
+.bo-size-chip-label {
+  display: flex; align-items: center; justify-content: center;
+  width: 54px; height: 54px; border-radius: 50%;
+  border: 1.5px solid #e5e5e5; background: #fff;
+  font-size: 0.85rem; font-weight: 600; color: #555;
+  cursor: pointer; user-select: none;
+  transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.15s;
+}
+.bo-size-chip-label:hover { border-color: rgba(20,168,137,0.5); transform: translateY(-2px); }
+.bo-size-chip.selected .bo-size-chip-label {
+  border-color: var(--red); background: var(--red); color: #fff;
+  box-shadow: 0 4px 14px rgba(20,168,137,0.3);
+}
+.bo-size-chip-label input { display: none; }
+.bo-size-chip-qty {
+  width: 54px; padding: 0.35rem 0.4rem; border: 1.5px solid #e5e5e5;
+  border-radius: 0.5rem; font-size: 0.8rem; text-align: center;
+  background: #fff; outline: none; transition: border-color 0.2s;
+}
+.bo-size-chip-qty:focus { border-color: var(--red); }
+.bo-size-status { font-size: 0.82rem; font-weight: 600; margin-top: 0.5rem; }
+.bo-size-status-red { color: #e0433d; }
+.bo-size-status-green { color: #148f6f; }
+
 /* date input */
 .bo-input[type="date"] { cursor: pointer; }
 .bo-input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.5; }
@@ -442,6 +471,79 @@ const styles = `
   .bo-cta-btns { flex-direction: column; width: 100%; gap: 0.75rem; }
   .bo-cta-btn-wa, .bo-cta-btn-ghost { justify-content: center; width: 100%; }
 }
+
+/* ── Extra responsive polish ── */
+@media (max-width: 900px) {
+  .bo-cta-content { padding: 60px 30px; }
+}
+
+@media (max-width: 640px) {
+  .bo-hero { min-height: auto; padding: 4.5rem 1.25rem 3.5rem; }
+  .bo-hero-stats { gap: 1.25rem 1rem; row-gap: 1.5rem; }
+  .bo-hero-divider { display: none; }
+  .bo-stat-num { font-size: 1.8rem; }
+  .bo-stat-label { font-size: 0.7rem; }
+  .bo-hero-pills { width: 100%; flex-direction: column; }
+  .bo-pill { width: 100%; justify-content: center; }
+
+  .bo-section-head { margin-bottom: 2.25rem; }
+
+  .bo-size-grid { gap: 0.75rem; justify-content: center; }
+  .bo-size-chip-label { width: 46px; height: 46px; font-size: 0.78rem; }
+  .bo-size-chip-qty { width: 46px; font-size: 0.75rem; }
+
+  .bo-radio-group { gap: 0.5rem; }
+  .bo-radio-label { padding: 0.5rem 0.85rem; font-size: 0.82rem; }
+
+  .bo-contact-card { padding: 1.75rem 1.4rem; }
+  .bo-sidebar-tagline { text-align: center; }
+  .bo-sidebar-sub { text-align: center; }
+  .bo-mini-benefit { text-align: left; }
+
+  .bo-cta-content { padding: 50px 1.25rem; gap: 1.25rem; }
+  .bo-cta-title { font-size: clamp(1.5rem, 7vw, 2.2rem); }
+  .bo-cta-sub { font-size: 0.9rem; }
+}
+
+@media (max-width: 480px) {
+  .bo-hero-h1 { font-size: clamp(2.2rem, 11vw, 3rem); }
+  .bo-hero-sub { font-size: 0.95rem; }
+  .bo-hero-stats { gap: 1rem 0.75rem; }
+  .bo-stat-num { font-size: 1.5rem; }
+
+  .bo-benefit-card { padding: 1.6rem 1.1rem; }
+  .bo-benefit-icon { width: 48px; height: 48px; }
+  .bo-benefit-title { font-size: 0.95rem; }
+  .bo-benefit-desc { font-size: 0.84rem; }
+
+  .bo-step-num { width: 50px; height: 50px; font-size: 1.15rem; }
+  .bo-step-desc { max-width: 140px; }
+
+  .bo-form-card { padding: 1.5rem 1rem; }
+  .bo-form-title { font-size: 1.3rem; }
+  .bo-input, .bo-textarea, .bo-select { font-size: 0.88rem; padding: 0.65rem 0.85rem; }
+  .bo-label { font-size: 0.72rem; }
+
+  .bo-size-chip-label { width: 42px; height: 42px; font-size: 0.72rem; }
+  .bo-size-chip-qty { width: 42px; padding: 0.3rem; }
+
+  .bo-submit-btn { font-size: 0.82rem; padding: 0.85rem 1.5rem; }
+  .bo-disclaimer { font-size: 0.72rem; }
+
+  .bo-success h3 { font-size: 1.4rem; }
+  .bo-success-icon { width: 60px; height: 60px; }
+
+  .bo-cta-btn-wa, .bo-cta-btn-ghost { font-size: 0.72rem; padding: 0.7rem 1rem; letter-spacing: 1px; }
+}
+
+@media (max-width: 380px) {
+  .bo-hero-h1 { font-size: 2rem; }
+  .bo-size-grid { gap: 0.6rem; }
+  .bo-size-chip-label { width: 40px; height: 40px; font-size: 0.68rem; }
+  .bo-radio-group { flex-direction: column; align-items: stretch; }
+  .bo-radio-label { text-align: center; justify-content: center; }
+  .bo-mini-benefits { gap: 1rem; }
+}
 `;
 
 /* ─── SVG Icons ─── */
@@ -538,15 +640,20 @@ const STEPS = [
 ];
 
 const CATEGORIES = [
-  "T-Shirts & Jerseys",
-  "Hoodies & Sweatshirts",
-  "Track Pants & Shorts",
-  "Sports Jackets",
-  "Compression Wear",
-  "Team Kits (Full Set)",
-  "Corporate Uniforms",
-  "Gym & Training Wear",
-  "Other / Mixed",
+  "Male",
+  "Female",
+  "Kids",
+  "Unisex"
+];
+
+const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+
+const QUANTITY_RANGES = [
+  { value: "50-100", label: "50 – 100 units", max: 100 },
+  { value: "100-250", label: "100 – 250 units", max: 250 },
+  { value: "250-500", label: "250 – 500 units", max: 500 },
+  { value: "500-1000", label: "500 – 1,000 units", max: 1000 },
+  { value: "1000+", label: "1,000+ units", max: Infinity },
 ];
 
 /* ─── FadeUp Component ─── */
@@ -626,10 +733,11 @@ function StepsLine() {
 function BulkOrderForm() {
   const [form, setForm] = useState({
     fullName: "", orgName: "", phone: "", email: "",
-    category: "", quantity: "", customPrinting: "", deliveryDate: "", requirements: "",
+    category: "", quantity: "", sizes: [], customPrinting: "", deliveryDate: "", requirements: "",
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [sizeQuantities, setSizeQuantities] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -638,15 +746,53 @@ function BulkOrderForm() {
 
   const setPrinting = (val) => setForm((prev) => ({ ...prev, customPrinting: val }));
 
+  const toggleSize = (val) => {
+    setForm((prev) => ({
+      ...prev,
+      sizes: prev.sizes.includes(val)
+        ? prev.sizes.filter((s) => s !== val)
+        : [...prev.sizes, val],
+    }));
+    setSizeQuantities((prev) => {
+      if (prev[val] !== undefined) {
+        const next = { ...prev };
+        delete next[val];
+        return next;
+      }
+      return { ...prev, [val]: "" };
+    });
+  };
+
+  const updateSizeQty = (val, qty) => {
+    setSizeQuantities((prev) => ({ ...prev, [val]: qty }));
+  };
+
+  const selectedRange = useMemo(
+    () => QUANTITY_RANGES.find((q) => q.value === form.quantity),
+    [form.quantity]
+  );
+
+  const totalSizeQty = useMemo(
+    () => Object.values(sizeQuantities).reduce((sum, v) => sum + (parseInt(v, 10) || 0), 0),
+    [sizeQuantities]
+  );
+
+  const sizeQtyExceeded = !!selectedRange && Number.isFinite(selectedRange.max) && totalSizeQty > selectedRange.max;
+  const sizeQtyRemaining = selectedRange && Number.isFinite(selectedRange.max) ? selectedRange.max - totalSizeQty : null;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.fullName || !form.orgName || !form.phone || !form.email || !form.category || !form.quantity) {
       toast.error("Please fill in all required fields.");
       return;
     }
+    if (sizeQtyExceeded) {
+      toast.error("Please increase your quantity — size quantities exceed the selected range.");
+      return;
+    }
     setLoading(true);
     try {
-      const response = await API.post('/bulk-orders', form);
+      const response = await API.post('/bulk-orders', { ...form, sizeQuantities });
       if (response.data && response.data.success) {
         toast.success(response.data.message || "Enquiry submitted successfully!");
         setSubmitted(true);
@@ -674,7 +820,7 @@ function BulkOrderForm() {
         <button
           className="bo-submit-btn"
           style={{ marginTop: "1rem" }}
-          onClick={() => { setSubmitted(false); setForm({ fullName:"",orgName:"",phone:"",email:"",category:"",quantity:"",customPrinting:"",deliveryDate:"",requirements:"" }); }}
+          onClick={() => { setSubmitted(false); setForm({ fullName:"",orgName:"",phone:"",email:"",category:"",quantity:"",sizes:[],customPrinting:"",deliveryDate:"",requirements:"" }); setSizeQuantities({}); }}
         >
           Submit Another Request
         </button>
@@ -715,9 +861,9 @@ function BulkOrderForm() {
         {/* Row 3: Category + Quantity */}
         <div className="bo-field-row">
           <div className="bo-field">
-            <label className="bo-label" htmlFor="bo-category">Product Category <span className="bo-required">*</span></label>
+            <label className="bo-label" htmlFor="bo-category">Gender<span className="bo-required">*</span></label>
             <select id="bo-category" name="category" className="bo-select" value={form.category} onChange={handleChange} required>
-              <option value="">Select category...</option>
+              <option value="">Select gender...</option>
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
@@ -725,13 +871,48 @@ function BulkOrderForm() {
             <label className="bo-label" htmlFor="bo-quantity">Quantity Required <span className="bo-required">*</span></label>
             <select id="bo-quantity" name="quantity" className="bo-select" value={form.quantity} onChange={handleChange} required>
               <option value="">Select range...</option>
-              <option value="50-100">50 – 100 units</option>
-              <option value="100-250">100 – 250 units</option>
-              <option value="250-500">250 – 500 units</option>
-              <option value="500-1000">500 – 1,000 units</option>
-              <option value="1000+">1,000+ units</option>
+              {QUANTITY_RANGES.map((q) => <option key={q.value} value={q.value}>{q.label}</option>)}
             </select>
           </div>
+        </div>
+
+        {/* Sizes */}
+        <div className="bo-field">
+          <label className="bo-label">Sizes Required</label>
+          <div className="bo-size-grid">
+            {SIZES.map((sz) => {
+              const active = form.sizes.includes(sz);
+              return (
+                <div key={sz} className={`bo-size-chip${active ? " selected" : ""}`}>
+                  <label className="bo-size-chip-label">
+                    <input type="checkbox" checked={active} onChange={() => toggleSize(sz)} />
+                    {sz}
+                  </label>
+                  {active && (
+                    <input
+                      type="number"
+                      min="0"
+                      className="bo-size-chip-qty"
+                      placeholder="Qty"
+                      value={sizeQuantities[sz] ?? ""}
+                      onChange={(e) => updateSizeQty(sz, e.target.value)}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {form.sizes.length > 0 && (
+            <p className={`bo-size-status ${sizeQtyExceeded ? "bo-size-status-red" : "bo-size-status-green"}`}>
+              {!form.quantity
+                ? "Select a quantity range above first."
+                : sizeQtyExceeded
+                ? `Total ${totalSizeQty} exceeds your quantity range — please increase your quantity.`
+                : Number.isFinite(sizeQtyRemaining)
+                ? `${sizeQtyRemaining} unit${sizeQtyRemaining === 1 ? "" : "s"} left to allocate.`
+                : `${totalSizeQty} units allocated so far.`}
+            </p>
+          )}
         </div>
 
         {/* Custom Printing */}

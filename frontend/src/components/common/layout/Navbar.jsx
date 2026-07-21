@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react"
+﻿import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Menu, ShoppingBag, User, X, LogIn, Package, Settings, ChevronDown, UserPlus, Search } from "lucide-react"
+import { Menu, ShoppingBag, User, X, LogIn, Package, Settings, ChevronDown, UserPlus } from "lucide-react"
 import { Link, NavLink as RouterNavLink, useLocation, useNavigate } from "react-router-dom"
 import logo from "../../../assets/images/comfy_logo4.png"
 
@@ -566,82 +566,6 @@ const styles = `
   }
 }
 
-.nav-search-wrap {
-  position: relative;
-}
-
-.search-dropdown {
-  position: fixed;
-  left: 1rem;
-  right: 1rem;
-  top: calc(var(--nav-h) + 40px + 10px);
-  width: auto;
-  max-width: none;
-  box-sizing: border-box;
-  background: #ffffff;
-  border-radius: 14px;
-  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
-  overflow: hidden;
-  z-index: 60;
-  padding: 0.75rem;
-}
-
-@media (min-width: 900px) {
-  .search-dropdown {
-    position: absolute;
-    left: auto;
-    right: 0;
-    top: calc(100% + 12px);
-    width: 280px;
-    max-width: calc(100vw - 2rem);
-  }
-}
-
-.search-dropdown-form {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.search-dropdown-input {
-  flex: 1;
-  min-width: 0;
-  height: 42px;
-  padding: 0 0.85rem;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 10px;
-  background: #f7f7f2;
-  font-size: 0.88rem;
-  font-family: inherit;
-  color: #000000;
-  outline: none;
-  box-sizing: border-box;
-  transition: border 0.2s ease;
-}
-
-.search-dropdown-input:focus {
-  border-color: #14a889;
-}
-
-.search-dropdown-submit {
-  display: inline-grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border: none;
-  border-radius: 10px;
-  background: #14a889;
-  color: #ffffff;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.2s ease;
-}
-
-.search-dropdown-submit:hover {
-  background: #0a3d33;
-}
 `
 const OFFERS = [
   { text: "Free shipping on orders over ₹999.", code: null, cta: "Shop Now", href: "/products" },
@@ -684,20 +608,8 @@ export default function Navbar({ cartCount }) {
   const [redirectAfterLogin, setRedirectAfterLogin] = useState(false)
 
   const accountRef = useRef(null)
-  const searchRef = useRef(null)
   const cartRef = useRef(null)
   const mobilePanelRef = useRef(null)
-  const [searchOpen, setSearchOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
-      setSearchOpen(false)
-      setSearchQuery("")
-    }
-  }
 
   const handleCartClick = () => {
     if (isLoggedIn) {
@@ -823,9 +735,6 @@ export default function Navbar({ cartCount }) {
         setShowRegisterForm(false)
         resetRegisterForm()
       }
-      if (searchRef.current && !searchRef.current.contains(e.target)) {
-        setSearchOpen(false)
-      }
       if (cartRef.current && !cartRef.current.contains(e.target)) {
         setShowCartToast(false)
       }
@@ -933,44 +842,6 @@ export default function Navbar({ cartCount }) {
         </motion.ul>
 
         <div className="nav-actions">
-          <div className="nav-search-wrap" ref={searchRef}>
-            <motion.button
-              type="button"
-              className={`icon-btn${searchOpen ? " active" : ""}`}
-              aria-label="Search"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setSearchOpen((v) => !v)}
-            >
-              <Search size={20} />
-            </motion.button>
-            <AnimatePresence>
-              {searchOpen && (
-                <motion.div
-                  className="search-dropdown"
-                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <form className="search-dropdown-form" onSubmit={handleSearchSubmit}>
-                    <input
-                      type="text"
-                      className="search-dropdown-input"
-                      placeholder="Search products..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      autoFocus
-                    />
-                    <button type="submit" className="search-dropdown-submit" aria-label="Submit search">
-                      <Search size={18} />
-                    </button>
-                  </form>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
           <div style={{ position: 'relative' }} ref={cartRef}>
             <motion.button
               type="button"

@@ -93,7 +93,7 @@ const styles = `
   .hero {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(120deg, rgba(6,37,31,0.13), rgba(10,61,51,0.13), rgba(5,22,18,0.13)), url('https://i.ibb.co/mrRPzPzK/Chat-GPT-Image-Jul-18-2026-01-12-58-PM.png');
+    background: linear-gradient(120deg, rgba(6,37,31,0.13), rgba(10,61,51,0.13), rgba(5,22,18,0.13)), url('https://i.ibb.co/zTCVmL8y/Chat-GPT-Image-Jul-21-2026-12-23-54-AM.png');
     background-size: cover;
     background-position: center;
     padding: 5rem 1.5rem 5rem;

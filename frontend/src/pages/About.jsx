@@ -898,6 +898,92 @@ const styles = `
   display: block;
 }
 
+.au-card-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.au-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.au-card-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: radial-gradient(circle at center, #0d5445 0%, #0a3d33 55%, #051a15 100%);
+  clip-path: circle(0% at 50% 50%);
+  transition: clip-path 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.au-card-image:hover .au-card-panel {
+  clip-path: circle(75% at 50% 50%);
+}
+
+.au-card-image-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  padding: 2rem;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.4s ease 0.25s, transform 0.4s ease 0.25s;
+  pointer-events: none;
+}
+
+.au-card-image:hover .au-card-image-overlay {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.au-card-image-overlay-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #72d4c6;
+  border: 2px solid rgba(114, 212, 198, 0.5);
+  background: rgba(114, 212, 198, 0.1);
+}
+
+.au-card-image-overlay-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 1.05rem;
+  color: #ffffff;
+  margin: 0;
+}
+
+.au-card-image-overlay-divider {
+  width: 36px;
+  height: 2px;
+  background: #72d4c6;
+}
+
+.au-card-image-overlay p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
 .au-card {
   cursor: default;
   transition: box-shadow 0.3s ease;
@@ -1395,10 +1481,10 @@ const styles = `
 `;
 
 const VALUES = [
-  { icon: Flame, title: "Relentless Performance", text: "Every product is crafted to help you train harder, move faster, and perform better. We design gear that keeps up with your ambition." },
-  { icon: Target, title: "Engineered for Athletes", text: "From advanced fabrics to precision fits, our sportswear is built using athlete feedback and real-world testing to maximize comfort and performance." },
-  { icon: Heart, title: "Stronger Together", text: "We believe sport connects people. Whether you're a beginner or a champion, we're here to support a community that inspires, motivates, and grows together." },
-  { icon: ShieldCheck, title: "Quality with Purpose", text: "We combine durable craftsmanship, innovative materials, and responsible production practices to create sportswear that lasts through every challenge." },
+  { icon: Flame, title: "Relentless Performance", text: "Every product is crafted to help you train harder, move faster, and perform better. We design gear that keeps up with your ambition.", image: "https://i.ibb.co/7NJLSy3t/Screenshot-2026-07-20-220740.png" },
+  { icon: Target, title: "Engineered for Athletes", text: "From advanced fabrics to precision fits, our sportswear is built using athlete feedback and real-world testing to maximize comfort and performance.", image: "https://i.ibb.co/HDb4nMTh/Screenshot-2026-07-20-220715.png" },
+  { icon: Heart, title: "Stronger Together", text: "We believe sport connects people. Whether you're a beginner or a champion, we're here to support a community that inspires, motivates, and grows together.", image: "https://i.ibb.co/5h2yvMK6/Screenshot-2026-07-20-221605.png" },
+  { icon: ShieldCheck, title: "Quality with Purpose", text: "We combine durable craftsmanship, innovative materials, and responsible production practices to create sportswear that lasts through every challenge.", image: "https://i.ibb.co/35HrT0cS/Screenshot-2026-07-20-222303.png" },
 ];
 
 const STATS = [
@@ -2097,17 +2183,34 @@ export default function AboutUs() {
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.65, delay: idx * 0.15, ease: "easeOut" }}
                 >
-                  <div className="au-card-header">
-                    <div className="au-card-icon">
-                      <Icon size={24} aria-hidden="true" />
+                  {v.image ? (
+                    <div className="au-card-image">
+                      <img src={v.image} alt={v.title} />
+                      <div className="au-card-panel" aria-hidden="true" />
+                      <div className="au-card-image-overlay">
+                        <div className="au-card-image-overlay-icon">
+                          <Icon size={24} aria-hidden="true" />
+                        </div>
+                        <p className="au-card-image-overlay-title">{v.title}</p>
+                        <div className="au-card-image-overlay-divider" aria-hidden="true" />
+                        <p>{v.text}</p>
+                      </div>
                     </div>
-                    <div className="au-card-meta">
-                      <div className="au-card-name-bar">{v.title}</div>
-                    </div>
-                  </div>
-                  <div className="au-card-body">
-                    <p>{v.text}</p>
-                  </div>
+                  ) : (
+                    <>
+                      <div className="au-card-header">
+                        <div className="au-card-icon">
+                          <Icon size={24} aria-hidden="true" />
+                        </div>
+                        <div className="au-card-meta">
+                          <div className="au-card-name-bar">{v.title}</div>
+                        </div>
+                      </div>
+                      <div className="au-card-body">
+                        <p>{v.text}</p>
+                      </div>
+                    </>
+                  )}
                 </motion.article>
               );
             })}
