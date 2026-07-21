@@ -31,6 +31,7 @@ import AdminLeads from './components/admin/AdminLeads';
 import AdminBulkOrders from './components/admin/AdminBulkOrders';
 import AdminTestimonials from './components/admin/AdminTestimonials';
 import AdminRegister from './components/admin/AdminRegister';
+import AdminUsers from './components/admin/AdminUsers';
 
 // User Dashboard
 import UserDashboard from './components/userdashboard/UserDashboard';
@@ -92,6 +93,7 @@ function App() {
         <Route path="/admin/leads"             element={<AdminLeads />} />
         <Route path="/admin/bulk-orders"       element={<AdminBulkOrders />} />
         <Route path="/admin/testimonials"      element={<AdminTestimonials />} />
+        <Route path="/admin/users"             element={<AdminUsers />} />
         {/* ── User Dashboard Route (NO Navbar/Footer) ── */}
         <Route path="/dashboard"               element={<UserDashboard />} />
        

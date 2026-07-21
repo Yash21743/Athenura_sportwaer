@@ -61,6 +61,19 @@ const UserSidebar = ({ activeTab, setActiveTab, user = {}, isMobileOpen, onMobil
   };
 
   const handleLogout = () => {
+    // Save current cart under user-specific key before clearing
+    try {
+      const activeUser = localStorage.getItem('csw_active_user');
+      if (activeUser) {
+        const currentCart = localStorage.getItem('csw_cart_items');
+        if (currentCart) localStorage.setItem(`csw_cart_${activeUser}`, currentCart);
+        localStorage.removeItem('csw_active_user');
+      }
+      localStorage.removeItem('csw_cart_items');
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (err) {
+      console.error('Cart save/clear failed:', err);
+    }
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("csw_is_logged_in");

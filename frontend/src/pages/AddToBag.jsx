@@ -13,7 +13,11 @@ const AddToBag = () => {
   const [discountPercent, setDiscountPercent] = useState(0);
   const [promoError, setPromoError] = useState('');
   const [promoSuccess, setPromoSuccess] = useState('');
-  const [checkoutStep, setCheckoutStep] = useState('cart'); 
+  const [checkoutStep, setCheckoutStep] = useState('cart');
+  const [showLoginWall, setShowLoginWall] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    try { return localStorage.getItem('csw_is_logged_in') === 'true'; } catch { return false; }
+  });
   
   
   const [addressForm, setAddressForm] = useState({
@@ -48,12 +52,21 @@ const AddToBag = () => {
       loadCart();
     };
 
+    // When user logs in from Navbar → update isLoggedIn + hide login wall
+    const handleUserLogin = () => {
+      const loggedIn = localStorage.getItem('csw_is_logged_in') === 'true';
+      setIsLoggedIn(loggedIn);
+      if (loggedIn) setShowLoginWall(false);
+    };
+
     window.addEventListener('cartUpdated', handleCartUpdate);
     window.addEventListener('storage', handleCartUpdate);
+    window.addEventListener('userLoggedIn', handleUserLogin);
 
     return () => {
       window.removeEventListener('cartUpdated', handleCartUpdate);
       window.removeEventListener('storage', handleCartUpdate);
+      window.removeEventListener('userLoggedIn', handleUserLogin);
     };
   }, []);
 
@@ -260,6 +273,22 @@ const AddToBag = () => {
   .promo-input { width: 100%; padding: 10px 12px; }
   .promo-btn { width: 100%; padding: 10px 12px; text-align: center; }
 }
+
+/* ── Responsive button widths in summary card ── */
+@media (max-width: 992px) {
+  .cart-proceed-btn {
+    max-width: 300px !important;
+    width: auto !important;
+    margin: 0 auto !important;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+  .cart-loginwall-btns {
+    max-width: 280px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
   `;
 
   return (
@@ -451,22 +480,93 @@ const AddToBag = () => {
                 </div>
 
                 {/* Proceed button */}
-                <button
-                  onClick={() => setCheckoutStep('shipping')}
-                  style={{
-                    width: '100%', padding: '16px', 
-                    background: 'linear-gradient(135deg, #0A7F6E 0%, #14a38f 100%)', 
-                    color: '#fff', borderRadius: '14px', fontSize: '13px', fontWeight: 800, border: 'none', 
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', 
-                    fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', 
-                    transition: 'all 0.3s ease', boxShadow: '0 8px 20px rgba(10, 127, 110, 0.3)'
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(10, 127, 110, 0.45)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(10, 127, 110, 0.3)'; }}
-                >
-                  <span>Proceed to Shipping</span>
-                  <CreditCard size={16} />
-                </button>
+                {showLoginWall ? (
+                  /* ── Login Wall (shown when guest tries to checkout) ── */
+                  <div style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1.5px solid rgba(20,168,137,0.4)',
+                    borderRadius: '14px',
+                    padding: '20px',
+                    textAlign: 'center',
+                  }}>
+                    <div style={{
+                      width: '44px', height: '44px', borderRadius: '50%',
+                      background: 'linear-gradient(135deg,#0a3d33,#14a889)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      margin: '0 auto 12px',
+                    }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                    </div>
+                    <p style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: '14px', color: '#ffffff', marginBottom: '4px' }}>
+                      Login required to checkout
+                    </p>
+                    <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginBottom: '16px', fontWeight: 400 }}>
+                      Your cart items are saved. Sign in to place your order.
+                    </p>
+                    <div className="cart-loginwall-btns" style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        onClick={() => {
+                          window.dispatchEvent(new CustomEvent('openSignIn'));
+                        }}
+                        style={{
+                          flex: 1, padding: '10px 0', borderRadius: '10px',
+                          border: '1.5px solid #14a889', background: 'transparent',
+                          color: '#14a889', fontWeight: 700, fontSize: '12px', cursor: 'pointer',
+                          fontFamily: 'Montserrat, sans-serif',
+                        }}
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        onClick={() => {
+                          window.dispatchEvent(new CustomEvent('openRegister'));
+                        }}
+                        style={{
+                          flex: 1, padding: '10px 0', borderRadius: '10px', border: 'none',
+                          background: 'linear-gradient(135deg,#0a3d33,#14a889)', color: '#fff',
+                          fontWeight: 700, fontSize: '12px', cursor: 'pointer',
+                          fontFamily: 'Montserrat, sans-serif',
+                        }}
+                      >
+                        Register
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => setShowLoginWall(false)}
+                      style={{
+                        marginTop: '10px', background: 'none', border: 'none',
+                        fontSize: '11px', color: 'rgba(255,255,255,0.35)', cursor: 'pointer',
+                        textDecoration: 'underline',
+                      }}
+                    >
+                      Continue browsing as guest
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="cart-proceed-btn"
+                    onClick={() => {
+                      if (!isLoggedIn) { setShowLoginWall(true); return; }
+                      setCheckoutStep('shipping');
+                    }}
+                    style={{
+                      width: '100%', padding: '16px',
+                      background: 'linear-gradient(135deg, #0A7F6E 0%, #14a38f 100%)',
+                      color: '#fff', borderRadius: '14px', fontSize: '13px', fontWeight: 800, border: 'none',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                      fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em',
+                      transition: 'all 0.3s ease', boxShadow: '0 8px 20px rgba(10, 127, 110, 0.3)'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(10, 127, 110, 0.45)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(10, 127, 110, 0.3)'; }}
+                  >
+                    <span>Proceed to Shipping</span>
+                    <CreditCard size={16} />
+                  </button>
+                )}
 
                 {/* Safety Badge */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '20px', fontSize: '11px', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 300, justifyContent: 'center' }}>

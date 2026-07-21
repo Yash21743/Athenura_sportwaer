@@ -61,7 +61,7 @@ const OrderHistory = ({ orders }) => {
       {orders.length === 0 ? (
         <Card>
           <div style={{ textAlign: "center", padding: "40px 20px" }}>
-            <Clock size={48} className="mx-auto" style={{ color: "#94a3b8", marginBottom: "16px" }} />
+            <Clock size={48} style={{ color: "#94a3b8", marginBottom: "16px", display: "block", margin: "0 auto 16px" }} />
             <h3 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 700, fontSize: "16px", color: "#0f172a", margin: 0 }}>No orders found</h3>
             <p style={{ color: "#64748b", fontSize: "12px", fontFamily: "'Poppins', sans-serif", marginTop: "6px", margin: 0 }}>
               You haven't placed any orders yet.

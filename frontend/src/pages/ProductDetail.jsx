@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -9,6 +9,90 @@ import {
 import RelatedProducts from '../components/products/RelatedProducts';
 import { mockProducts } from '../services/mockProducts';
 import API from '../services/api';
+
+/* ─── B2B Form Constants ─── */
+const PHONE_DISPLAY = "+91 XXXXXXXXXX";
+const CATEGORIES = ["Male", "Female", "Kids", "Unisex"];
+const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+const QUANTITY_RANGES = [
+  { value: "50-100", label: "50 – 100 units", max: 100 },
+  { value: "100-250", label: "100 – 250 units", max: 250 },
+  { value: "250-500", label: "250 – 500 units", max: 500 },
+  { value: "500-1000", label: "500 – 1,000 units", max: 1000 },
+  { value: "1000+", label: "1,000+ units", max: Infinity },
+];
+
+const boStyles = `
+.bo-required { color: #0A7F6E; }
+.bo-form { display: flex; flex-direction: column; gap: 1rem; }
+.bo-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 520px) { .bo-field-row { grid-template-columns: 1fr; } }
+.bo-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.bo-label { font-size: 0.78rem; font-weight: 600; color: #444; letter-spacing: 0.05em; text-transform: uppercase; }
+.bo-input, .bo-textarea, .bo-select {
+  padding: 0.75rem 1rem; border: 1.5px solid #e5e5e5;
+  border-radius: 0.625rem; font-size: 0.95rem; font-family: 'Inter', sans-serif;
+  color: #111; background: #fafafa; outline: none; width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.bo-input:focus, .bo-textarea:focus, .bo-select:focus {
+  border-color: #0A7F6E; box-shadow: 0 0 0 3px rgba(10,127,110,0.12); background: #fff;
+}
+.bo-textarea { resize: vertical; min-height: 110px; }
+.bo-select {
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23999' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1rem; padding-right: 2.5rem;
+}
+.bo-radio-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.bo-radio-label {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.55rem 1rem; border-radius: 999px;
+  border: 1.5px solid #e5e5e5; cursor: pointer; font-size: 0.88rem;
+  font-weight: 500; color: #555; transition: border-color 0.2s, background 0.2s, color 0.2s;
+  user-select: none;
+}
+.bo-radio-label input { display: none; }
+.bo-radio-label.selected { border-color: #0A7F6E; background: rgba(10,127,110,0.07); color: #0A7F6E; font-weight: 600; }
+.bo-size-grid { display: flex; gap: 1rem; flex-wrap: wrap; }
+.bo-size-chip { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.bo-size-chip-label {
+  display: flex; align-items: center; justify-content: center;
+  width: 54px; height: 54px; border-radius: 50%;
+  border: 1.5px solid #e5e5e5; background: #fff;
+  font-size: 0.85rem; font-weight: 600; color: #555;
+  cursor: pointer; user-select: none;
+  transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.15s;
+}
+.bo-size-chip-label:hover { border-color: rgba(10,127,110,0.5); transform: translateY(-2px); }
+.bo-size-chip.selected .bo-size-chip-label {
+  border-color: #0A7F6E; background: #0A7F6E; color: #fff;
+  box-shadow: 0 4px 14px rgba(10,127,110,0.3);
+}
+.bo-size-chip-label input { display: none; }
+.bo-size-chip-qty {
+  width: 54px; padding: 0.35rem 0.4rem; border: 1.5px solid #e5e5e5;
+  border-radius: 0.5rem; font-size: 0.8rem; text-align: center;
+  background: #fff; outline: none; transition: border-color 0.2s;
+}
+.bo-size-chip-qty:focus { border-color: #0A7F6E; }
+.bo-size-status { font-size: 0.82rem; font-weight: 600; margin-top: 0.5rem; }
+.bo-size-status-red { color: #e0433d; }
+.bo-size-status-green { color: #148f6f; }
+.bo-input[type="date"] { cursor: pointer; }
+.bo-submit-btn {
+  display: flex; align-items: center; justify-content: center; gap: 0.65rem;
+  padding: 0.95rem 2rem; border-radius: 999px; background: #0A7F6E; color: #fff;
+  font-size: 0.9rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  border: none; cursor: pointer; width: 100%;
+  transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(10,127,110,0.30);
+}
+.bo-submit-btn:hover { transform: translateY(-2px); background: #086053; box-shadow: 0 8px 24px rgba(10,127,110,0.35); }
+.bo-submit-btn:active { transform: translateY(0); }
+.bo-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+.bo-disclaimer { font-size: 0.77rem; color: #aaa; text-align: center; line-height: 1.6; margin-top: 0.25rem; }
+`;
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -31,15 +115,11 @@ const ProductDetail = () => {
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
 
   // Inquiry form states
-  const [inquiryName, setInquiryName] = useState('');
-  const [inquiryEmail, setInquiryEmail] = useState('');
-  const [inquiryPhone, setInquiryPhone] = useState('');
-  const [inquiryOrg, setInquiryOrg] = useState('');
-  const [inquiryCategory, setInquiryCategory] = useState('');
-  const [inquiryQuantityRange, setInquiryQuantityRange] = useState('');
-  const [inquiryPrinting, setInquiryPrinting] = useState('');
-  const [inquiryDeliveryDate, setInquiryDeliveryDate] = useState('');
-  const [inquiryAdditionalReq, setInquiryAdditionalReq] = useState('');
+  const [inquiryForm, setInquiryForm] = useState({
+    fullName: "", orgName: "", phone: "", email: "",
+    category: "", quantity: "", sizes: [], customPrinting: "", deliveryDate: "", requirements: "",
+  });
+  const [sizeQuantities, setSizeQuantities] = useState({});
   const [inquirySubmitting, setInquirySubmitting] = useState(false);
   const [inquirySuccess, setInquirySuccess] = useState(false);
 
@@ -94,31 +174,88 @@ const ProductDetail = () => {
     setInquirySuccess(false);
   }, [id]);
 
+  // Inquiry form handlers
+  const handleInquiryChange = (e) => {
+    const { name, value } = e.target;
+    setInquiryForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const setInquiryPrinting = (val) => setInquiryForm((prev) => ({ ...prev, customPrinting: val }));
+
+  const toggleInquirySize = (val) => {
+    setInquiryForm((prev) => ({
+      ...prev,
+      sizes: prev.sizes.includes(val)
+        ? prev.sizes.filter((s) => s !== val)
+        : [...prev.sizes, val],
+    }));
+    setSizeQuantities((prev) => {
+      if (prev[val] !== undefined) {
+        const next = { ...prev };
+        delete next[val];
+        return next;
+      }
+      return { ...prev, [val]: "" };
+    });
+  };
+
+  const updateInquirySizeQty = (val, qty) => {
+    setSizeQuantities((prev) => ({ ...prev, [val]: qty }));
+  };
+
+  const selectedRange = useMemo(
+    () => QUANTITY_RANGES.find((q) => q.value === inquiryForm.quantity),
+    [inquiryForm.quantity]
+  );
+
+  const totalSizeQty = useMemo(
+    () => Object.values(sizeQuantities).reduce((sum, v) => sum + (parseInt(v, 10) || 0), 0),
+    [sizeQuantities]
+  );
+
+  const sizeQtyExceeded = !!selectedRange && Number.isFinite(selectedRange.max) && totalSizeQty > selectedRange.max;
+  const sizeQtyRemaining = selectedRange && Number.isFinite(selectedRange.max) ? selectedRange.max - totalSizeQty : null;
+
   // Handle Inquiry Form Submission
   const handleInquirySubmit = async (e) => {
     e.preventDefault();
-    if (!inquiryName || !inquiryOrg || !inquiryEmail || !inquiryPhone || !inquiryCategory || !inquiryQuantityRange || !inquiryPrinting) {
+    if (!inquiryForm.fullName || !inquiryForm.orgName || !inquiryForm.phone || !inquiryForm.email || !inquiryForm.category || !inquiryForm.quantity || !inquiryForm.customPrinting) {
       toast.error('Please fill in all required fields.');
+      return;
+    }
+    if (sizeQtyExceeded) {
+      toast.error("Please increase your quantity — size quantities exceed the selected range.");
       return;
     }
 
     try {
       setInquirySubmitting(true);
+
+      const formattedSizes = inquiryForm.sizes.length > 0
+        ? inquiryForm.sizes.map(sz => `${sz}: ${sizeQuantities[sz] || 0}`).join(', ')
+        : 'None';
+
+      const detailedMessage = `B2B Product Enquiry:\nProduct: ${product.name} (${product.code || 'N/A'})\nOrg: ${inquiryForm.orgName}\nGender: ${inquiryForm.category}\nQty Range: ${inquiryForm.quantity}\nSizes: ${formattedSizes}\nPrinting: ${inquiryForm.customPrinting}\nDelivery: ${inquiryForm.deliveryDate || 'Not specified'}\nNotes: ${inquiryForm.requirements || 'None'}`;
+
       const inquiryPayload = {
         product: product._id,
         productName: product.name,
         productCode: product.code,
-        name: inquiryName,
-        email: inquiryEmail,
-        phone: inquiryPhone,
-        organization: inquiryOrg,
-        category: inquiryCategory,
-        quantityRange: inquiryQuantityRange,
-        printing: inquiryPrinting,
-        deliveryDate: inquiryDeliveryDate,
-        additionalRequirements: inquiryAdditionalReq,
+        name: inquiryForm.fullName,
+        email: inquiryForm.email,
+        phone: inquiryForm.phone,
+        mobileNumber: inquiryForm.phone,
+        organization: inquiryForm.orgName,
+        category: inquiryForm.category,
+        quantityRange: inquiryForm.quantity,
+        printing: inquiryForm.customPrinting,
+        deliveryDate: inquiryForm.deliveryDate,
+        additionalRequirements: inquiryForm.requirements,
         size: selectedSize,
-        color: product.colorNames ? product.colorNames[selectedColorIndex] : 'Default'
+        color: product.colorNames ? product.colorNames[selectedColorIndex] : 'Default',
+        sizes: inquiryForm.sizes,
+        sizeQuantities,
+        message: detailedMessage.slice(0, 999)
       };
 
       try {
@@ -132,11 +269,6 @@ const ProductDetail = () => {
 
       setInquirySubmitting(false);
       setInquirySuccess(true);
-      setInquiryCategory('');
-      setInquiryQuantityRange('');
-      setInquiryPrinting('');
-      setInquiryDeliveryDate('');
-      setInquiryAdditionalReq('');
 
     } catch (err) {
       setInquirySubmitting(false);
@@ -263,17 +395,21 @@ const ProductDetail = () => {
     
     .pd-price-box { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 20px 24px; background: #EAEBE3; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; flex-wrap: wrap; gap: 16px; }
 
-    @media (max-width: 1024px) {
-      .pd-grid { gap: 32px; }
-      .pd-img-col { grid-column: span 6; }
-      .pd-info-col { grid-column: span 6; }
-    }
-    @media (max-width: 768px) {
+    @media (max-width: 1100px) {
       .pd-header { padding: 24px 24px; }
       .pd-container { padding: 0 24px; }
-      .pd-card { padding: 24px; }
+      .pd-card { padding: 28px; }
       .pd-grid { display: flex; flex-direction: column; gap: 32px; }
       .pd-form-grid { display: flex; flex-direction: column; }
+      .pd-info-col { max-width: 780px; width: 100%; margin: 0 auto; }
+      .pd-img-col { max-width: 780px; width: 100%; margin: 0 auto; }
+    }
+    @media (max-width: 768px) {
+      .pd-header { padding: 24px 16px; }
+      .pd-container { padding: 0 16px; }
+      .pd-card { padding: 20px; }
+      .pd-info-col { max-width: 100%; }
+      .pd-img-col { max-width: 100%; }
     }
     @media (max-width: 480px) {
       .pd-header { padding: 16px; flex-direction: column; align-items: flex-start; }
@@ -620,6 +756,7 @@ const ProductDetail = () => {
                     </div>
                   </div>
 
+                  <style>{boStyles}</style>
                   <AnimatePresence mode="wait">
                     {inquirySuccess ? (
                       <motion.div
@@ -634,11 +771,15 @@ const ProductDetail = () => {
                         </div>
                         <h4 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '12px', color: '#111111', fontFamily: 'Montserrat, sans-serif' }}>Quote Request Sent!</h4>
                         <p style={{ fontSize: '15px', color: 'rgba(0,0,0,0.6)', maxWidth: '420px', margin: '0 auto 32px', lineHeight: 1.6 }}>
-                          Thank you, <strong style={{ color: '#0A7F6E' }}>{inquiryName}</strong>! We've received your request. Our sales team will get back to you within 24 hours with a custom proposal.
+                          Thank you, <strong style={{ color: '#0A7F6E' }}>{inquiryForm.fullName || 'there'}</strong>! We've received your request. Our sales team will get back to you within 24 hours with a custom proposal.
                         </p>
                         <button
                           type="button"
-                          onClick={() => setInquirySuccess(false)}
+                          onClick={() => {
+                            setInquirySuccess(false);
+                            setInquiryForm({ fullName: "", orgName: "", phone: "", email: "", category: "", quantity: "", sizes: [], customPrinting: "", deliveryDate: "", requirements: "" });
+                            setSizeQuantities({});
+                          }}
                           style={{ padding: '16px 32px', background: 'rgba(0,0,0,0.05)', color: '#111111', fontWeight: 700, fontSize: '13px', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.1)', cursor: 'pointer', transition: 'all 0.2s', textTransform: 'uppercase', letterSpacing: '0.05em' }}
                           onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
                           onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)' }}
@@ -650,186 +791,138 @@ const ProductDetail = () => {
                       <motion.form
                         key="form"
                         onSubmit={handleInquirySubmit}
-                        className="pd-form-grid"
-                        style={{ gap: '28px 20px' }}
+                        className="bo-form"
+                        noValidate
                       >
-                        {/* Name */}
-                        <div>
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
-                            FULL NAME <span style={{ color: '#0A7F6E' }}>*</span>
-                          </label>
-                          <input type="text" required value={inquiryName} onChange={(e) => setInquiryName(e.target.value)} placeholder="Enter your name"
-                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: '#111', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
-                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
-                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
-                          />
+                        {/* Row 1: Full Name + Org Name */}
+                        <div className="bo-field-row">
+                          <div className="bo-field">
+                            <label className="bo-label" htmlFor="bo-fullName">Full Name <span className="bo-required">*</span></label>
+                            <input id="bo-fullName" name="fullName" className="bo-input" type="text" placeholder="Enter your name" value={inquiryForm.fullName} onChange={handleInquiryChange} required />
+                          </div>
+                          <div className="bo-field">
+                            <label className="bo-label" htmlFor="bo-orgName">Organization Name <span className="bo-required">*</span></label>
+                            <input id="bo-orgName" name="orgName" className="bo-input" type="text" placeholder="ABC Sports Club" value={inquiryForm.orgName} onChange={handleInquiryChange} required />
+                          </div>
                         </div>
 
-                        {/* Organization */}
-                        <div>
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
-                            ORGANIZATION NAME <span style={{ color: '#0A7F6E' }}>*</span>
-                          </label>
-                          <input type="text" required value={inquiryOrg} onChange={(e) => setInquiryOrg(e.target.value)} placeholder="ABC Sports Club"
-                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: '#111', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
-                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
-                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
-                          />
+                        {/* Row 2: Phone + Email */}
+                        <div className="bo-field-row">
+                          <div className="bo-field">
+                            <label className="bo-label" htmlFor="bo-phone">Phone Number <span className="bo-required">*</span></label>
+                            <input id="bo-phone" name="phone" className="bo-input" type="tel" placeholder={PHONE_DISPLAY} value={inquiryForm.phone} onChange={handleInquiryChange} required />
+                          </div>
+                          <div className="bo-field">
+                            <label className="bo-label" htmlFor="bo-email">Email Address <span className="bo-required">*</span></label>
+                            <input id="bo-email" name="email" className="bo-input" type="email" placeholder="you@company.com" value={inquiryForm.email} onChange={handleInquiryChange} required />
+                          </div>
                         </div>
 
-                        {/* Phone */}
-                        <div>
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
-                            PHONE NUMBER <span style={{ color: '#0A7F6E' }}>*</span>
-                          </label>
-                          <input type="tel" required value={inquiryPhone} onChange={(e) => setInquiryPhone(e.target.value)} placeholder="+91 8755578878"
-                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: '#111', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
-                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
-                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
-                          />
+                        {/* Row 3: Gender + Quantity */}
+                        <div className="bo-field-row">
+                          <div className="bo-field">
+                            <label className="bo-label" htmlFor="bo-category">Gender <span className="bo-required">*</span></label>
+                            <select id="bo-category" name="category" className="bo-select" value={inquiryForm.category} onChange={handleInquiryChange} required>
+                              <option value="">Select gender...</option>
+                              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                          </div>
+                          <div className="bo-field">
+                            <label className="bo-label" htmlFor="bo-quantity">Quantity Required <span className="bo-required">*</span></label>
+                            <select id="bo-quantity" name="quantity" className="bo-select" value={inquiryForm.quantity} onChange={handleInquiryChange} required>
+                              <option value="">Select range...</option>
+                              {QUANTITY_RANGES.map((q) => <option key={q.value} value={q.value}>{q.label}</option>)}
+                            </select>
+                          </div>
                         </div>
 
-                        {/* Email */}
-                        <div>
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
-                            EMAIL ADDRESS <span style={{ color: '#0A7F6E' }}>*</span>
-                          </label>
-                          <input type="email" required value={inquiryEmail} onChange={(e) => setInquiryEmail(e.target.value)} placeholder="you@company.com"
-                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: '#111', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
-                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
-                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
-                          />
-                        </div>
-
-                        {/* Product Category */}
-                        <div>
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
-                            PRODUCT CATEGORY <span style={{ color: '#0A7F6E' }}>*</span>
-                          </label>
-                          <select required value={inquiryCategory} onChange={(e) => setInquiryCategory(e.target.value)}
-                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: inquiryCategory ? '#111' : 'rgba(0,0,0,0.4)', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', appearance: 'none', backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23666\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 20px center', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
-                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
-                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
-                          >
-                            <option value="" disabled>Select category...</option>
-                            <option value="T-Shirts">T-Shirts</option>
-                            <option value="Jerseys">Jerseys</option>
-                            <option value="Shorts">Shorts</option>
-                            <option value="Tracksuits">Tracksuits</option>
-                            <option value="Other">Other</option>
-                          </select>
-                        </div>
-
-                        {/* Quantity Required */}
-                        <div>
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
-                            QUANTITY REQUIRED <span style={{ color: '#0A7F6E' }}>*</span>
-                          </label>
-                          <select required value={inquiryQuantityRange} onChange={(e) => setInquiryQuantityRange(e.target.value)}
-                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: inquiryQuantityRange ? '#111' : 'rgba(0,0,0,0.4)', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', appearance: 'none', backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23666\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 20px center', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)' }}
-                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
-                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
-                          >
-                            <option value="" disabled>Select range...</option>
-                            <option value="10-50">10 - 50 Units</option>
-                            <option value="51-100">51 - 100 Units</option>
-                            <option value="101-500">101 - 500 Units</option>
-                            <option value="500+">500+ Units</option>
-                          </select>
+                        {/* Sizes Required */}
+                        <div className="bo-field">
+                          <label className="bo-label">Sizes Required</label>
+                          <div className="bo-size-grid">
+                            {SIZES.map((sz) => {
+                              const active = inquiryForm.sizes.includes(sz);
+                              return (
+                                <div key={sz} className={`bo-size-chip${active ? " selected" : ""}`}>
+                                  <label className="bo-size-chip-label">
+                                    <input type="checkbox" checked={active} onChange={() => toggleInquirySize(sz)} />
+                                    {sz}
+                                  </label>
+                                  {active && (
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      className="bo-size-chip-qty"
+                                      placeholder="Qty"
+                                      value={sizeQuantities[sz] ?? ""}
+                                      onChange={(e) => updateInquirySizeQty(sz, e.target.value)}
+                                    />
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {inquiryForm.sizes.length > 0 && (
+                            <p className={`bo-size-status ${sizeQtyExceeded ? "bo-size-status-red" : "bo-size-status-green"}`}>
+                              {!inquiryForm.quantity
+                                ? "Select a quantity range above first."
+                                : sizeQtyExceeded
+                                ? `Total ${totalSizeQty} exceeds your quantity range — please increase your quantity.`
+                                : Number.isFinite(sizeQtyRemaining)
+                                ? `${sizeQtyRemaining} unit${sizeQtyRemaining === 1 ? "" : "s"} left to allocate.`
+                                : `${totalSizeQty} units allocated so far.`}
+                            </p>
+                          )}
                         </div>
 
                         {/* Custom Printing */}
-                        <div className="pd-form-full">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '14px' }}>
-                            CUSTOM PRINTING REQUIRED <span style={{ color: '#0A7F6E' }}>*</span>
-                          </label>
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-                            {['Yes – Logo / Text', 'Yes – Full Sublimation', 'Yes – Embroidery', 'No Printing'].map((option) => (
-                              <button
-                                key={option}
-                                type="button"
-                                className={`custom-radio-btn ${inquiryPrinting === option ? 'selected' : ''}`}
-                                onClick={() => setInquiryPrinting(option)}
-                                style={{
-                                  padding: '14px 24px',
-                                  borderRadius: '30px',
-                                  border: inquiryPrinting === option ? '1px solid #0A7F6E' : '1px solid rgba(0,0,0,0.1)',
-                                  background: inquiryPrinting === option ? 'rgba(10,127,110,0.08)' : '#ffffff',
-                                  color: inquiryPrinting === option ? '#0A7F6E' : '#333',
-                                  fontSize: '13px',
-                                  fontWeight: inquiryPrinting === option ? 700 : 500,
-                                  cursor: 'pointer',
-                                  transition: 'all 0.2s',
-                                  boxShadow: inquiryPrinting === option ? '0 4px 12px rgba(10,127,110,0.1)' : '0 2px 6px rgba(0,0,0,0.02)'
-                                }}
-                                onMouseEnter={(e) => { if (inquiryPrinting !== option) { e.currentTarget.style.background = '#f9f9f9'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; } }}
-                                onMouseLeave={(e) => { if (inquiryPrinting !== option) { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; } }}
-                              >
-                                {option}
-                              </button>
+                        <div className="bo-field">
+                          <label className="bo-label">Custom Printing Required <span className="bo-required">*</span></label>
+                          <div className="bo-radio-group">
+                            {["Yes – Logo / Text", "Yes – Full Sublimation", "Yes – Embroidery", "No Printing"].map((opt) => (
+                              <label key={opt} className={`bo-radio-label${inquiryForm.customPrinting === opt ? " selected" : ""}`}>
+                                <input type="radio" name="customPrinting" value={opt} checked={inquiryForm.customPrinting === opt} onChange={() => setInquiryPrinting(opt)} />
+                                {opt}
+                              </label>
                             ))}
                           </div>
                         </div>
 
                         {/* Preferred Delivery Date */}
-                        <div className="pd-form-full">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
-                            PREFERRED DELIVERY DATE
-                          </label>
+                        <div className="bo-field">
+                          <label className="bo-label" htmlFor="bo-deliveryDate">Preferred Delivery Date</label>
                           <input
+                            id="bo-deliveryDate"
+                            name="deliveryDate"
+                            className="bo-input"
                             type="date"
-                            value={inquiryDeliveryDate}
-                            onChange={(e) => setInquiryDeliveryDate(e.target.value)}
-                            min={new Date().toISOString().split('T')[0]}
-                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: inquiryDeliveryDate ? '#111' : 'rgba(0,0,0,0.4)', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)', fontFamily: 'inherit' }}
-                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
-                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
+                            min={new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0]}
+                            value={inquiryForm.deliveryDate}
+                            onChange={handleInquiryChange}
                           />
-                          <p style={{ marginTop: '6px', fontSize: '11px', color: 'rgba(0,0,0,0.38)', fontStyle: 'italic' }}>Optional — helps us plan production schedule</p>
                         </div>
 
                         {/* Additional Requirements */}
-                        <div className="pd-form-full">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
-                            ADDITIONAL REQUIREMENTS
-                          </label>
+                        <div className="bo-field">
+                          <label className="bo-label" htmlFor="bo-requirements">Additional Requirements</label>
                           <textarea
-                            value={inquiryAdditionalReq}
-                            onChange={(e) => setInquiryAdditionalReq(e.target.value)}
+                            id="bo-requirements"
+                            name="requirements"
+                            className="bo-textarea"
                             placeholder="Sizes breakdown, color preferences, reference designs, special instructions..."
-                            rows={4}
-                            style={{ width: '100%', padding: '16px 20px', background: 'rgba(0,0,0,0.02)', border: '1px solid transparent', borderRadius: '14px', color: '#111', fontSize: '14px', fontWeight: 500, outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)', resize: 'vertical', minHeight: '110px', fontFamily: 'inherit', lineHeight: 1.6 }}
-                            onFocus={(e) => { e.currentTarget.style.borderColor = '#0A7F6E'; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(10,127,110,0.1)'; }}
-                            onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.01)'; }}
+                            value={inquiryForm.requirements}
+                            onChange={handleInquiryChange}
                           />
-                          <p style={{ marginTop: '6px', fontSize: '11px', color: 'rgba(0,0,0,0.38)', fontStyle: 'italic' }}>Optional — any special customization or delivery notes</p>
                         </div>
 
-                        {/* Submit */}
-                        <div className="pd-form-full" style={{ marginTop: '32px' }}>
-                          <button type="submit" disabled={inquirySubmitting}
-                            style={{
-                              width: '100%',
-                              padding: '20px',
-                              background: inquirySubmitting ? '#555' : 'linear-gradient(135deg, #0A7F6E 0%, #086053 100%)',
-                              color: '#ffffff', borderRadius: '16px', fontSize: '15px', fontWeight: 800, border: 'none',
-                              cursor: inquirySubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-                              textTransform: 'uppercase', letterSpacing: '0.05em',
-                              transition: 'all 0.3s ease', opacity: inquirySubmitting ? 0.7 : 1,
-                              boxShadow: inquirySubmitting ? 'none' : '0 12px 24px rgba(10, 127, 110, 0.3)'
-                            }}
-                            onMouseEnter={(e) => { if (!inquirySubmitting) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 32px rgba(10, 127, 110, 0.4)'; } }}
-                            onMouseLeave={(e) => { if (!inquirySubmitting) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(10, 127, 110, 0.3)'; } }}
-                          >
-                            {inquirySubmitting ? (
-                              <span>Processing...</span>
-                            ) : (
-                              <>
-                                Submit Enquiry <Send size={18} />
-                              </>
-                            )}
-                          </button>
-                        </div>
+                        {/* Submit Button */}
+                        <button type="submit" className="bo-submit-btn" disabled={inquirySubmitting}>
+                          {inquirySubmitting ? "Submitting…" : <><Send size={18} /> Submit B2B Enquiry</>}
+                        </button>
+                        <p className="bo-disclaimer">
+                          By submitting, you agree our team will contact you within 24 hours.
+                          Your data is safe and never shared with third parties.
+                        </p>
                       </motion.form>
                     )}
                   </AnimatePresence>

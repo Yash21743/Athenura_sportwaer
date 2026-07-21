@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Menu, ShoppingBag, User, X, LogIn, Package, Settings, ChevronDown, UserPlus } from "lucide-react"
 import { Link, NavLink as RouterNavLink, useLocation, useNavigate } from "react-router-dom"
@@ -606,6 +606,9 @@ export default function Navbar({ cartCount }) {
   })
   const [showCartToast, setShowCartToast] = useState(false)
   const [redirectAfterLogin, setRedirectAfterLogin] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotStatus, setForgotStatus] = useState('idle') // 'idle' | 'sent'
 
   const accountRef = useRef(null)
   const cartRef = useRef(null)
@@ -620,21 +623,89 @@ export default function Navbar({ cartCount }) {
     }
   }
 
+  // ── Cart helpers ────────────────────────────────────────────────
+  const mergeAndLoadCart = (userEmail) => {
+    try {
+      const userKey = `csw_cart_${userEmail}`;
+      const savedCart  = JSON.parse(localStorage.getItem(userKey)      || '[]');
+      const guestCart  = JSON.parse(localStorage.getItem('csw_cart_items') || '[]');
+      // Merge: add guest quantities on top of saved cart
+      const merged = [...savedCart];
+      guestCart.forEach(guestItem => {
+        const idx = merged.findIndex(
+          m => m._id === guestItem._id && m.size === guestItem.size && m.color === guestItem.color
+        );
+        if (idx > -1) {
+          merged[idx].quantity += guestItem.quantity;
+        } else {
+          merged.push(guestItem);
+        }
+      });
+      localStorage.setItem('csw_cart_items', JSON.stringify(merged));
+      localStorage.setItem('csw_active_user', userEmail);
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (err) {
+      console.error('Cart merge failed:', err);
+    }
+  };
+
+  const saveAndClearCart = () => {
+    try {
+      const activeUser = localStorage.getItem('csw_active_user');
+      if (activeUser) {
+        const currentCart = localStorage.getItem('csw_cart_items');
+        if (currentCart) localStorage.setItem(`csw_cart_${activeUser}`, currentCart);
+        localStorage.removeItem('csw_active_user');
+      }
+      localStorage.removeItem('csw_cart_items');
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (err) {
+      console.error('Cart save/clear failed:', err);
+    }
+  };
+  // ────────────────────────────────────────────────────────────────
+
+  const [signInError, setSignInError] = useState('')
+
   const handleSignInSubmit = (e) => {
     e.preventDefault()
-    console.log("Sign in attempt:", { email: signInEmail, password: signInPassword })
+    setSignInError('')
+    // Validate against localStorage users
+    try {
+      const raw = localStorage.getItem('csw_users')
+      const users = raw ? JSON.parse(raw) : []
+      const found = users.find(u => u.email.toLowerCase() === signInEmail.toLowerCase())
+      if (!found) {
+        setSignInError('Email not registered. Please register first.')
+        return
+      }
+      if (found.password !== signInPassword) {
+        setSignInError('Incorrect password. Please try again.')
+        return
+      }
+    } catch {
+      // If localStorage fails, allow login (fallback)
+    }
+    // ✅ Login success
+    mergeAndLoadCart(signInEmail)
     localStorage.setItem('csw_is_logged_in', 'true')
+    localStorage.setItem('csw_logged_user_email', signInEmail)
+    window.dispatchEvent(new CustomEvent('userLoggedIn'))
     setIsLoggedIn(true)
     setShowSignInForm(false)
     setAccountOpen(false)
+    setMobileOpen(false)
+    setMobileAccountOpen(false)
     setSignInEmail("")
     setSignInPassword("")
+    setSignInError('')
     if (redirectAfterLogin) {
       navigate('/cart')
     }
   }
 
   const handleLogout = () => {
+    saveAndClearCart()
     localStorage.removeItem('csw_is_logged_in')
     setIsLoggedIn(false)
     setAccountOpen(false)
@@ -653,22 +724,44 @@ export default function Navbar({ cartCount }) {
     setRegisterStatus("idle")
   }
 
+  const handleForgotPasswordSubmit = (e) => {
+    e.preventDefault()
+    // TODO: connect to backend API → send reset email
+    setForgotStatus('sent')
+  }
+
   const handleRegisterSubmit = (e) => {
     e.preventDefault()
     if (registerPassword !== registerConfirmPassword) {
       alert("Passwords do not match")
       return
     }
-    // TODO: wire this up to your actual registration logic
-    console.log("Register attempt:", {
-      name: registerName,
-      number: registerNumber,
-      email: registerEmail,
-      password: registerPassword,
-    })
+    // ── Check if email already registered ──
+    try {
+      const raw = localStorage.getItem('csw_users')
+      const existing = raw ? JSON.parse(raw) : []
+      if (existing.find(u => u.email.toLowerCase() === registerEmail.toLowerCase())) {
+        alert('This email is already registered. Please Sign In.')
+        return
+      }
+      // ── Save new user ──
+      const joinedOn = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+      const newUser = { name: registerName, email: registerEmail, phone: registerNumber, password: registerPassword, joinedOn }
+      existing.push(newUser)
+      localStorage.setItem('csw_users', JSON.stringify(existing))
+      // Notify admin users page if open
+      window.dispatchEvent(new CustomEvent('userRegistered'))
+    } catch {
+      // Silently continue even if localStorage fails
+    }
     setRegisterStatus("success")
+    mergeAndLoadCart(registerEmail)
     localStorage.setItem('csw_is_logged_in', 'true')
+    localStorage.setItem('csw_logged_user_email', registerEmail)
+    window.dispatchEvent(new CustomEvent('userLoggedIn'))
     setIsLoggedIn(true)
+    setMobileOpen(false)
+    setMobileAccountOpen(false)
     setTimeout(() => {
       setRegisterStatus("goToLogin")
       if (redirectAfterLogin) {
@@ -704,10 +797,45 @@ export default function Navbar({ cartCount }) {
     };
     window.addEventListener('showCartLoginPopup', handleShowCartPopup);
 
+    // From cart page login wall → open sign in form
+    const handleOpenSignIn = () => {
+      setRedirectAfterLogin(true);
+      if (window.innerWidth < 900) {
+        setMobileOpen(true);
+        setMobileAccountOpen(true);
+        setShowSignInForm(true);
+        setShowRegisterForm(false);
+      } else {
+        setAccountOpen(true);
+        setShowSignInForm(true);
+        setShowRegisterForm(false);
+      }
+    };
+
+    // From cart page login wall → open register form
+    const handleOpenRegister = () => {
+      setRedirectAfterLogin(true);
+      if (window.innerWidth < 900) {
+        setMobileOpen(true);
+        setMobileAccountOpen(true);
+        setShowRegisterForm(true);
+        setShowSignInForm(false);
+      } else {
+        setAccountOpen(true);
+        setShowRegisterForm(true);
+        setShowSignInForm(false);
+      }
+    };
+
+    window.addEventListener('openSignIn', handleOpenSignIn);
+    window.addEventListener('openRegister', handleOpenRegister);
+
     return () => {
       window.removeEventListener('cartUpdated', updateCartCount);
       window.removeEventListener('storage', updateCartCount);
       window.removeEventListener('showCartLoginPopup', handleShowCartPopup);
+      window.removeEventListener('openSignIn', handleOpenSignIn);
+      window.removeEventListener('openRegister', handleOpenRegister);
     };
   }, []);
 
@@ -957,6 +1085,31 @@ export default function Navbar({ cartCount }) {
                       Register
                     </button>
                   </div>
+                  {/* Divider */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.08)' }} />
+                    <span style={{ fontSize: '0.72rem', color: 'rgba(0,0,0,0.35)', fontWeight: 500 }}>or</span>
+                    <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.08)' }} />
+                  </div>
+                  {/* Continue as Guest */}
+                  <button
+                    onClick={() => {
+                      setShowCartToast(false);
+                      navigate('/cart');
+                    }}
+                    style={{
+                      width: '100%', padding: '0.5rem 0', borderRadius: '8px',
+                      border: '1.5px solid rgba(0,0,0,0.1)', background: 'transparent',
+                      color: 'rgba(0,0,0,0.55)', fontWeight: 600, fontSize: '0.82rem',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', gap: '0.4rem',
+                      transition: 'border-color 0.2s, color 0.2s',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#14a889'; e.currentTarget.style.color = '#0a3d33'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; e.currentTarget.style.color = 'rgba(0,0,0,0.55)'; }}
+                  >
+                    Continue as Guest →
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -986,10 +1139,60 @@ export default function Navbar({ cartCount }) {
                   transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <div className="desktop-account-head">
-                    {showSignInForm ? "Sign In" : showRegisterForm ? "Register" : "My Account"}
+                    {showForgotPassword ? "Reset Password" : showSignInForm ? "Sign In" : showRegisterForm ? "Register" : "My Account"}
                   </div>
 
-                  {showSignInForm ? (
+                  {showForgotPassword ? (
+                    /* ── Forgot Password Form (Desktop) ── */
+                    <form className="desktop-signin-form" onSubmit={handleForgotPasswordSubmit}>
+                      {forgotStatus === 'sent' ? (
+                        <div style={{ textAlign: 'center', padding: '8px 0 12px' }}>
+                          <div style={{
+                            width: '42px', height: '42px', borderRadius: '50%',
+                            background: 'linear-gradient(135deg,#0a3d33,#14a889)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            margin: '0 auto 12px',
+                          }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          </div>
+                          <p style={{ fontWeight: 700, fontSize: '13px', color: '#111', marginBottom: '4px' }}>Reset link sent!</p>
+                          <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '16px' }}>Check your email inbox.</p>
+                          <button
+                            type="button"
+                            className="desktop-signin-back"
+                            onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setForgotStatus('idle'); setShowSignInForm(true); }}
+                          >
+                            ← Back to Sign In
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '10px', lineHeight: 1.5 }}>
+                            Enter your registered email to receive a password reset link.
+                          </p>
+                          <input
+                            type="email"
+                            className="desktop-signin-input"
+                            placeholder="Your email address"
+                            value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)}
+                            required
+                            autoFocus
+                          />
+                          <button type="submit" className="desktop-signin-submit">Send Reset Link</button>
+                          <button
+                            type="button"
+                            className="desktop-signin-back"
+                            onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setForgotStatus('idle'); setShowSignInForm(true); }}
+                          >
+                            ← Back to Sign In
+                          </button>
+                        </>
+                      )}
+                    </form>
+                  ) : showSignInForm ? (
                     <form className="desktop-signin-form" onSubmit={handleSignInSubmit}>
                       <input
                         type="email"
@@ -1008,9 +1211,25 @@ export default function Navbar({ cartCount }) {
                         onChange={(e) => setSignInPassword(e.target.value)}
                         required
                       />
+                      <button
+                        type="button"
+                        style={{
+                          background: 'none', border: 'none', padding: '0 0 2px',
+                          fontSize: '11px', color: '#14a889', cursor: 'pointer',
+                          textAlign: 'right', width: '100%', fontWeight: 600,
+                        }}
+                        onClick={() => { setShowSignInForm(false); setShowForgotPassword(true); setForgotStatus('idle'); }}
+                      >
+                        Forgot Password?
+                      </button>
                       <button type="submit" className="desktop-signin-submit">
                         Sign In
                       </button>
+                      {signInError && (
+                        <p style={{ fontSize: '11px', color: '#ef4444', fontWeight: 500, textAlign: 'center', margin: '-4px 0 0' }}>
+                          {signInError}
+                        </p>
+                      )}
                       <button
                         type="button"
                         className="desktop-signin-back"
@@ -1227,7 +1446,56 @@ export default function Navbar({ cartCount }) {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                       >
-                        {showSignInForm ? (
+                        {showForgotPassword ? (
+                          /* ── Forgot Password Form (Mobile) ── */
+                          <form className="desktop-signin-form" onSubmit={handleForgotPasswordSubmit}>
+                            {forgotStatus === 'sent' ? (
+                              <div style={{ textAlign: 'center', padding: '8px 0 12px' }}>
+                                <div style={{
+                                  width: '42px', height: '42px', borderRadius: '50%',
+                                  background: 'linear-gradient(135deg,#0a3d33,#14a889)',
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  margin: '0 auto 12px',
+                                }}>
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                  </svg>
+                                </div>
+                                <p style={{ fontWeight: 700, fontSize: '13px', color: '#111', marginBottom: '4px' }}>Reset link sent!</p>
+                                <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '16px' }}>Check your email inbox.</p>
+                                <button
+                                  type="button"
+                                  className="desktop-signin-back"
+                                  onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setForgotStatus('idle'); setShowSignInForm(true); }}
+                                >
+                                  ← Back to Sign In
+                                </button>
+                              </div>
+                            ) : (
+                              <>
+                                <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '10px', lineHeight: 1.5 }}>
+                                  Enter your registered email to receive a password reset link.
+                                </p>
+                                <input
+                                  type="email"
+                                  className="desktop-signin-input"
+                                  placeholder="Your email address"
+                                  value={forgotEmail}
+                                  onChange={(e) => setForgotEmail(e.target.value)}
+                                  required
+                                />
+                                <button type="submit" className="desktop-signin-submit">Send Reset Link</button>
+                                <button
+                                  type="button"
+                                  className="desktop-signin-back"
+                                  onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setForgotStatus('idle'); setShowSignInForm(true); }}
+                                >
+                                  ← Back to Sign In
+                                </button>
+                              </>
+                            )}
+                          </form>
+                        ) : showSignInForm ? (
                           <form className="desktop-signin-form" onSubmit={handleSignInSubmit}>
                             <input
                               type="email"
@@ -1245,6 +1513,17 @@ export default function Navbar({ cartCount }) {
                               onChange={(e) => setSignInPassword(e.target.value)}
                               required
                             />
+                            <button
+                              type="button"
+                              style={{
+                                background: 'none', border: 'none', padding: '0 0 2px',
+                                fontSize: '11px', color: '#14a889', cursor: 'pointer',
+                                textAlign: 'right', width: '100%', fontWeight: 600,
+                              }}
+                              onClick={() => { setShowSignInForm(false); setShowForgotPassword(true); setForgotStatus('idle'); }}
+                            >
+                              Forgot Password?
+                            </button>
                             <button type="submit" className="desktop-signin-submit">
                               Sign In
                             </button>
