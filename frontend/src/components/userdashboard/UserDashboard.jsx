@@ -1,18 +1,34 @@
-import { useState, useEffect } from "react";
-import { Menu, ShoppingBag, ShoppingCart, CheckCircle, MapPin, User } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { useLocation, Outlet } from "react-router-dom";
+import {
+  Menu,
+  ShoppingBag,
+  ShoppingCart,
+  CheckCircle,
+} from "lucide-react";
+
 import UserSidebar from "../userlayout/UserSidebar";
 import API from "../../services/api";
 
-// Sub-components
 import OrderHistory from "./OrderHistory";
 import MyCart from "./MyCart";
 import Addresses from "./Addresses";
 import EditProfile from "./EditProfile";
 
-// Reusable card container matching clean light style
-const Card = ({ children, title, titleParts, sub, action, delay = 0 }) => {
+/* =====================================================
+   CARD COMPONENT
+===================================================== */
+
+const Card = ({
+  children,
+  title,
+  titleParts,
+  sub,
+  action,
+  delay = 0,
+}) => {
   return (
-    <div 
+    <div
       style={{
         background: "#ffffff",
         border: "1px solid #e2e8f0",
@@ -20,28 +36,84 @@ const Card = ({ children, title, titleParts, sub, action, delay = 0 }) => {
         padding: "24px",
         position: "relative",
         overflow: "hidden",
-        boxShadow: "0 15px 35px -8px rgba(0, 0, 0, 0.12), 0 4px 12px -5px rgba(0, 0, 0, 0.04)",
+        boxShadow:
+          "0 15px 35px -8px rgba(0, 0, 0, 0.12), 0 4px 12px -5px rgba(0, 0, 0, 0.04)",
         animation: "csw-fadein 0.45s ease both",
-        animationDelay: `${delay}s`,
+        animationDelay: delay + "s",
       }}
     >
       {(title || titleParts) && (
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", borderBottom: "1px solid #f1f5f9", paddingBottom: "14px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            marginBottom: "20px",
+            borderBottom: "1px solid #f1f5f9",
+            paddingBottom: "14px",
+          }}
+        >
           <div>
             {titleParts ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                <h3 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: "15px", letterSpacing: "0.3px", margin: 0, textTransform: "uppercase" }}>
-                  <span style={{ color: "#0f172a" }}>{titleParts.first} </span>
-                  <span style={{ color: "#0A7F6E" }}>{titleParts.second}</span>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "5px",
+                }}
+              >
+                <h3
+                  style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontWeight: 800,
+                    fontSize: "15px",
+                    letterSpacing: "0.3px",
+                    margin: 0,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  <span style={{ color: "#0f172a" }}>
+                    {titleParts.first}{" "}
+                  </span>
+                  <span style={{ color: "#0A7F6E" }}>
+                    {titleParts.second}
+                  </span>
                 </h3>
-                <div style={{ width: "30px", height: "2.5px", background: "#0A7F6E", borderRadius: "1px" }} />
+                <div
+                  style={{
+                    width: "30px",
+                    height: "2.5px",
+                    background: "#0A7F6E",
+                    borderRadius: "1px",
+                  }}
+                />
               </div>
             ) : (
-              <h3 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: "15px", color: "#0f172a", letterSpacing: "0.3px", margin: 0 }}>
+              <h3
+                style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontWeight: 800,
+                  fontSize: "15px",
+                  color: "#0f172a",
+                  letterSpacing: "0.3px",
+                  margin: 0,
+                }}
+              >
                 {title}
               </h3>
             )}
-            {sub && <p style={{ color: "#64748b", fontSize: "11px", fontFamily: "'Poppins', sans-serif", marginTop: titleParts ? "6px" : "2px", margin: 0 }}>{sub}</p>}
+            {sub && (
+              <p
+                style={{
+                  color: "#64748b",
+                  fontSize: "11px",
+                  fontFamily: "'Poppins', sans-serif",
+                  margin: "6px 0 0",
+                }}
+              >
+                {sub}
+              </p>
+            )}
           </div>
           {action && <div>{action}</div>}
         </div>
@@ -51,34 +123,43 @@ const Card = ({ children, title, titleParts, sub, action, delay = 0 }) => {
   );
 };
 
-// Reusable stat card matching clean light style
-const StatCard = ({ title, value, badge, accent, icon, vector, delay = 0 }) => {
+/* =====================================================
+   STAT CARD
+===================================================== */
+
+const StatCard = ({
+  title,
+  value,
+  badge,
+  accent,
+  icon,
+  delay = 0,
+}) => {
   const [hov, setHov] = useState(false);
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
-    const target = parseInt(value, 10);
-    if (isNaN(target)) {
+    const target = Number(value);
+    if (Number.isNaN(target)) {
       setDisplayValue(value);
       return;
     }
-
     let startTimestamp = null;
+    let animationFrameId;
     const duration = 800;
-
     const step = (timestamp) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
       const easeProgress = progress * (2 - progress);
       setDisplayValue(Math.floor(easeProgress * target));
       if (progress < 1) {
-        window.requestAnimationFrame(step);
+        animationFrameId = window.requestAnimationFrame(step);
       } else {
         setDisplayValue(target);
       }
     };
-
-    window.requestAnimationFrame(step);
+    animationFrameId = window.requestAnimationFrame(step);
+    return () => window.cancelAnimationFrame(animationFrameId);
   }, [value]);
 
   return (
@@ -87,101 +168,58 @@ const StatCard = ({ title, value, badge, accent, icon, vector, delay = 0 }) => {
       onMouseLeave={() => setHov(false)}
       style={{
         background: "#ffffff",
-        border: `1px solid ${hov ? accent : "#e2e8f0"}`,
+        border: "1px solid " + (hov ? accent : "#e2e8f0"),
         borderRadius: "16px",
         padding: "20px",
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        boxShadow: hov 
-          ? "0 15px 35px -10px rgba(0, 0, 0, 0.12), 0 5px 15px -5px rgba(0, 0, 0, 0.04)" 
-          : "0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02)",
+        transition: "all 0.3s ease",
+        boxShadow: hov ? "0 15px 35px -10px rgba(0, 0, 0, 0.12)" : "0 10px 30px -10px rgba(0, 0, 0, 0.08)",
         transform: hov ? "translateY(-4px)" : "translateY(0)",
         cursor: "pointer",
         position: "relative",
         overflow: "hidden",
         animation: "csw-fadein 0.45s ease both",
-        animationDelay: `${delay}s`,
+        animationDelay: delay + "s",
       }}
     >
-      <div 
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "2.5px",
-          background: `linear-gradient(90deg, ${accent}, transparent)`,
-        }}
-      />
-      {vector && (
-        <div 
-          style={{ 
-            position: "absolute", 
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            opacity: hov ? 0.35 : 0.22, 
-            pointerEvents: "none",
-            transition: "opacity 0.25s ease, transform 0.3s ease",
-            transform: hov ? "scale(1.02)" : "scale(1)",
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "flex-end",
-            overflow: "hidden",
-            borderRadius: "16px"
-          }}
-        >
-          {vector}
-        </div>
-      )}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "2.5px", background: "linear-gradient(90deg, " + accent + ", transparent)" }} />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "14px" }}>
-        <div
-          style={{
-            width: "42px",
-            height: "42px",
-            borderRadius: "11px",
-            background: `${accent}12`,
-            border: `1px solid ${accent}25`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: accent,
-            transition: "transform 0.25s ease",
-            transform: hov ? "scale(1.08)" : "scale(1)",
-          }}
-        >
+        <div style={{ width: "42px", height: "42px", borderRadius: "11px", background: accent + "12", border: "1px solid " + accent + "25", display: "flex", alignItems: "center", justifyContent: "center", color: accent }}>
           {icon}
         </div>
-        <span
-          style={{
-            fontSize: "11px",
-            fontWeight: 600,
-            color: accent,
-            background: `${accent}10`,
-            border: `1px solid ${accent}25`,
-            borderRadius: "8px",
-            padding: "3px 8px",
-            fontFamily: "'Poppins', sans-serif",
-          }}
-        >
+        <span style={{ fontSize: "11px", fontWeight: 600, color: accent, background: accent + "10", border: "1px solid " + accent + "25", borderRadius: "8px", padding: "3px 8px", fontFamily: "'Poppins', sans-serif" }}>
           {badge}
         </span>
       </div>
-      <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: "30px", color: "#0f172a", marginBottom: "4px", lineHeight: 1 }}>
-        {displayValue}
-      </p>
+      <p style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: "30px", color: "#0f172a", margin: "0 0 4px", lineHeight: 1 }}>{displayValue}</p>
       <p style={{ color: "#64748b", fontSize: "12px", fontFamily: "'Poppins', sans-serif", margin: 0 }}>{title}</p>
     </div>
   );
 };
 
+/* =====================================================
+   USER DASHBOARD
+===================================================== */
+
 const UserDashboard = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const location = useLocation();
+
+  // ✅ FIX: OrderSuccess साठी देखील Outlet रेंडर होण्यासाठी isSpecialRoute वापरला आहे.
+  const isSpecialRoute = 
+    location.pathname.startsWith("/dashboard/checkout") || 
+    location.pathname.startsWith("/dashboard/order-success");
+
+  const [activeTab, setActiveTab] = useState(location.state?.tab || "dashboard");
+
+  useEffect(() => {
+    if (location.state?.tab) {
+      setActiveTab(location.state.tab);
+    }
+  }, [location.state]);
+
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isDesktop, setIsDesktop] = useState(typeof window !== "undefined" ? window.innerWidth > 1024 : true);
 
-  // ✅ Real data from backend, replacing MOCK_USER / MOCK_ADDRESSES / MOCK_ORDERS
   const [profile, setProfile] = useState({ name: "", email: "", phone: "" });
   const [addresses, setAddresses] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -194,47 +232,57 @@ const UserDashboard = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ✅ Fetch everything the dashboard needs in one pass
-  const loadDashboardData = async () => {
+  const getCartCount = useCallback(async () => {
+    try {
+      const response = await API.get("/cart");
+      const cartItems = response.data?.data || response.data?.cart || response.data || [];
+      const totalQuantity = Array.isArray(cartItems)
+        ? cartItems.reduce((total, item) => total + Number(item.quantity || 1), 0)
+        : 0;
+      setCartCount(totalQuantity);
+    } catch (error) {
+      console.error("Failed to fetch cart count:", error);
+      setCartCount(0);
+    }
+  }, []);
+
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-      const [profileRes, addressesRes, ordersRes, cartRes] = await Promise.all([
+      const [profileRes, addressesRes, ordersRes] = await Promise.all([
         API.get("/users/me"),
         API.get("/addresses"),
         API.get("/orders"),
-        API.get("/cart"),
       ]);
 
-      if (profileRes.data?.data) setProfile(profileRes.data.data);
-      if (addressesRes.data?.data) setAddresses(addressesRes.data.data);
-      if (ordersRes.data?.data) setOrders(ordersRes.data.data);
-      if (cartRes.data?.data) setCartCount(cartRes.data.data.length);
-    } catch (err) {
-      console.error("Failed to load dashboard data:", err);
+      const profileData = profileRes.data?.data || profileRes.data?.user || profileRes.data || {};
+      const addressesData = addressesRes.data?.data || addressesRes.data?.addresses || addressesRes.data || [];
+      const ordersData = ordersRes.data?.data || ordersRes.data?.orders || ordersRes.data || [];
+
+      setProfile(profileData);
+      setAddresses(Array.isArray(addressesData) ? addressesData : []);
+      setOrders(Array.isArray(ordersData) ? ordersData : []);
+
+      await getCartCount();
+    } catch (error) {
+      console.error("Failed to load dashboard data:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [getCartCount]);
 
   useEffect(() => {
     loadDashboardData();
-  }, []);
+  }, [loadDashboardData]);
 
-  // ✅ Let child components (MyCart) trigger a cart-count refresh after add/remove
   useEffect(() => {
-    const refreshCartCount = async () => {
-      try {
-        const res = await API.get("/cart");
-        setCartCount(res.data?.data?.length || 0);
-      } catch (err) {
-        console.error("Failed to refresh cart count:", err);
-      }
-    };
+    const refreshCartCount = () => getCartCount();
     window.addEventListener("cartUpdated", refreshCartCount);
     return () => window.removeEventListener("cartUpdated", refreshCartCount);
-  }, []);
+  }, [getCartCount]);
 
   const getHeaderTitleParts = () => {
+    if (isSpecialRoute) return { first: "CHECKOUT", second: "PROCESS" };
     switch (activeTab) {
       case "dashboard": return { first: "DASHBOARD", second: "OVERVIEW" };
       case "orders": return { first: "ORDER", second: "HISTORY" };
@@ -245,7 +293,8 @@ const UserDashboard = () => {
     }
   };
 
-  const deliveredCount = orders.filter((o) => o.status === "Delivered").length;
+  const deliveredCount = orders.filter((order) => String(order.status || "").toLowerCase() === "delivered").length;
+  const defaultAddress = addresses.find((address) => address.isDefault === true || address.isDefault === "true");
 
   if (loading) {
     return (
@@ -258,8 +307,10 @@ const UserDashboard = () => {
     );
   }
 
+  const headerTitle = getHeaderTitleParts();
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans user-dashboard-root">
+    <div className="user-dashboard-root">
       <UserSidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -269,229 +320,136 @@ const UserDashboard = () => {
         onCollapsedChange={setSidebarCollapsed}
       />
 
-      <div 
+      <div
+        className="dashboard-content"
         style={{
           marginLeft: isDesktop ? (sidebarCollapsed ? "72px" : "280px") : "0px",
-          transition: "margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
           width: isDesktop ? (sidebarCollapsed ? "calc(100% - 72px)" : "calc(100% - 280px)") : "100%",
         }}
-        className="min-h-screen flex flex-col"
       >
-        <header className="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-200 z-30 shadow-sm py-5">
-          <button
-            onClick={() => setIsMobileSidebarOpen(true)}
-            style={{
-              position: "absolute", top: "50%", left: "16px", transform: "translateY(-50%)", zIndex: 40,
-              width: "38px", height: "38px", display: isDesktop ? "none" : "flex",
-              alignItems: "center", justifyContent: "center", background: "#0A7F6E",
-              border: "1px solid #0A7F6E", borderRadius: "9px", cursor: "pointer", padding: 0,
-              transition: "opacity 0.2s ease", color: "#ffffff", boxShadow: "0 2px 8px rgba(10,127,110,0.3)"
-            }}
-            className="hover:opacity-90"
-          >
+        <header className="dashboard-header">
+          <button onClick={() => setIsMobileSidebarOpen(true)} className="mobile-menu-button" style={{ display: isDesktop ? "none" : "flex" }}>
             <Menu size={20} />
           </button>
-
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", paddingTop: "8px" }}>
-            <h1 style={{ fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: "clamp(15px, 4vw, 24px)", letterSpacing: "0.5px", margin: 0, lineHeight: 1.1, textTransform: "uppercase" }}>
-              <span style={{ color: "#0f172a" }}>{getHeaderTitleParts().first} </span>
-              <span style={{ color: "#0A7F6E" }}>{getHeaderTitleParts().second}</span>
+          <div className="header-title-wrapper">
+            <h1 className="header-title">
+              <span>{headerTitle.first} </span>
+              <strong>{headerTitle.second}</strong>
             </h1>
-            <div style={{ width: "45px", height: "3.5px", background: "#0A7F6E", borderRadius: "2px" }} />
+            <div className="header-line" />
           </div>
-          
-          <p style={{ color: "#475569", fontSize: "13px", fontFamily: "'Poppins', sans-serif", margin: "10px auto 4px", lineHeight: 1.5, maxWidth: "600px", textAlign: "center", padding: "0 60px 0 60px" }}>
-            Your orders, cart & profile — all in <strong style={{ color: "#0A7F6E", fontWeight: 700 }}>one place.</strong>
+          <p className="header-subtitle">
+            Your orders, cart & profile — all in <strong>one place.</strong>
           </p>
         </header>
 
-        <main className="user-main" style={{ padding: "24px 12px 40px", minHeight: "100vh", background: "#f8fafc", overflowX: "hidden", boxSizing: "border-box" }}>
-          <div style={{ maxWidth: "1300px", margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
-            {activeTab === "dashboard" && (
-              <div className="animate-fadeIn">
-                <div className="csw-stats">
-                  <StatCard 
-                    title="Total Orders" value={orders.length} badge="Active" accent="#0A7F6E"
-                    icon={<ShoppingBag size={20} />} delay={0}
-                    vector={
-                      <svg viewBox="0 0 200 50" fill="none" style={{ width: "100%", height: "50px", alignSelf: "flex-end" }} preserveAspectRatio="none">
-                        <path d="M0,45 Q25,25 50,40 T100,15 T150,35 T200,5" stroke="#0A7F6E" strokeWidth="2.5" strokeLinecap="round" />
-                        <path d="M0,45 Q25,25 50,40 T100,15 T150,35 T200,5 L200,50 L0,50 Z" fill="url(#grad-orders)" opacity="0.12" />
-                        <defs>
-                          <linearGradient id="grad-orders" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#0A7F6E" />
-                            <stop offset="100%" stopColor="transparent" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                    }
-                  />
-                  <StatCard 
-                    title="My Cart" value={cartCount} badge="Items" accent="#ec4899"
-                    icon={<ShoppingCart size={20} />} delay={0.07}
-                    vector={
-                      <svg viewBox="0 0 120 80" fill="none" style={{ width: "130px", height: "80px", alignSelf: "flex-end" }}>
-                        <circle cx="95" cy="50" r="38" stroke="#ec4899" strokeWidth="1.5" strokeDasharray="3,3" opacity="0.8" />
-                        <circle cx="95" cy="50" r="24" stroke="#ec4899" strokeWidth="2" opacity="0.6" />
-                        <g fill="#ec4899" opacity="0.25">
-                          {[...Array(4)].map((_, r) =>
-                            [...Array(6)].map((_, c) => (
-                              <circle key={`${r}-${c}`} cx={15 + c * 10} cy={20 + r * 10} r="1.5" />
-                            ))
-                          )}
-                        </g>
-                      </svg>
-                    }
-                  />
-                  <StatCard 
-                    title="Orders Delivered" value={deliveredCount} badge="Delivered" accent="#3B82F6"
-                    icon={<CheckCircle size={20} />} delay={0.14}
-                    vector={
-                      <svg viewBox="0 0 160 60" fill="none" style={{ width: "140px", height: "65px", alignSelf: "flex-end" }}>
-                        {[12, 18, 15, 28, 22, 35, 28, 48].map((h, i) => (
-                          <rect key={i} x={10 + i * 16} y={60 - h} width="8" height={h} rx="2" fill="#3B82F6" opacity={0.3 + (i * 0.1)} />
-                        ))}
-                        <circle cx="140" cy="15" r="3" fill="#3B82F6" opacity="0.8" />
-                        <circle cx="125" cy="20" r="1.5" fill="#3B82F6" opacity="0.6" />
-                      </svg>
-                    }
-                  />
-                </div>
+        <main className="dashboard-main">
+          <div className="dashboard-container">
+            {/* ✅ FIX: isSpecialRoute चेक करून Outlet दाखवत आहोत */}
+            {isSpecialRoute ? (
+              <Outlet /> 
+            ) : (
+              <>
+                {activeTab === "dashboard" && (
+                  <div className="animate-fadeIn">
+                    <div className="csw-stats">
+                      <StatCard title="Total Orders" value={orders.length} badge="Active" accent="#0A7F6E" icon={<ShoppingBag size={20} />} delay={0} />
+                      <StatCard title="My Cart" value={cartCount} badge="Items" accent="#ec4899" icon={<ShoppingCart size={20} />} delay={0.1} />
+                      <StatCard title="Orders Delivered" value={deliveredCount} badge="Delivered" accent="#3B82F6" icon={<CheckCircle size={20} />} delay={0.2} />
+                    </div>
 
-                <div className="csw-main-grid">
-                  <div className="csw-left-col">
-                    <Card titleParts={{ first: "RECENT", second: "ORDERS" }} sub="Latest product purchases" delay={0.2}>
-                      {orders.length === 0 ? (
-                        <p style={{ fontSize: "12.5px", color: "#64748b", textAlign: "center", padding: "24px 0" }}>No orders yet.</p>
-                      ) : (
-                        <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch", marginLeft: "-4px", marginRight: "-4px", paddingLeft: "4px", paddingRight: "4px" }}>
-                          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "280px" }}>
-                            <thead>
-                              <tr>
-                                {["Order ID", "Date", "Items", "Status", "Amount"].map(h => (
-                                  <th key={h} style={{ textAlign: h === "Amount" ? "right" : h === "Status" ? "center" : "left", padding: "7px 10px", fontSize: "10px", fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.8px", fontFamily: "'Poppins', sans-serif", borderBottom: "1px solid #e2e8f0" }}>
-                                    {h}
-                                  </th>
-                                ))}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {orders.slice(0, 3).map((order) => (
-                                <tr key={order._id || order.orderNumber} className="csw-tr" style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.2s ease" }}>
-                                  <td style={{ padding: "12px 10px", fontSize: "12.5px", fontWeight: 700, color: "#0f172a", fontFamily: "'Poppins', sans-serif" }}>
-                                    {order.orderNumber}
-                                  </td>
-                                  <td style={{ padding: "12px 10px", fontSize: "12px", color: "#64748b", fontFamily: "'Poppins', sans-serif" }}>
-                                    {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                                  </td>
-                                  <td style={{ padding: "12px 10px", fontSize: "12px", color: "#475569", fontFamily: "'Poppins', sans-serif" }}>
-                                    {order.items.map(i => `${i.name} (${i.size})`).join(", ")}
-                                  </td>
-                                  <td style={{ padding: "12px 10px", textAlign: "center" }}>
-                                    <span style={{
-                                      padding: "3px 9px", borderRadius: "20px", fontSize: "10px", fontWeight: 600,
-                                      background: order.status === "Delivered" ? "rgba(16,185,129,0.08)" : order.status === "In Transit" ? "rgba(59,130,246,0.08)" : "rgba(245,158,11,0.08)",
-                                      color: order.status === "Delivered" ? "#10B981" : order.status === "In Transit" ? "#3B82F6" : "#F59E0B",
-                                      border: `1px solid ${order.status === "Delivered" ? "rgba(16,185,129,0.2)" : order.status === "In Transit" ? "rgba(59,130,246,0.2)" : "rgba(245,158,11,0.2)"}`,
-                                      fontFamily: "'Poppins', sans-serif", whiteSpace: "nowrap",
-                                    }}>
-                                      {order.status}
-                                    </span>
-                                  </td>
-                                  <td style={{ padding: "12px 10px", textAlign: "right", fontSize: "13px", fontWeight: 800, color: "#0A7F6E", fontFamily: "'Montserrat', sans-serif" }}>
-                                    ₹{order.total.toLocaleString("en-IN")}
-                                  </td>
+                    <div className="csw-main-grid">
+                      <Card titleParts={{ first: "RECENT", second: "ORDERS" }} sub="Latest product purchases">
+                        {orders.length === 0 ? (
+                          <p className="empty-text">No orders yet.</p>
+                        ) : (
+                          <div className="table-wrapper">
+                            <table>
+                              <thead>
+                                <tr>
+                                  <th>Order ID</th><th>Date</th><th>Items</th><th>Status</th><th>Amount</th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                              </thead>
+                              <tbody>
+                                {orders.slice(0, 3).map((order) => (
+                                  <tr key={order._id || order.orderNumber}>
+                                    <td>{order.orderNumber || order._id || "N/A"}</td>
+                                    <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "N/A"}</td>
+                                    <td>{Array.isArray(order.items) ? order.items.map((item) => (item.name || "Product") + " (" + (item.size || "N/A") + ")").join(", ") : "N/A"}</td>
+                                    <td>{order.status || "Pending"}</td>
+                                    <td>₹{Number(order.total || 0).toLocaleString("en-IN")}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                        <div className="center-button">
+                          <button onClick={() => setActiveTab("orders")} className="secondary-button">View All Orders</button>
                         </div>
-                      )}
+                      </Card>
 
-                      <div style={{ display: "flex", justifyContent: "center" }}>
-                        <button
-                          onClick={() => setActiveTab("orders")}
-                          style={{
-                            width: "fit-content", padding: "11px 28px", marginTop: "16px",
-                            background: "#F4F1EA", border: "1px solid #E4DFD5", borderRadius: "10px",
-                            color: "#5C5243", fontSize: "11px", fontWeight: 700, textTransform: "uppercase",
-                            letterSpacing: "0.6px", cursor: "pointer", fontFamily: "'Poppins', sans-serif", transition: "all 0.22s ease",
-                          }}
-                          onMouseEnter={e => { e.target.style.background = "#EDE9DF"; e.target.style.borderColor = "#D9D3C7"; }}
-                          onMouseLeave={e => { e.target.style.background = "#F4F1EA"; e.target.style.borderColor = "#E4DFD5"; }}
-                        >
-                          View All Orders
-                        </button>
-                      </div>
-                    </Card>
-                  </div>
-
-                  <div className="csw-right-col">
-                    <Card titleParts={{ first: "PROFILE", second: "DETAILS" }} sub="Account configuration" delay={0.25}>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "2px", marginBottom: "16px" }}>
+                      <Card titleParts={{ first: "PROFILE", second: "DETAILS" }} sub="Account configuration">
                         {[
-                          { label: "Full Name", val: profile.name },
-                          { label: "Email", val: profile.email },
-                          { label: "Phone", val: profile.phone },
-                          { label: "Default Address", val: addresses.find(a => a.isDefault) ? `${addresses.find(a => a.isDefault).city}, ${addresses.find(a => a.isDefault).state}` : "None set" },
-                        ].map((item, idx) => (
-                          <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "4px", padding: "12px 0", borderBottom: idx < 3 ? "1px solid #f1f5f9" : "none" }}>
-                            <span style={{ fontSize: "10.5px", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.8px", fontFamily: "'Poppins', sans-serif", fontWeight: 600, flexShrink: 0 }}>
-                              {item.label}
-                            </span>
-                            <span style={{ fontSize: "12px", color: "#0f172a", fontFamily: "'Poppins', sans-serif", fontWeight: 600, wordBreak: "break-all", textAlign: "right", flex: "1 1 auto", minWidth: 0 }} title={item.val}>
-                              {item.val}
-                            </span>
+                          { label: "Full Name", val: profile.name || "Not set" },
+                          { label: "Email", val: profile.email || "Not set" },
+                          { label: "Phone", val: profile.phone || "Not set" },
+                          { label: "Default Address", val: defaultAddress ? [defaultAddress.city, defaultAddress.state].filter(Boolean).join(", ") || "Address available" : "None set" },
+                        ].map((item) => (
+                          <div key={item.label} className="profile-row">
+                            <span>{item.label}</span>
+                            <strong>{item.val}</strong>
                           </div>
                         ))}
-                      </div>
-
-                      <div style={{ display: "flex", justifyContent: "center" }}>
-                        <button
-                          onClick={() => setActiveTab("settings")}
-                          style={{
-                            width: "fit-content", padding: "11px 28px", background: "linear-gradient(135deg, #0A7F6E, #0d9488)",
-                            border: "none", borderRadius: "10px", color: "#fff", fontSize: "11px", fontWeight: 700,
-                            textTransform: "uppercase", letterSpacing: "0.6px", cursor: "pointer", fontFamily: "'Poppins', sans-serif",
-                            transition: "all 0.22s ease", boxShadow: "0 4px 12px rgba(10,127,110,0.15)",
-                          }}
-                          onMouseEnter={e => { e.target.style.transform = "translateY(-1px)"; e.target.style.boxShadow = "0 6px 16px rgba(10,127,110,0.25)"; }}
-                          onMouseLeave={e => { e.target.style.transform = "translateY(0)"; e.target.style.boxShadow = "0 4px 12px rgba(10,127,110,0.15)"; }}
-                        >
-                          Edit Profile Details
-                        </button>
-                      </div>
-                    </Card>
+                        <div className="center-button">
+                          <button onClick={() => setActiveTab("settings")} className="primary-button">Edit Profile Details</button>
+                        </div>
+                      </Card>
+                    </div>
                   </div>
-                </div>
-              </div>
-            )}
+                )}
 
-            {activeTab === "orders" && <OrderHistory orders={orders} />}
-            {activeTab === "cart" && <MyCart />}
-            {activeTab === "addresses" && <Addresses addresses={addresses} setAddresses={setAddresses} />}
-            {activeTab === "settings" && <EditProfile profile={profile} setProfile={setProfile} />}
+                {activeTab === "orders" && <OrderHistory orders={orders} />}
+                {activeTab === "cart" && <MyCart />}
+                {activeTab === "addresses" && <Addresses addresses={addresses} setAddresses={setAddresses} />}
+                {activeTab === "settings" && <EditProfile profile={profile} setProfile={setProfile} />}
+              </>
+            )}
           </div>
         </main>
       </div>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
-        .user-dashboard-root * { box-sizing: border-box; }
+        * { box-sizing: border-box; }
+        .user-dashboard-root { min-height: 100vh; background: #f8fafc; color: #0f172a; font-family: 'Poppins', sans-serif; }
+        .dashboard-content { min-height: 100vh; display: flex; flex-direction: column; transition: margin-left 0.35s ease, width 0.35s ease; }
+        .dashboard-header { position: sticky; top: 0; z-index: 30; padding: 20px; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); border-bottom: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); }
+        .mobile-menu-button { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); width: 38px; height: 38px; align-items: center; justify-content: center; background: #0A7F6E; border: 1px solid #0A7F6E; border-radius: 9px; cursor: pointer; color: #ffffff; }
+        .header-title-wrapper { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .header-title { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(15px, 4vw, 24px); letter-spacing: 0.5px; margin: 0; text-transform: uppercase; }
+        .header-title span { color: #0f172a; } .header-title strong { color: #0A7F6E; }
+        .header-line { width: 45px; height: 3.5px; background: #0A7F6E; border-radius: 2px; }
+        .header-subtitle { color: #475569; font-size: 13px; margin: 10px auto 4px; text-align: center; padding: 0 60px; }
+        .header-subtitle strong { color: #0A7F6E; }
+        .dashboard-main { flex: 1; padding: 24px 12px 40px; background: #f8fafc; overflow-x: hidden; }
+        .dashboard-container { width: 100%; max-width: 1300px; margin: 0 auto; }
+        .csw-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .csw-main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+        .table-wrapper { width: 100%; overflow-x: auto; }
+        table { width: 100%; min-width: 600px; border-collapse: collapse; }
+        th { text-align: left; padding: 10px; font-size: 10px; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
+        td { padding: 12px 10px; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
+        .empty-text { font-size: 12.5px; color: #64748b; text-align: center; padding: 24px 0; }
+        .center-button { display: flex; justify-content: center; }
+        .secondary-button { padding: 11px 28px; margin-top: 16px; background: #F4F1EA; border: 1px solid #E4DFD5; border-radius: 10px; cursor: pointer; font-weight: 700; }
+        .primary-button { margin-top: 18px; padding: 11px 28px; background: linear-gradient(135deg, #0A7F6E, #0d9488); border: none; border-radius: 10px; color: #ffffff; cursor: pointer; font-weight: 700; }
+        .profile-row { display: flex; justify-content: space-between; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .profile-row span { font-size: 10.5px; color: #64748b; font-weight: 600; } .profile-row strong { font-size: 12px; color: #0f172a; font-weight: 600; text-align: right; word-break: break-word; }
         @keyframes csw-fadein { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .csw-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-        .csw-main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
-        .csw-tr:hover td { background: #f8fafc !important; }
-        @media (max-width: 1023px) {
-          .csw-stats { grid-template-columns: 1fr 1fr !important; }
-          .csw-main-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (max-width: 640px) {
-          .csw-stats { grid-template-columns: 1fr !important; }
-          .csw-main-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
-          .csw-left-col, .csw-right-col { min-width: 0 !important; width: 100% !important; overflow: hidden !important; box-sizing: border-box !important; }
-        }
+        @media (max-width: 1023px) { .csw-stats { grid-template-columns: repeat(2, 1fr); } .csw-main-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .csw-stats { grid-template-columns: 1fr; } .csw-main-grid { grid-template-columns: 1fr; } .dashboard-main { padding: 16px 10px 30px; } .dashboard-header { padding: 18px 10px; } .header-subtitle { padding: 0 35px; font-size: 11px; } }
       `}</style>
     </div>
   );

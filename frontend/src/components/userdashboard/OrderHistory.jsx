@@ -1,5 +1,7 @@
-import React from "react";
-import { CheckCircle, Truck, Clock } from "lucide-react";
+import React, { useState } from "react";
+import { CheckCircle, Truck, Clock, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
+import API from "../../services/api";
 
 // Reusable card container matching UserDashboard clean light design
 const Card = ({ children, title, sub, action, accent }) => {
@@ -25,7 +27,7 @@ const Card = ({ children, title, sub, action, accent }) => {
             left: 0,
             right: 0,
             height: "2.5px",
-            background: `linear-gradient(90deg, ${accent}, transparent)`,
+            background: "linear-gradient(90deg, " + accent + ", transparent)",
           }}
         />
       )}
@@ -55,7 +57,29 @@ const formatOrderDate = (isoDate) => {
   });
 };
 
-const OrderHistory = ({ orders }) => {
+const OrderHistory = ({ orders, setOrders }) => {
+  const [deletingId, setDeletingId] = useState(null);
+
+  // ✅ Handle Order Deletion
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      setDeletingId(orderId);
+      await API.delete(`/orders/${orderId}`);
+      
+      // Remove from parent state
+      if (setOrders) {
+        setOrders((prevOrders) => prevOrders.filter((o) => o._id !== orderId));
+      }
+      
+      toast.success("Order deleted successfully.");
+    } catch (error) {
+      console.error("Failed to delete order:", error);
+      toast.error("Failed to delete order.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div style={{ animation: "csw-fadein 0.45s ease both" }}>
       {orders.length === 0 ? (
@@ -71,8 +95,6 @@ const OrderHistory = ({ orders }) => {
       ) : (
         orders.map((order) => {
           const accent = order.status === "Delivered" ? "#10B981" : order.status === "In Transit" ? "#3B82F6" : "#F59E0B";
-          // ✅ FIX: real orders have _id (Mongo ObjectId) and orderNumber (e.g. "#CS-82049"),
-          // not the flat `order.id` the mock data used.
           const orderKey = order._id;
           const orderLabel = order.orderNumber || order._id;
 
@@ -99,7 +121,7 @@ const OrderHistory = ({ orders }) => {
                   left: 0,
                   right: 0,
                   height: "2.5px",
-                  background: `linear-gradient(90deg, ${accent}, transparent)`,
+                  background: "linear-gradient(90deg, " + accent + ", transparent)",
                 }}
               />
 
@@ -110,42 +132,62 @@ const OrderHistory = ({ orders }) => {
                     Order {orderLabel}
                   </h3>
                   <p style={{ color: "#64748b", fontSize: "11px", fontFamily: "'Poppins', sans-serif", marginTop: "2px", margin: 0 }}>
-                    {/* ✅ FIX: format the real ISO date instead of relying on a pre-formatted mock string */}
                     Placed on {formatOrderDate(order.createdAt)}
                   </p>
                 </div>
-                <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    padding: "4px 10px",
-                    borderRadius: "20px",
-                    fontSize: "10.5px",
-                    fontWeight: 600,
-                    background:
-                      order.status === "Delivered"
-                        ? "rgba(16,185,129,0.08)"
-                        : order.status === "In Transit"
-                        ? "rgba(59,130,246,0.08)"
-                        : "rgba(245,158,11,0.08)",
-                    color: accent,
-                    border: `1px solid ${
-                      order.status === "Delivered"
-                        ? "rgba(16,185,129,0.2)"
-                        : order.status === "In Transit"
-                        ? "rgba(59,130,246,0.2)"
-                        : "rgba(245,158,11,0.2)"
-                    }`,
-                    fontFamily: "'Poppins', sans-serif",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {order.status === "Delivered" && <CheckCircle size={11} />}
-                  {order.status === "In Transit" && <Truck size={11} />}
-                  {order.status === "Processing" && <Clock size={11} />}
-                  {order.status}
-                </span>
+
+                {/* Status & Delete Button Wrapper */}
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      padding: "4px 10px",
+                      borderRadius: "20px",
+                      fontSize: "10.5px",
+                      fontWeight: 600,
+                      background:
+                        order.status === "Delivered"
+                          ? "rgba(16,185,129,0.08)"
+                          : order.status === "In Transit"
+                          ? "rgba(59,130,246,0.08)"
+                          : "rgba(245,158,11,0.08)",
+                      color: accent,
+                      border: "1px solid " + (order.status === "Delivered" ? "rgba(16,185,129,0.2)" : order.status === "In Transit" ? "rgba(59,130,246,0.2)" : "rgba(245,158,11,0.2)"),
+                      fontFamily: "'Poppins', sans-serif",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {order.status === "Delivered" && <CheckCircle size={11} />}
+                    {order.status === "In Transit" && <Truck size={11} />}
+                    {order.status === "Processing" && <Clock size={11} />}
+                    {order.status}
+                  </span>
+
+                  {/* ✅ Delete Order Button */}
+                  <button 
+                    onClick={() => handleDeleteOrder(order._id)} 
+                    disabled={deletingId === order._id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "8px",
+                      background: "rgba(239, 68, 68, 0.08)",
+                      border: "1px solid rgba(239, 68, 68, 0.15)",
+                      color: "#ef4444",
+                      cursor: deletingId === order._id ? "not-allowed" : "pointer",
+                      opacity: deletingId === order._id ? 0.5 : 1,
+                      transition: "all 0.2s ease"
+                    }}
+                    title="Delete Order"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
               </div>
 
               {/* Order Items List */}
@@ -184,8 +226,6 @@ const OrderHistory = ({ orders }) => {
                           <span style={{ color: "#cbd5e1" }}>•</span>
                           <span>Qty: <strong style={{ color: "#334155" }}>{item.qty}</strong></span>
                           <span style={{ color: "#cbd5e1" }}>•</span>
-                          {/* ✅ FIX: item.price is a plain number from the backend (e.g. 1299),
-                              not a formatted string like "₹1,299" — format it here instead */}
                           <span>Price: <strong style={{ color: "#334155" }}>₹{item.price.toLocaleString("en-IN")}</strong></span>
                         </div>
                       </div>
@@ -196,8 +236,6 @@ const OrderHistory = ({ orders }) => {
 
                     {/* Calculated Line Item Price */}
                     <div style={{ textAlign: "right", flexShrink: 0 }}>
-                      {/* ✅ FIX: item.price is already a number — no need to strip currency
-                          symbols with .replace(), which crashed on a non-string value */}
                       <span className="oh-item-total" style={{ fontWeight: 700, color: "#0f172a", fontFamily: "'Montserrat', sans-serif" }}>
                         ₹{(item.price * item.qty).toLocaleString("en-IN")}
                       </span>
@@ -237,7 +275,6 @@ const OrderHistory = ({ orders }) => {
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <span style={{ fontSize: "11.5px", color: "#64748b", fontFamily: "'Poppins', sans-serif" }}>Tracking ID:</span>
                   <code style={{ fontSize: "11px", fontWeight: 700, color: "#475569", fontFamily: "monospace", background: "#e2e8f0", padding: "2px 6px", borderRadius: "4px" }}>
-                    {/* ✅ FIX: order.id doesn't exist on real orders — use _id (last 6 chars for brevity) */}
                     ATH-TRK-{order._id.slice(-6).toUpperCase()}
                   </code>
                 </div>
@@ -257,7 +294,6 @@ const OrderHistory = ({ orders }) => {
                 <span style={{ fontSize: "10.5px", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.8px", fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
                   Total Paid Amount
                 </span>
-                {/* ✅ FIX: order.total is a plain number from the backend, not a pre-formatted string */}
                 <span style={{ fontSize: "16px", fontWeight: 800, color: "#0A7F6E", fontFamily: "'Montserrat', sans-serif" }}>
                   ₹{order.total.toLocaleString("en-IN")}
                 </span>

@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Quote,
   ArrowRight,
-  MapPin,
   Mail,
   Home as HomeIcon,
   Rocket,

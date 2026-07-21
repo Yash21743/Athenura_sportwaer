@@ -1,760 +1,903 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Check, 
-  Tag, ChevronRight, CreditCard, ArrowRight, Truck, Info, 
-  MapPin, ShoppingCart, Calendar
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Trash2,
+  Plus,
+  Minus,
+  ShoppingBag,
+  ArrowLeft,
+  Tag,
+  ChevronRight,
+  CreditCard,
+  ArrowRight,
+  Truck
 } from 'lucide-react';
 
 const AddToBag = () => {
+  const navigate = useNavigate();
+
   const [cartItems, setCartItems] = useState([]);
+
   const [promoCode, setPromoCode] = useState('');
   const [discountPercent, setDiscountPercent] = useState(0);
   const [promoError, setPromoError] = useState('');
   const [promoSuccess, setPromoSuccess] = useState('');
-  const [checkoutStep, setCheckoutStep] = useState('cart');
+
   const [showLoginWall, setShowLoginWall] = useState(false);
+
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    try { return localStorage.getItem('csw_is_logged_in') === 'true'; } catch { return false; }
+    return localStorage.getItem('csw_is_logged_in') === 'true';
   });
-  
-  
-  const [addressForm, setAddressForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zip: ''
-  });
-  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
-  const [orderId, setOrderId] = useState('');
 
-  // Load cart initially
+  // ===============================
+  // LOAD CART
+  // ===============================
+
   useEffect(() => {
-    const loadCart = () => {
-      try {
-        const stored = localStorage.getItem('csw_cart_items');
-        if (stored) {
-          setCartItems(JSON.parse(stored));
-        }
-      } catch (err) {
-        console.error('Failed to load cart items from localStorage:', err);
-      }
-    };
-
     loadCart();
 
-    // Listen to custom update event from product detail
     const handleCartUpdate = () => {
       loadCart();
     };
 
-    // When user logs in from Navbar → update isLoggedIn + hide login wall
     const handleUserLogin = () => {
-      const loggedIn = localStorage.getItem('csw_is_logged_in') === 'true';
+      const loggedIn =
+        localStorage.getItem('csw_is_logged_in') === 'true';
+
       setIsLoggedIn(loggedIn);
-      if (loggedIn) setShowLoginWall(false);
+
+      if (loggedIn) {
+        setShowLoginWall(false);
+      }
     };
 
-    window.addEventListener('cartUpdated', handleCartUpdate);
-    window.addEventListener('storage', handleCartUpdate);
-    window.addEventListener('userLoggedIn', handleUserLogin);
+    const handleShowLoginPopup = () => {
+      setShowLoginWall(true);
+    };
+
+    window.addEventListener(
+      'cartUpdated',
+      handleCartUpdate
+    );
+
+    window.addEventListener(
+      'storage',
+      handleCartUpdate
+    );
+
+    window.addEventListener(
+      'userLoggedIn',
+      handleUserLogin
+    );
+
+    window.addEventListener(
+      'showCartLoginPopup',
+      handleShowLoginPopup
+    );
 
     return () => {
-      window.removeEventListener('cartUpdated', handleCartUpdate);
-      window.removeEventListener('storage', handleCartUpdate);
-      window.removeEventListener('userLoggedIn', handleUserLogin);
+      window.removeEventListener(
+        'cartUpdated',
+        handleCartUpdate
+      );
+
+      window.removeEventListener(
+        'storage',
+        handleCartUpdate
+      );
+
+      window.removeEventListener(
+        'userLoggedIn',
+        handleUserLogin
+      );
+
+      window.removeEventListener(
+        'showCartLoginPopup',
+        handleShowLoginPopup
+      );
     };
   }, []);
 
+  // ===============================
+  // LOAD CART
+  // ===============================
 
+  const loadCart = () => {
+    try {
+      const storedCart =
+        localStorage.getItem('csw_cart_items');
+
+      if (storedCart) {
+        setCartItems(JSON.parse(storedCart));
+      } else {
+        setCartItems([]);
+      }
+    } catch (error) {
+      console.error('Cart loading error:', error);
+      setCartItems([]);
+    }
+  };
+
+  // ===============================
+  // SAVE CART
+  // ===============================
 
   const saveCart = (items) => {
     setCartItems(items);
-    localStorage.setItem('csw_cart_items', JSON.stringify(items));
-    window.dispatchEvent(new Event('cartUpdated'));
-  };
 
-  const updateQuantity = (id, size, color, newQty) => {
-    if (newQty < 1) return;
-    const updated = cartItems.map(item => 
-      (item._id === id && item.size === size && item.color === color)
-        ? { ...item, quantity: Math.max(1, newQty) }
-        : item
+    localStorage.setItem(
+      'csw_cart_items',
+      JSON.stringify(items)
     );
-    saveCart(updated);
-  };
 
-  const removeItem = (id, size, color) => {
-    const updated = cartItems.filter(item => 
-      !(item._id === id && item.size === size && item.color === color)
+    window.dispatchEvent(
+      new Event('cartUpdated')
     );
-    saveCart(updated);
   };
 
-  const applyPromoCode = (e) => {
-    e.preventDefault();
+  // ===============================
+  // UPDATE QUANTITY
+  // ===============================
+
+  const updateQuantity = (
+    id,
+    size,
+    color,
+    newQuantity
+  ) => {
+    const quantity = Number(newQuantity);
+
+    if (
+      !Number.isFinite(quantity) ||
+      quantity < 1
+    ) {
+      return;
+    }
+
+    const updatedItems = cartItems.map((item) => {
+      if (
+        item._id === id &&
+        item.size === size &&
+        item.color === color
+      ) {
+        return {
+          ...item,
+          quantity
+        };
+      }
+
+      return item;
+    });
+
+    saveCart(updatedItems);
+  };
+
+  // ===============================
+  // REMOVE ITEM
+  // ===============================
+
+  const removeItem = (
+    id,
+    size,
+    color
+  ) => {
+    const updatedItems = cartItems.filter(
+      (item) =>
+        !(
+          item._id === id &&
+          item.size === size &&
+          item.color === color
+        )
+    );
+
+    saveCart(updatedItems);
+  };
+
+  // ===============================
+  // PROMO
+  // ===============================
+
+  const applyPromoCode = (event) => {
+    event.preventDefault();
+
     setPromoError('');
     setPromoSuccess('');
-    
-    if (promoCode.trim().toUpperCase() === 'ATHENURA10') {
+
+    const code =
+      promoCode.trim().toUpperCase();
+
+    if (code === 'ATHENURA10') {
       setDiscountPercent(10);
-      setPromoSuccess('10% discount applied successfully!');
-    } else if (promoCode.trim()) {
-      setPromoError('Invalid promo code. Try "ATHENURA10".');
+
+      setPromoSuccess(
+        '10% discount applied successfully!'
+      );
+    } else {
       setDiscountPercent(0);
+
+      setPromoError(
+        'Invalid promo code. Try ATHENURA10.'
+      );
     }
   };
 
-  // Calculations
-  const itemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const discountAmount = Math.round((subtotal * discountPercent) / 100);
+  // ===============================
+  // CALCULATIONS
+  // ===============================
+
+  const itemsCount = cartItems.reduce(
+    (total, item) =>
+      total + Number(item.quantity || 0),
+    0
+  );
+
+  const subtotal = cartItems.reduce(
+    (total, item) =>
+      total +
+      Number(item.price || 0) *
+        Number(item.quantity || 0),
+    0
+  );
+
+  const discountAmount = Math.round(
+    (subtotal * discountPercent) / 100
+  );
+
   const shippingCost = 0;
-  const gstAmount = 0;
-  const total = subtotal - discountAmount;
 
-  const handleCheckoutSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmittingOrder(true);
+  const total =
+    subtotal -
+    discountAmount +
+    shippingCost;
 
-    // Simulate server request
-    setTimeout(() => {
-      const generatedId = `ATH-${Math.floor(100000 + Math.random() * 900000)}-${addressForm.zip || 'IN'}`;
-      setOrderId(generatedId);
-      setIsSubmittingOrder(false);
-      setCheckoutStep('success');
-      
-      // Clear cart
-      saveCart([]);
-    }, 1500);
-  };
+  // ===============================
+  // GO TO CHECKOUT
+  // ===============================
 
-  const handleFormChange = (e) => {
-    setAddressForm({
-      ...addressForm,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  // Styles injected for styling the layout
-  const localStyles = `
-    /* ── Base Reset ── */
-    .cart-wrap * { box-sizing: border-box; }
-    .cart-wrap { min-height: 100vh; background: #ffffff; color: #111111; padding-bottom: 20px; font-family: 'Poppins', sans-serif; overflow-x: hidden; width: 100%; max-width: 100%; }
-
-    /* ── Header ── */
-    .cart-header { max-width: 1200px; margin: 0 auto; padding: 24px 16px 12px; }
-
-    /* ── Two-column layout (desktop) ── */
-    .cart-layout { max-width: 1200px; margin: 0 auto; padding: 0 16px 0; display: grid; grid-template-columns: 1fr 360px; gap: 28px; width: 100%; }
-
-    /* ── Left column ── */
-    .cart-list-sec { display: flex; flex-direction: column; gap: 14px; min-width: 0; width: 100%; }
-
-    /* ── Cart item card (row layout on desktop) ── */
-    .cart-item-card { display: flex; flex-direction: row; gap: 14px; background: #0c1f1b; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 16px; position: relative; transition: border-color 0.3s; color: #fff; width: 100%; max-width: 100%; overflow: hidden; }
-    .cart-item-card:hover { border-color: rgba(10,127,110,0.4); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
-
-    /* ── Card image (fixed square on desktop, always fully visible) ── */
-    .cart-item-img { width: 100px; height: 100px; min-width: 100px; max-width: 100px; border-radius: 10px; object-fit: cover; object-position: center; background: #111; border: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; display: block; }
-
-    /* ── Card details ── */
-    .cart-item-details { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
-
-    /* ── Qty + Price row ── */
-    .item-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; gap: 8px; flex-wrap: wrap; }
-    .item-price-block { text-align: right; flex-shrink: 0; }
-
-    /* ── Code / Size / Color meta row ── */
-    .item-meta-list { display: flex; flex-wrap: wrap; gap: 8px 12px; margin-top: 6px; font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 300; }
-
-    /* ── Promo form ── */
-    .promo-form { display: flex; gap: 8px; margin-bottom: 24px; width: 100%; }
-    .promo-input { flex: 1; min-width: 0; padding: 10px 14px; background: #000; border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; font-size: 12px; outline: none; }
-    .promo-btn { padding: 0 18px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
-    .promo-btn:hover { background: rgba(255,255,255,0.15); }
-
-    /* ── Quantity selector ── */
-    .qty-select { display: flex; align-items: center; gap: 4px; background: #DDDFD2; padding: 2px; border-radius: 10px; border: 1px solid rgba(10,127,110,0.25); width: fit-content; flex-shrink: 0; }
-    .qty-btn { width: 28px; height: 28px; border-radius: 7px; border: none; background: transparent; color: #0A7F6E; cursor: pointer; display: grid; place-items: center; font-weight: 700; transition: background 0.2s; flex-shrink: 0; }
-    .qty-btn:hover { background: rgba(10,127,110,0.15); }
-    .qty-input { width: 38px; min-width: 38px; text-align: center; background: transparent; border: none; color: #053d35; font-weight: 700; font-size: 13px; outline: none; }
-
-    /* ── Summary card (right) ── */
-    .summary-card { background: #0c1f1b; border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 22px; height: fit-content; position: sticky; top: 90px; box-shadow: 0 12px 36px rgba(0,0,0,0.18); color: #fff; width: 100%; max-width: 100%; }
-
-    /* ── Empty state ── */
-    .empty-state { text-align: center; padding: 60px 16px; max-width: 600px; margin: 0 auto; width: 100%; }
-    .explore-btn { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg,#0A7F6E 0%,#14a38f 100%); color: #fff; text-decoration: none; padding: 14px 28px; border-radius: 14px; font-weight: 800; font-family: 'Montserrat',sans-serif; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s; box-shadow: 0 8px 20px rgba(10,127,110,0.35); }
-    .explore-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(10,127,110,0.45); }
-
-    /* ── Checkout form ── */
-    .checkout-form-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; width: 100%; }
-    .form-col-full { grid-column: span 2; }
-    .input-field { width: 100%; max-width: 100%; padding: 11px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: inherit; }
-    .input-field:focus { border-color: #0A7F6E; background: rgba(10,127,110,0.03); }
-
-    /* ── Summary mini image (checkout step) ── */
-    .summary-mini-img { width: 48px; height: 48px; min-width: 48px; border-radius: 8px; object-fit: cover; object-position: center; flex-shrink: 0; }
-
-    /* ── Success Card (Order Confirmation) ── */
-    .success-card {
-      max-width: 640px;
-      width: 100%;
-      margin: 40px auto 0;
-      background: #0c1f1b;
-      border: 1px solid rgba(74, 222, 128, 0.2);
-      border-radius: 24px;
-      padding: 48px 32px;
-      text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-      box-sizing: border-box;
+  const handleGoToCheckout = () => {
+    if (!isLoggedIn) {
+      setShowLoginWall(true);
+      return;
     }
 
-    @media (max-width: 680px) {
-      .success-card {
-        width: 92%;
-        padding: 32px 20px;
-        margin: 20px auto 0;
-        border-radius: 20px;
-      }
-    }
-
-    /* ═BREAKPOINT══ */
-
-    @media (max-width: 992px) {
-      .cart-layout { grid-template-columns: 1fr; gap: 18px; }
-      .summary-card { position: static; }
-    }
-
-  @media (max-width: 600px) {
-  .cart-header { padding: 14px 12px 8px; width: 100%; box-sizing: border-box; }
-  .cart-layout { display: flex; flex-direction: column; padding: 0 12px; gap: 14px; width: 100%; max-width: 100%; box-sizing: border-box; }
-  .cart-list-sec { width: 100%; max-width: 100%; box-sizing: border-box; }
-  .cart-item-card { display: flex; flex-direction: column; gap: 0; padding: 14px; border-radius: 16px; width: 100%; max-width: 100%; box-sizing: border-box; }
-  .cart-item-img { width: 100%; max-width: 100%; min-width: unset; height: 240px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 10px; margin: 0 auto 12px; display: block; }
-  .summary-card { padding: 16px; border-radius: 16px; width: 100%; max-width: 100%; box-sizing: border-box; }
-  .checkout-form-grid { display: flex; flex-direction: column; gap: 12px; }
-  .form-col-full { grid-column: span 1; }
-}
-
-@media (max-width: 420px) {
-  .cart-header { padding: 12px 10px 6px; }
-  .cart-layout { padding: 0 10px; gap: 10px; }
-  .cart-item-card { padding: 12px; border-radius: 14px; }
-  .cart-item-img { width: 100%; max-width: 100%; min-width: unset; height: 220px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 8px; margin: 0 auto 10px; display: block; }
-  .summary-card { padding: 14px; border-radius: 14px; }
-  .qty-btn { width: 26px; height: 26px; }
-  .qty-input { width: 26px; font-size: 12px; }
-  .item-bottom-row { flex-direction: row; }
-  .empty-state { padding: 36px 8px; }
-}
-
-@media (max-width: 350px) {
-  .cart-header { padding: 10px 8px 6px; }
-  .cart-layout { padding: 0 8px; gap: 8px; }
-  .cart-item-card { padding: 10px; border-radius: 12px; }
-  .cart-item-img { width: 100%; max-width: 100%; min-width: unset; height: 190px; aspect-ratio: unset; object-fit: cover; object-position: center; background: #111; border-radius: 8px; margin: 0 auto 8px; display: block; }
-  .summary-card { padding: 12px; border-radius: 12px; }
-  .item-bottom-row { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .item-price-block { text-align: left; width: 100%; }
-  .qty-btn { width: 26px; height: 26px; }
-  .qty-input { width: 36px; min-width: 36px; font-size: 12px; }
-}
-
-@media (max-width: 316px) {
-  .cart-item-img { width: 100%; max-width: 100%; height: 170px; }
-  .item-meta-list { flex-direction: column; gap: 4px; }
-  .promo-form { flex-direction: column; gap: 8px; }
-  .promo-input { width: 100%; padding: 10px 12px; }
-  .promo-btn { width: 100%; padding: 10px 12px; text-align: center; }
-}
-
-/* ── Responsive button widths in summary card ── */
-@media (max-width: 992px) {
-  .cart-proceed-btn {
-    max-width: 300px !important;
-    width: auto !important;
-    margin: 0 auto !important;
-    padding-left: 32px !important;
-    padding-right: 32px !important;
+    navigate('/dashboard', {
+  state: {
+    activeTab: 'checkout'
   }
-  .cart-loginwall-btns {
-    max-width: 280px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-  `;
+});
+  };
 
   return (
     <>
-      <style>{localStyles}</style>
+      <style>{`
+
+        .cart-wrap {
+          min-height: 100vh;
+          background: #ffffff;
+          color: #111111;
+          padding-bottom: 40px;
+          font-family: 'Poppins', sans-serif;
+        }
+
+        .cart-header {
+          max-width: 1200px;
+          margin: auto;
+          padding: 24px 16px;
+        }
+
+        .cart-layout {
+          max-width: 1200px;
+          margin: auto;
+          padding: 0 16px;
+          display: grid;
+          grid-template-columns: 1fr 360px;
+          gap: 28px;
+        }
+
+        .cart-list-sec {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        .cart-item-card {
+          display: flex;
+          gap: 14px;
+          background: #0c1f1b;
+          border-radius: 18px;
+          padding: 16px;
+          color: #fff;
+        }
+
+        .cart-item-img {
+          width: 110px;
+          height: 110px;
+          border-radius: 12px;
+          object-fit: cover;
+        }
+
+        .cart-item-details {
+          flex: 1;
+        }
+
+        .item-bottom-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 20px;
+          padding-top: 12px;
+          border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .qty-select {
+          display: flex;
+          align-items: center;
+          background: #dddfd2;
+          border-radius: 10px;
+          padding: 3px;
+        }
+
+        .qty-btn {
+          width: 30px;
+          height: 30px;
+          border: none;
+          background: transparent;
+          color: #0a7f6e;
+          cursor: pointer;
+        }
+
+        .qty-input {
+          width: 40px;
+          text-align: center;
+          border: none;
+          background: transparent;
+          color: #053d35;
+          font-weight: bold;
+        }
+
+        .summary-card {
+          background: #0c1f1b;
+          color: white;
+          border-radius: 22px;
+          padding: 22px;
+          height: fit-content;
+          position: sticky;
+          top: 90px;
+        }
+
+        .promo-form {
+          display: flex;
+          gap: 8px;
+          margin: 20px 0;
+        }
+
+        .promo-input {
+          flex: 1;
+          padding: 12px;
+          background: #000;
+          color: white;
+          border: 1px solid #444;
+          border-radius: 8px;
+        }
+
+        .promo-btn {
+          padding: 0 15px;
+          background: #333;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+        }
+
+        .checkout-btn {
+          width: 100%;
+          padding: 16px;
+          background: linear-gradient(
+            135deg,
+            #0a7f6e,
+            #14a38f
+          );
+          color: white;
+          border: none;
+          border-radius: 14px;
+          font-weight: bold;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .empty-state {
+          text-align: center;
+          padding: 80px 20px;
+        }
+
+        .explore-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: #0a7f6e;
+          color: white;
+          text-decoration: none;
+          padding: 14px 25px;
+          border-radius: 12px;
+        }
+
+        @media(max-width: 992px) {
+          .cart-layout {
+            grid-template-columns: 1fr;
+          }
+
+          .summary-card {
+            position: static;
+          }
+        }
+
+        @media(max-width: 600px) {
+          .cart-item-card {
+            flex-direction: column;
+          }
+
+          .cart-item-img {
+            width: 100%;
+            height: 240px;
+          }
+
+          .item-bottom-row {
+            flex-wrap: wrap;
+            gap: 15px;
+          }
+        }
+
+      `}</style>
+
       <div className="cart-wrap">
-        
-        {/* Header & Breadcrumb */}
+
         <div className="cart-header">
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', fontSize: '11px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 600, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px' }}>
-            <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>HOME</Link>
-            <ChevronRight size={12} />
-            <Link to="/products" style={{ color: 'inherit', textDecoration: 'none' }}>PRODUCTS</Link>
-            <ChevronRight size={12} />
-            <span style={{ color: '#0A7F6E', fontWeight: 800 }}>SHOPPING BAG</span>
+
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              fontSize: 12,
+              color: '#777'
+            }}
+          >
+            <Link
+              to="/"
+              style={{
+                color: 'inherit',
+                textDecoration: 'none'
+              }}
+            >
+              HOME
+            </Link>
+
+            <ChevronRight size={14} />
+
+            <span>
+              SHOPPING BAG
+            </span>
           </div>
-          
-          <h1 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 900, fontSize: 'clamp(20px, 4vw, 42px)', textTransform: 'uppercase', letterSpacing: '0.02em', color: '#0A7F6E', marginBottom: '8px', wordBreak: 'break-word' }}>
-            {checkoutStep === 'success' ? 'Order Confirmed' : checkoutStep === 'shipping' ? 'Shipping Details' : 'Your Shopping Bag'}
+
+          <h1
+            style={{
+              color: '#0a7f6e',
+              fontWeight: 900
+            }}
+          >
+            YOUR SHOPPING BAG
           </h1>
-          {checkoutStep === 'cart' && cartItems.length > 0 && (
-            <p style={{ color: 'rgba(0, 0, 0, 0.5)', fontSize: '14px', fontWeight: 300 }}>
-              You have <strong style={{ color: '#000' }}>{itemsCount}</strong> {itemsCount === 1 ? 'item' : 'items'} in your bag.
+
+          {cartItems.length > 0 && (
+            <p>
+              You have{' '}
+              <strong>
+                {itemsCount}
+              </strong>{' '}
+              items in your bag.
             </p>
           )}
+
         </div>
 
-        {/* Dynamic Pages Logic */}
-        <AnimatePresence mode="wait">
-          {/* STEP 1: Empty Cart */}
-          {checkoutStep === 'cart' && cartItems.length === 0 && (
-            <motion.div
-              key="empty-cart"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="empty-state"
+        {cartItems.length === 0 ? (
+
+          <div className="empty-state">
+
+            <ShoppingBag
+              size={70}
+              color="#0a7f6e"
+            />
+
+            <h2>
+              Your Bag is Empty
+            </h2>
+
+            <p>
+              Browse our premium collection.
+            </p>
+
+            <Link
+              to="/products"
+              className="explore-btn"
             >
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(10, 127, 110, 0.08)', color: '#0A7F6E', display: 'grid', placeItems: 'center', margin: '0 auto 24px', border: '1px solid rgba(10, 127, 110, 0.2)' }}>
-                <ShoppingBag size={38} />
-              </div>
-              <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: '22px', marginBottom: '12px', textTransform: 'uppercase', color: '#111' }}>
-                Your Bag is Empty
-              </h2>
-              <p style={{ color: 'rgba(0, 0, 0, 0.5)', fontSize: '14px', lineHeight: 1.6, marginBottom: '36px', fontWeight: 300 }}>
-                Athletic performance begins with the right gear. Browse our premium collection and customize your fit.
-              </p>
-              
-              <Link to="/products" className="explore-btn">
-                <span>Explore Products</span>
-                <ArrowRight size={18} />
-              </Link>
-            </motion.div>
-          )}
+              Explore Products
+              <ArrowRight size={18} />
+            </Link>
 
-          {/* STEP 2: Items in Cart (Shopping Page View) */}
-          {checkoutStep === 'cart' && cartItems.length > 0 && (
-            <motion.div
-              key="active-cart"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="cart-layout"
-            >
-              {/* Left Column: Cart items list */}
-              <div className="cart-list-sec">
-                <AnimatePresence>
-                  {cartItems.map((item) => (
-                    <motion.div
-                      key={`${item._id}-${item.size}-${item.color}`}
-                      layout
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, x: -50, scale: 0.9, transition: { duration: 0.2 } }}
-                      className="cart-item-card"
-                    >
-                      <img src={item.image} alt={item.name} className="cart-item-img" />
-                      <div className="cart-item-details">
-                        {/* Title & Remove */}
-                        <div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
-                            <Link to={`/products/${item._id}`} style={{ textDecoration: 'none' }}>
-                              <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#fff', fontFamily: 'Montserrat, sans-serif', transition: 'color 0.2s', textTransform: 'uppercase' }} className="hover:text-[#0A7F6E]">{item.name}</h3>
-                            </Link>
-                            <button
-                              onClick={() => removeItem(item._id, item.size, item.color)}
-                              style={{ border: 'none', background: 'transparent', color: 'rgba(255, 255, 255, 0.35)', cursor: 'pointer', padding: '4px', transition: 'color 0.2s' }}
-                              onMouseEnter={(e) => e.currentTarget.style.color = '#0A7F6E'}
-                              onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.35)'}
-                              title="Remove item"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                          
-                          <div className="item-meta-list">
-                            <span>Code: <strong style={{ color: '#fff', fontFamily: 'monospace' }}>{item.code}</strong></span>
-                            <span>Size: <strong style={{ color: '#fff' }}>{item.size || 'N/A'}</strong></span>
-                            <span>Color: <strong style={{ color: '#fff' }}>{item.color || 'N/A'}</strong></span>
-                          </div>
-                        </div>
+          </div>
 
-                        {/* Quantity selector & Price subtotal */}
-                        <div className="item-bottom-row">
-                          <div className="qty-select">
-                            <button 
-                              type="button" 
-                              onClick={() => updateQuantity(item._id, item.size, item.color, item.quantity - 1)}
-                              disabled={item.quantity <= 1}
-                              className="qty-btn"
-                              style={{ opacity: item.quantity <= 1 ? 0.3 : 1 }}
-                            >
-                              <Minus size={11} />
-                            </button>
-                            <input 
-                              type="number" 
-                              value={item.quantity} 
-                              onChange={(e) => updateQuantity(item._id, item.size, item.color, Number(e.target.value))}
-                              className="qty-input" 
-                            />
-                            <button 
-                              type="button" 
-                              onClick={() => updateQuantity(item._id, item.size, item.color, item.quantity + 1)}
-                              className="qty-btn"
-                            >
-                              <Plus size={11} />
-                            </button>
-                          </div>
-                          
-                          <div className="item-price-block">
-                            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', display: 'block', whiteSpace: 'nowrap' }}>₹{item.price} each</span>
-                            <span style={{ fontSize: '15px', fontWeight: 900, color: '#fff', whiteSpace: 'nowrap' }}>₹{item.price * item.quantity}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-                
-                {/* Back Link */}
-                <Link to="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'rgba(0, 0, 0, 0.55)', fontSize: '13px', textDecoration: 'none', fontWeight: 600, marginTop: '12px', transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = '#000'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(0, 0, 0, 0.55)'}>
-                  <ArrowLeft size={16} />
-                  <span>Continue Shopping</span>
-                </Link>
-              </div>
+        ) : (
 
-              {/* Right Column: Order Summary */}
-              <div className="summary-card">
-                <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: '16px', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px', marginBottom: '20px', color: '#fff' }}>
-                  Order Summary
-                </h3>
-                <form onSubmit={applyPromoCode} className="promo-form">
-                  <input 
-                    type="text" 
-                    placeholder="Promo Code" 
-                    value={promoCode} 
-                    onChange={(e) => setPromoCode(e.target.value)} 
-                    className="promo-input"
+          <div className="cart-layout">
+
+            {/* CART ITEMS */}
+
+            <div className="cart-list-sec">
+
+              {cartItems.map((item) => (
+
+                <div
+                  key={`${item._id}-${item.size}-${item.color}`}
+                  className="cart-item-card"
+                >
+
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="cart-item-img"
                   />
-                  <button 
-                    type="submit" 
-                    className="promo-btn"
-                  >
-                    Apply
-                  </button>
-                </form>
-                {promoError && <p style={{ fontSize: '11px', color: '#0A7F6E', marginTop: '-18px', marginBottom: '18px', fontWeight: 500 }}>{promoError}</p>}
-                {promoSuccess && <p style={{ fontSize: '11px', color: '#4ade80', marginTop: '-18px', marginBottom: '18px', fontWeight: 500 }}>{promoSuccess}</p>}
 
-                {/* Prices Breakdown */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '13px', color: 'rgba(255, 255, 255, 0.5)', fontWeight: 300, borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '20px', marginBottom: '20px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Bag Subtotal</span>
-                    <span style={{ color: '#fff', fontWeight: 500 }}>₹{subtotal}</span>
-                  </div>
-                  
-                  {discountAmount > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#4ade80' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Tag size={12} /> Promo Discount</span>
-                      <span style={{ fontWeight: 600 }}>-₹{discountAmount}</span>
-                    </div>
-                  )}
-                </div>
+                  <div className="cart-item-details">
 
-                {/* Total */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
-                  <span style={{ fontSize: '15px', fontWeight: 700, color: '#fff' }}>Order Total</span>
-                  <span style={{ fontSize: '24px', fontWeight: 900, color: '#fff', fontFamily: 'Montserrat, sans-serif' }}>₹{total}</span>
-                </div>
-
-                {/* Proceed button */}
-                {showLoginWall ? (
-                  /* ── Login Wall (shown when guest tries to checkout) ── */
-                  <div style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1.5px solid rgba(20,168,137,0.4)',
-                    borderRadius: '14px',
-                    padding: '20px',
-                    textAlign: 'center',
-                  }}>
-                    <div style={{
-                      width: '44px', height: '44px', borderRadius: '50%',
-                      background: 'linear-gradient(135deg,#0a3d33,#14a889)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      margin: '0 auto 12px',
-                    }}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                      </svg>
-                    </div>
-                    <p style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: '14px', color: '#ffffff', marginBottom: '4px' }}>
-                      Login required to checkout
-                    </p>
-                    <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginBottom: '16px', fontWeight: 400 }}>
-                      Your cart items are saved. Sign in to place your order.
-                    </p>
-                    <div className="cart-loginwall-btns" style={{ display: 'flex', gap: '8px' }}>
-                      <button
-                        onClick={() => {
-                          window.dispatchEvent(new CustomEvent('openSignIn'));
-                        }}
-                        style={{
-                          flex: 1, padding: '10px 0', borderRadius: '10px',
-                          border: '1.5px solid #14a889', background: 'transparent',
-                          color: '#14a889', fontWeight: 700, fontSize: '12px', cursor: 'pointer',
-                          fontFamily: 'Montserrat, sans-serif',
-                        }}
-                      >
-                        Sign In
-                      </button>
-                      <button
-                        onClick={() => {
-                          window.dispatchEvent(new CustomEvent('openRegister'));
-                        }}
-                        style={{
-                          flex: 1, padding: '10px 0', borderRadius: '10px', border: 'none',
-                          background: 'linear-gradient(135deg,#0a3d33,#14a889)', color: '#fff',
-                          fontWeight: 700, fontSize: '12px', cursor: 'pointer',
-                          fontFamily: 'Montserrat, sans-serif',
-                        }}
-                      >
-                        Register
-                      </button>
-                    </div>
-                    <button
-                      onClick={() => setShowLoginWall(false)}
+                    <div
                       style={{
-                        marginTop: '10px', background: 'none', border: 'none',
-                        fontSize: '11px', color: 'rgba(255,255,255,0.35)', cursor: 'pointer',
-                        textDecoration: 'underline',
+                        display: 'flex',
+                        justifyContent: 'space-between'
                       }}
                     >
-                      Continue browsing as guest
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    className="cart-proceed-btn"
-                    onClick={() => {
-                      if (!isLoggedIn) { setShowLoginWall(true); return; }
-                      setCheckoutStep('shipping');
-                    }}
-                    style={{
-                      width: '100%', padding: '16px',
-                      background: 'linear-gradient(135deg, #0A7F6E 0%, #14a38f 100%)',
-                      color: '#fff', borderRadius: '14px', fontSize: '13px', fontWeight: 800, border: 'none',
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                      fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em',
-                      transition: 'all 0.3s ease', boxShadow: '0 8px 20px rgba(10, 127, 110, 0.3)'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(10, 127, 110, 0.45)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(10, 127, 110, 0.3)'; }}
-                  >
-                    <span>Proceed to Shipping</span>
-                    <CreditCard size={16} />
-                  </button>
-                )}
 
-                {/* Safety Badge */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '20px', fontSize: '11px', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 300, justifyContent: 'center' }}>
-                  <Truck size={14} color="#0A7F6E" />
-                  <span>Secure checkout. High quality athletic fabric guaranteed.</span>
-                </div>
-              </div>
-            </motion.div>
-          )}
+                      <h3>
+                        {item.name}
+                      </h3>
 
-          {/* STEP 3: Checkout Shipping Form */}
-          {checkoutStep === 'shipping' && (
-            <motion.div
-              key="checkout-shipping"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              className="cart-layout"
-            >
-              {/* Left Column: Form Details */}
-              <div style={{ background: '#0c1f1b', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '24px', padding: '32px', boxShadow: '0 15px 40px rgba(0,0,0,0.15)', color: '#ffffff' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px' }}>
-                  <MapPin size={20} color="#0A7F6E" />
-                  <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: '18px', textTransform: 'uppercase', color: '#fff' }}>
-                    Shipping Address
-                  </h2>
-                </div>
+                      <button
+                        onClick={() =>
+                          removeItem(
+                            item._id,
+                            item.size,
+                            item.color
+                          )
+                        }
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: 'white',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <Trash2 size={18} />
+                      </button>
 
-                <form onSubmit={handleCheckoutSubmit} className="checkout-form-grid">
-                  <div>
-                    <label style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Full Name *</label>
-                    <input type="text" required name="name" value={addressForm.name} onChange={handleFormChange} placeholder="Enter full name" className="input-field" />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Email Address *</label>
-                    <input type="email" required name="email" value={addressForm.email} onChange={handleFormChange} placeholder="you@example.com" className="input-field" />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Phone Number *</label>
-                    <input type="tel" required name="phone" value={addressForm.phone} onChange={handleFormChange} placeholder="+91 xxxxx xxxxx" className="input-field" />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Pincode / ZIP *</label>
-                    <input type="text" required name="zip" value={addressForm.zip} onChange={handleFormChange} placeholder="e.g. 110001" className="input-field" />
-                  </div>
-                  <div className="form-col-full">
-                    <label style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Street Address *</label>
-                    <input type="text" required name="address" value={addressForm.address} onChange={handleFormChange} placeholder="House, apartment number, area" className="input-field" />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>City *</label>
-                    <input type="text" required name="city" value={addressForm.city} onChange={handleFormChange} placeholder="Enter City" className="input-field" />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>State *</label>
-                    <input type="text" required name="state" value={addressForm.state} onChange={handleFormChange} placeholder="Enter State" className="input-field" />
-                  </div>
- 
-                  <div className="form-col-full" style={{ display: 'flex', gap: '12px', marginTop: '24px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '20px' }}>
-                    <button
-                      type="button"
-                      onClick={() => setCheckoutStep('cart')}
-                      style={{ padding: '14px 24px', background: 'transparent', color: 'rgba(255, 255, 255, 0.6)', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: '12px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', flex: 1 }}
-                      onMouseEnter={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)'; }}
-                    >
-                      Back to Bag
-                    </button>
-                    
-                    <button
-                      type="submit"
-                      disabled={isSubmittingOrder}
+                    </div>
+
+                    <div
                       style={{
-                        padding: '14px 28px', 
-                        background: isSubmittingOrder ? '#555' : 'linear-gradient(135deg, #0A7F6E 0%, #14a38f 100%)', 
-                        color: '#fff', borderRadius: '12px', fontSize: '12px', fontWeight: 800, border: 'none', 
-                        cursor: isSubmittingOrder ? 'not-allowed' : 'pointer', flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                        fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s'
+                        color: '#aaa',
+                        fontSize: 13
                       }}
-                      onMouseEnter={(e) => { if(!isSubmittingOrder) e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                      onMouseLeave={(e) => { if(!isSubmittingOrder) e.currentTarget.style.transform = 'translateY(0)'; }}
                     >
-                      {isSubmittingOrder ? 'Placing Order...' : 'Place Order (Simulated)'}
-                      {!isSubmittingOrder && <Check size={16} />}
-                    </button>
-                  </div>
-                </form>
-              </div>
+                      Code: {item.code || 'N/A'}
+                      <br />
+                      Size: {item.size || 'N/A'}
+                      <br />
+                      Color: {item.color || 'N/A'}
+                    </div>
 
-              {/* Right Column: Order Summary details */}
-              <div className="summary-card">
-                <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: '16px', textTransform: 'uppercase', letterSpacing: '0.08em', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px', marginBottom: '20px', color: '#fff' }}>
-                  Items Summary
-                </h3>
+                    <div className="item-bottom-row">
 
-                {/* Items loop */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '200px', overflowY: 'auto', marginBottom: '24px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px', scrollbarWidth: 'thin' }}>
-                  {cartItems.map(item => (
-                    <div key={`${item._id}-${item.size}-${item.color}`} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                      <img src={item.image} alt={item.name} className="summary-mini-img" />
-                      <div style={{ flex: 1, fontSize: '12px', minWidth: 0 }}>
-                        <h4 style={{ fontWeight: 700, color: '#fff', textTransform: 'uppercase', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{item.name}</h4>
-                        <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 300 }}>Qty: {item.quantity} &middot; Sz: {item.size}</span>
+                      <div className="qty-select">
+
+                        <button
+                          className="qty-btn"
+                          disabled={
+                            item.quantity <= 1
+                          }
+                          onClick={() =>
+                            updateQuantity(
+                              item._id,
+                              item.size,
+                              item.color,
+                              item.quantity - 1
+                            )
+                          }
+                        >
+                          <Minus size={14} />
+                        </button>
+
+                        <input
+                          className="qty-input"
+                          type="number"
+                          min="1"
+                          value={item.quantity}
+                          onChange={(event) =>
+                            updateQuantity(
+                              item._id,
+                              item.size,
+                              item.color,
+                              event.target.value
+                            )
+                          }
+                        />
+
+                        <button
+                          className="qty-btn"
+                          onClick={() =>
+                            updateQuantity(
+                              item._id,
+                              item.size,
+                              item.color,
+                              item.quantity + 1
+                            )
+                          }
+                        >
+                          <Plus size={14} />
+                        </button>
+
                       </div>
-                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#fff', flexShrink: 0 }}>₹{item.price * item.quantity}</span>
-                    </div>
-                  ))}
-                </div>
 
-                {/* Summary totals */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '16px', marginBottom: '16px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Subtotal</span>
-                    <span style={{ color: '#fff' }}>₹{subtotal}</span>
+                      <strong>
+                        ₹
+                        {Number(item.price) *
+                          Number(item.quantity)}
+                      </strong>
+
+                    </div>
+
                   </div>
-                  {discountAmount > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#4ade80' }}>
-                      <span>Discount</span>
-                      <span>-₹{discountAmount}</span>
-                    </div>
-                  )}
+
                 </div>
 
-                {/* Total */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#fff' }}>Total Amount</span>
-                  <span style={{ fontSize: '20px', fontWeight: 900, color: '#fff', fontFamily: 'Montserrat, sans-serif' }}>₹{total}</span>
-                </div>
-              </div>
-            </motion.div>
-          )}
+              ))}
 
-          {/* STEP 4: Success View */}
-          {checkoutStep === 'success' && (
-            <motion.div
-              key="checkout-success"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              className="success-card"
-            >
-              {/* Success Ring */}
-              <div style={{ 
-                width: '76px', height: '76px', 
-                background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)', 
-                color: '#fff', borderRadius: '50%', display: 'grid', placeItems: 'center', 
-                margin: '0 auto 24px', boxShadow: '0 10px 25px rgba(74, 222, 128, 0.2)' 
-              }}>
-                <Check size={38} strokeWidth={3} />
-              </div>
+              <Link
+                to="/products"
+                style={{
+                  color: '#111',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8
+                }}
+              >
+                <ArrowLeft size={16} />
+                Continue Shopping
+              </Link>
 
-              <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 900, fontSize: '24px', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
-                Order Placed!
+            </div>
+
+            {/* SUMMARY */}
+
+            <div className="summary-card">
+
+              <h2>
+                Order Summary
               </h2>
-              <p style={{ color: '#4ade80', fontSize: '13px', fontWeight: 700, marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                Confirmation Code: {orderId}
-              </p>
-              
-              <p style={{ color: 'rgba(255, 255, 255, 0.45)', fontSize: '14px', lineHeight: 1.6, maxWidth: '480px', margin: '0 auto 36px', fontWeight: 300 }}>
-                Thank you for your purchase, <strong style={{ color: '#fff' }}>{addressForm.name}</strong>. A receipt and shipping details have been sent to <strong style={{ color: '#fff' }}>{addressForm.email}</strong>. 
-                Your athletic gear will reach you in 4-6 business days.
-              </p>
 
-              {/* Order Specs */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', background: '#000000', border: '1px solid rgba(255,255,255,0.08)', padding: '16px', borderRadius: '16px', marginBottom: '40px', fontSize: '12px', textAlign: 'left' }}>
-                <div>
-                  <span style={{ color: 'rgba(255, 255, 255, 0.3)', display: 'block', marginBottom: '4px' }}>Shipping Method</span>
-                  <strong style={{ color: '#fff', fontWeight: 600 }}>Standard Ground</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'rgba(255, 255, 255, 0.3)', display: 'block', marginBottom: '4px' }}>Delivery Date</span>
-                  <strong style={{ color: '#fff', fontWeight: 600 }}>{new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} (Est.)</strong>
-                </div>
-                <div>
-                  <span style={{ color: 'rgba(255, 255, 255, 0.3)', display: 'block', marginBottom: '4px' }}>Payment Mode</span>
-                  <strong style={{ color: '#fff', fontWeight: 600 }}>Simulated UPI</strong>
-                </div>
+              <form
+                onSubmit={applyPromoCode}
+                className="promo-form"
+              >
+
+                <input
+                  className="promo-input"
+                  placeholder="Promo Code"
+                  value={promoCode}
+                  onChange={(event) =>
+                    setPromoCode(
+                      event.target.value
+                    )
+                  }
+                />
+
+                <button
+                  className="promo-btn"
+                  type="submit"
+                >
+                  Apply
+                </button>
+
+              </form>
+
+              {promoError && (
+                <p
+                  style={{
+                    color: '#ef4444',
+                    fontSize: 12
+                  }}
+                >
+                  {promoError}
+                </p>
+              )}
+
+              {promoSuccess && (
+                <p
+                  style={{
+                    color: '#4ade80',
+                    fontSize: 12
+                  }}
+                >
+                  {promoSuccess}
+                </p>
+              )}
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginTop: 20
+                }}
+              >
+                <span>
+                  Subtotal
+                </span>
+
+                <strong>
+                  ₹{subtotal}
+                </strong>
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                <Link to="/products" className="explore-btn" style={{ padding: '14px 28px', fontSize: '12px' }}>
-                  <span>Continue Shopping</span>
-                  <ArrowRight size={16} />
-                </Link>
+              {discountAmount > 0 && (
+
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    color: '#4ade80',
+                    marginTop: 15
+                  }}
+                >
+                  <span>
+                    <Tag size={13} />
+                    Discount
+                  </span>
+
+                  <strong>
+                    -₹{discountAmount}
+                  </strong>
+                </div>
+
+              )}
+
+              <hr
+                style={{
+                  margin: '20px 0'
+                }}
+              />
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginBottom: 20
+                }}
+              >
+                <strong>
+                  Total
+                </strong>
+
+                <strong
+                  style={{
+                    fontSize: 24
+                  }}
+                >
+                  ₹{total}
+                </strong>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+
+              {showLoginWall ? (
+
+                <div
+                  style={{
+                    border: '1px solid #14a889',
+                    padding: 20,
+                    borderRadius: 12,
+                    textAlign: 'center'
+                  }}
+                >
+
+                  <h3>
+                    Login Required
+                  </h3>
+
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: '#aaa'
+                    }}
+                  >
+                    Please login to continue checkout.
+                  </p>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 10
+                    }}
+                  >
+
+                    <button
+                      onClick={() => {
+                        window.dispatchEvent(
+                          new CustomEvent(
+                            'openSignIn'
+                          )
+                        );
+
+                        setShowLoginWall(false);
+                      }}
+                      style={{
+                        flex: 1,
+                        padding: 12
+                      }}
+                    >
+                      Sign In
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        window.dispatchEvent(
+                          new CustomEvent(
+                            'openRegister'
+                          )
+                        );
+
+                        setShowLoginWall(false);
+                      }}
+                      style={{
+                        flex: 1,
+                        padding: 12
+                      }}
+                    >
+                      Register
+                    </button>
+
+                  </div>
+
+                </div>
+
+              ) : (
+
+                <button
+                  className="checkout-btn"
+                  onClick={handleGoToCheckout}
+                >
+                  Go To Checkout
+                  <CreditCard size={18} />
+                </button>
+
+              )}
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 8,
+                  marginTop: 20,
+                  fontSize: 12,
+                  color: '#aaa'
+                }}
+              >
+                <Truck size={15} />
+                Secure checkout
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
 
       </div>
     </>

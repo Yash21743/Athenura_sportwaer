@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/Yash21743/Athenura_sportwaer#readme",
   "dependencies": {
-    "@getbrevo/brevo": "^6.0.2",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
@@ -34,7 +33,9 @@
     "mongoose": "^9.7.4",
     "morgan": "^1.11.0",
     "multer": "^2.2.0",
-    "multer-storage-cloudinary": "^4.0.0"
+    "multer-storage-cloudinary": "^4.0.0",
+    "sib-api-v3-sdk": "^8.5.0",
+    "twilio": "^6.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

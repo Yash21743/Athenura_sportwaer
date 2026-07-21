@@ -132,7 +132,6 @@ const ProductDetail = () => {
         const response = await API.get(`/products/${id}`);
         const apiData = response.data?.data;
         if (apiData && apiData._id) {
-          // Normalize backend fields to frontend expectations
           const normalizedProduct = {
             ...apiData,
             code: apiData.productCode || apiData.code,
@@ -278,40 +277,30 @@ const ProductDetail = () => {
 
   const stripHtml = (html = '') => html.replace(/<[^>]*>/g, '');
 
-  const handleAddToCart = () => {
+  // ✅ FIXED: handleAddToCart — calls backend POST /api/cart directly (no more localStorage-only cart).
+  // "View Bag" now opens the Dashboard's "My Cart" tab instead of the old /cart page.
+  const handleAddToCart = async () => {
     if (!product) return;
-    try {
-      const cartKey = 'csw_cart_items';
-      const stored = localStorage.getItem(cartKey);
-      let cart = stored ? JSON.parse(stored) : [];
 
+    const loggedIn = localStorage.getItem('csw_is_logged_in') === 'true';
+    if (!loggedIn) {
+      window.dispatchEvent(new Event('showCartLoginPopup'));
+      return;
+    }
+
+    try {
       const colorName = product.colorNames && product.colorNames[selectedColorIndex]
         ? product.colorNames[selectedColorIndex]
         : 'Default';
       const sizeName = selectedSize || (product.sizes && product.sizes[0]) || 'Default';
 
-      const existingIndex = cart.findIndex(item =>
-        item._id === product._id &&
-        item.size === sizeName &&
-        item.color === colorName
-      );
+      await API.post('/cart', {
+        productId: product._id,
+        size: sizeName,
+        color: colorName,
+        quantity
+      });
 
-      if (existingIndex > -1) {
-        cart[existingIndex].quantity += quantity;
-      } else {
-        cart.push({
-          _id: product._id,
-          name: product.name,
-          code: product.code,
-          price: product.price,
-          image: activeImage || (product.images && product.images[0]) || '',
-          size: sizeName,
-          color: colorName,
-          quantity: quantity
-        });
-      }
-
-      localStorage.setItem(cartKey, JSON.stringify(cart));
       window.dispatchEvent(new Event('cartUpdated'));
 
       toast.success(
@@ -321,12 +310,7 @@ const ProductDetail = () => {
             <button
               onClick={() => {
                 toast.dismiss(t.id);
-                const loggedIn = localStorage.getItem('csw_is_logged_in') === 'true';
-                if (loggedIn) {
-                  navigate('/cart');
-                } else {
-                  window.dispatchEvent(new Event('showCartLoginPopup'));
-                }
+                navigate('/dashboard', { state: { tab: 'cart' } });
               }}
               style={{ color: '#0A7F6E', fontWeight: 800, textDecoration: 'underline', textTransform: 'uppercase', letterSpacing: '0.05em', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', padding: 0 }}
             >
@@ -338,8 +322,70 @@ const ProductDetail = () => {
       );
     } catch (err) {
       console.error('Failed to add item to cart:', err);
-      toast.error('Could not add item to cart. Please try again.');
+      toast.error(err.response?.data?.message || 'Could not add item to cart. Please try again.');
     }
+  };
+
+  // ✅ FIXED: Buy Now Button — adds to backend cart then opens Dashboard's My Cart tab directly.
+  const BuyNowButton = () => {
+    const handleBuyNow = async () => {
+      if (!product) return;
+
+      const loggedIn = localStorage.getItem('csw_is_logged_in') === 'true';
+      if (!loggedIn) {
+        window.dispatchEvent(new Event('showCartLoginPopup'));
+        return;
+      }
+
+      try {
+        const colorName = product.colorNames && product.colorNames[selectedColorIndex]
+          ? product.colorNames[selectedColorIndex]
+          : 'Default';
+        const sizeName = selectedSize || (product.sizes && product.sizes[0]) || 'Default';
+
+        await API.post('/cart', {
+          productId: product._id,
+          size: sizeName,
+          color: colorName,
+          quantity
+        });
+
+        window.dispatchEvent(new Event('cartUpdated'));
+        navigate('/dashboard', { state: { tab: 'cart' } });
+      } catch (err) {
+        console.error('Failed to proceed with buy now:', err);
+        toast.error(err.response?.data?.message || 'Could not process your request. Please try again.');
+      }
+    };
+
+    return (
+      <button
+        type="button"
+        onClick={handleBuyNow}
+        style={{
+          padding: '16px',
+          background: '#0A7F6E',
+          color: '#111111',
+          border: 'none',
+          borderRadius: '16px',
+          fontSize: '14px',
+          fontWeight: 800,
+          cursor: 'pointer',
+          fontFamily: 'Montserrat, sans-serif',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          transition: 'all 0.2s',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.background = '#086053'}
+        onMouseLeave={(e) => e.currentTarget.style.background = '#0A7F6E'}
+      >
+        ✓ Buy Now
+      </button>
+    );
   };
 
   if (loading) {
@@ -481,7 +527,6 @@ const ProductDetail = () => {
                     {product.code}
                   </span>
                 </div>
-
 
                 {/* Product Specifications */}
                 <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -687,7 +732,7 @@ const ProductDetail = () => {
                     </div>
                   </div>
 
-                  {/* Direct Purchase Actions */}
+                  {/* ✅ FIXED: Direct Purchase Actions - Buy Now uses BuyNowButton component */}
                   <div className="pd-action-btns">
                     <button
                       type="button"
@@ -698,15 +743,7 @@ const ProductDetail = () => {
                     >
                       Add to Cart
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => alert("Proceeding to checkout")}
-                      style={{ padding: '16px', background: '#0A7F6E', color: '#111111', border: 'none', borderRadius: '16px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', textTransform: 'uppercase', letterSpacing: '0.05em', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#086053'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = '#0A7F6E'}
-                    >
-                      Buy Now
-                    </button>
+                    <BuyNowButton />
                   </div>
 
                   {/* Description */}
@@ -863,14 +900,12 @@ const ProductDetail = () => {
                             })}
                           </div>
                           {inquiryForm.sizes.length > 0 && (
-                            <p className={`bo-size-status ${sizeQtyExceeded ? "bo-size-status-red" : "bo-size-status-green"}`}>
-                              {!inquiryForm.quantity
-                                ? "Select a quantity range above first."
-                                : sizeQtyExceeded
-                                ? `Total ${totalSizeQty} exceeds your quantity range — please increase your quantity.`
-                                : Number.isFinite(sizeQtyRemaining)
-                                ? `${sizeQtyRemaining} unit${sizeQtyRemaining === 1 ? "" : "s"} left to allocate.`
-                                : `${totalSizeQty} units allocated so far.`}
+                            <p className={`bo-size-status ${sizeQtyExceeded ? 'bo-size-status-red' : 'bo-size-status-green'}`}>
+                              {sizeQtyExceeded
+                                ? `Exceeded by ${totalSizeQty - selectedRange.max} units — please increase your quantity range.`
+                                : sizeQtyRemaining !== null
+                                  ? `${sizeQtyRemaining} units remaining in selected range.`
+                                  : ''}
                             </p>
                           )}
                         </div>
@@ -879,136 +914,86 @@ const ProductDetail = () => {
                         <div className="bo-field">
                           <label className="bo-label">Custom Printing Required <span className="bo-required">*</span></label>
                           <div className="bo-radio-group">
-                            {["Yes – Logo / Text", "Yes – Full Sublimation", "Yes – Embroidery", "No Printing"].map((opt) => (
-                              <label key={opt} className={`bo-radio-label${inquiryForm.customPrinting === opt ? " selected" : ""}`}>
-                                <input type="radio" name="customPrinting" value={opt} checked={inquiryForm.customPrinting === opt} onChange={() => setInquiryPrinting(opt)} />
+                            {["Yes", "No"].map((opt) => (
+                              <label key={opt} className={`bo-radio-label${inquiryForm.customPrinting === opt ? ' selected' : ''}`}>
+                                <input
+                                  type="radio"
+                                  name="customPrinting"
+                                  value={opt}
+                                  checked={inquiryForm.customPrinting === opt}
+                                  onChange={(e) => setInquiryPrinting(e.target.value)}
+                                />
                                 {opt}
                               </label>
                             ))}
                           </div>
                         </div>
 
-                        {/* Preferred Delivery Date */}
-                        <div className="bo-field">
-                          <label className="bo-label" htmlFor="bo-deliveryDate">Preferred Delivery Date</label>
-                          <input
-                            id="bo-deliveryDate"
-                            name="deliveryDate"
-                            className="bo-input"
-                            type="date"
-                            min={new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0]}
-                            value={inquiryForm.deliveryDate}
-                            onChange={handleInquiryChange}
-                          />
-                        </div>
-
-                        {/* Additional Requirements */}
-                        <div className="bo-field">
-                          <label className="bo-label" htmlFor="bo-requirements">Additional Requirements</label>
-                          <textarea
-                            id="bo-requirements"
-                            name="requirements"
-                            className="bo-textarea"
-                            placeholder="Sizes breakdown, color preferences, reference designs, special instructions..."
-                            value={inquiryForm.requirements}
-                            onChange={handleInquiryChange}
-                          />
+                        {/* Delivery Date + Requirements */}
+                        <div className="bo-field-row">
+                          <div className="bo-field">
+                            <label className="bo-label" htmlFor="bo-deliveryDate">Expected Delivery Date</label>
+                            <input
+                              id="bo-deliveryDate"
+                              name="deliveryDate"
+                              className="bo-input"
+                              type="date"
+                              value={inquiryForm.deliveryDate}
+                              onChange={handleInquiryChange}
+                            />
+                          </div>
+                          <div className="bo-field">
+                            <label className="bo-label" htmlFor="bo-requirements">Additional Requirements</label>
+                            <input
+                              id="bo-requirements"
+                              name="requirements"
+                              className="bo-input"
+                              type="text"
+                              placeholder="Logo, names, numbers..."
+                              value={inquiryForm.requirements}
+                              onChange={handleInquiryChange}
+                            />
+                          </div>
                         </div>
 
                         {/* Submit Button */}
-                        <button type="submit" className="bo-submit-btn" disabled={inquirySubmitting}>
-                          {inquirySubmitting ? "Submitting…" : <><Send size={18} /> Submit B2B Enquiry</>}
+                        <button
+                          type="submit"
+                          className="bo-submit-btn"
+                          disabled={inquirySubmitting}
+                        >
+                          {inquirySubmitting ? (
+                            <>
+                              <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite', display: 'inline-block' }} />
+                              Submitting...
+                            </>
+                          ) : (
+                            <>
+                              <Send size={16} />
+                              Submit Enquiry
+                            </>
+                          )}
                         </button>
+
                         <p className="bo-disclaimer">
-                          By submitting, you agree our team will contact you within 24 hours.
-                          Your data is safe and never shared with third parties.
+                          By submitting this form, you agree to be contacted by our sales team regarding your enquiry. We respect your privacy and will never share your information.
                         </p>
                       </motion.form>
                     )}
                   </AnimatePresence>
                 </div>
 
-
-
               </div>
-
-            </div>
-
-            {/* Related Products Hook */}
-            <div style={{ marginTop: '48px', paddingTop: '40px' }}>
-              <RelatedProducts category={product.category} currentProductId={product._id} />
             </div>
 
           </div>
+
+          {/* Related Products */}
+          <div style={{ marginTop: '48px' }}>
+            <RelatedProducts currentProductId={product._id} category={product.category} />
+          </div>
+
         </main>
-
-        {/* Size Guide Modal Overlay */}
-        <AnimatePresence>
-          {isSizeGuideOpen && (
-            <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-              <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 0.8 }} exit={{ opacity: 0 }}
-                onClick={() => setIsSizeGuideOpen(false)}
-                style={{ position: 'absolute', inset: 0, background: '#EAEBE3', cursor: 'pointer' }}
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                style={{ position: 'relative', width: '100%', maxWidth: '600px', background: '#EAEBE3', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '24px', padding: '32px', boxShadow: '0 40px 80px rgba(0,0,0,0.8)', maxHeight: '85vh', overflowY: 'auto' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Users size={24} color="#0A7F6E" />
-                    <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#111111', fontFamily: 'Montserrat, sans-serif' }}>Athenura Size Chart</h3>
-                  </div>
-                  <button onClick={() => setIsSizeGuideOpen(false)} style={{ background: 'rgba(0,0,0,0.08)', border: 'none', color: 'rgba(0,0,0,0.6)', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                    <X size={16} />
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: '13px', lineHeight: 1.6, fontWeight: 300 }}>
-                    Our apparel sizes are athletic-fit. If you prefer a loose chest configuration or plan to wear base-layers beneath your jersey/tees, we suggest ordering one size up.
-                  </p>
-                  <div style={{ borderRadius: '16px', border: '1px solid rgba(0,0,0,0.08)', overflow: 'hidden' }}>
-                    <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', fontSize: '13px' }}>
-                      <thead>
-                        <tr style={{ background: 'rgba(0,0,0,0.05)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
-                          <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Size</th>
-                          <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Chest (in)</th>
-                          <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Waist (in)</th>
-                          <th style={{ padding: '16px', color: 'rgba(0,0,0,0.7)', fontWeight: 700 }}>Length (in)</th>
-                        </tr>
-                      </thead>
-                      <tbody style={{ color: 'rgba(0,0,0,0.5)' }}>
-                        {[
-                          { s: 'XS', c: '34 - 36', w: '28 - 30', l: '26.5' },
-                          { s: 'S', c: '36 - 38', w: '30 - 32', l: '27.5' },
-                          { s: 'M', c: '38 - 40', w: '32 - 34', l: '28.5' },
-                          { s: 'L', c: '40 - 42', w: '34 - 36', l: '29.5' },
-                          { s: 'XL', c: '42 - 44', w: '36 - 38', l: '30.5' },
-                          { s: 'XXL', c: '44 - 46', w: '38 - 40', l: '31.5' },
-                          { s: 'XXXL', c: '46 - 48', w: '40 - 42', l: '32.5' }
-                        ].map((r, i) => (
-                          <tr key={r.s} style={{ borderTop: i > 0 ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
-                            <td style={{ padding: '16px', fontWeight: 700, color: '#111111' }}>{r.s}</td>
-                            <td style={{ padding: '16px' }}>{r.c}</td>
-                            <td style={{ padding: '16px' }}>{r.w}</td>
-                            <td style={{ padding: '16px' }}>{r.l}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
-                    <button onClick={() => setIsSizeGuideOpen(false)} style={{ padding: '12px 24px', background: '#1a1a1a', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '12px', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
-                      Got It
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
 
       </div>
     </>

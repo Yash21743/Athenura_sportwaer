@@ -3,570 +3,60 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Menu, ShoppingBag, User, X, LogIn, Package, Settings, ChevronDown, UserPlus } from "lucide-react"
 import { Link, NavLink as RouterNavLink, useLocation, useNavigate } from "react-router-dom"
 import logo from "../../../assets/images/comfy_logo4.png"
+import API from "../../../services/api"
 
 const styles = `
-.nav-root {
-  --nav-h: 76px;
-  --bg-3d: #1e1e22;
-  --shadow-3d-dark: 6px 6px 12px rgba(0, 0, 0, 0.6);
-  --shadow-3d-light: -6px -6px 12px rgba(255, 255, 255, 0.06);
-  --inset-3d-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.6);
-  --inset-3d-light: inset -4px -4px 8px rgba(255, 255, 255, 0.05);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  width: 100%;
-}
-
-.nav-root--fixed {
-  position: fixed !important;
-}
-
-
-.nav-shell {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  height: var(--nav-h);
- padding: 0 clamp(1rem, 4vw, 3rem);
-  background: #d6d7cb;
-  border-bottom: none;
-  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
-  transition: background 0.35s ease, box-shadow 0.35s ease;
-}
-
-.nav-shell[data-scrolled='true'] {
-  background: #d6d7cb;
-  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light), 0 6px 25px rgba(20, 168, 137, 0.15);
-}
-
-.nav-links {
-  display: none;
-  align-items: center;
-  gap: 0.25rem;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.nav-link {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  padding: 0.6rem 1.2rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
- color: rgba(0, 0, 0, 0.7);
-  text-decoration: none;
-  border-radius: 14px;
-  border: none;
-  transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
-  white-space: nowrap;
-}
-
-.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 1.2rem;
-  right: 1.2rem;
-  bottom: 4px;
-  height: 2px;
-  background: #14a889;
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 0.25s ease;
-}
-
-.nav-link:hover,
-.nav-link.active {
-  color: #000000;
-}
-
-.nav-link:hover::after,
-.nav-link.active::after {
-  transform: scaleX(1);
-}
-
-.nav-link__dot {
-  display: none;
-}
-
-.nav-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  text-decoration: none;
-  user-select: none;
-  position: relative;
-  z-index: 1;
-}
-
-.nav-logo__text {
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #000000;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.nav-logo__text span {
-  color: #14a889;
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.icon-btn {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 14px;
-  color: rgba(0, 0, 0, 0.8);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.icon-btn:hover,
-.icon-btn.active {
-  color: rgba(0, 0, 0, 0.8);
-  background: #ffffff;
-  border: 1px solid #14a889;
-}
-
-.cart-badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  display: grid;
-  place-items: center;
-  font-size: 0.68rem;
-  font-weight: 700;
-  line-height: 1;
-  color: #ffffff;
-  background: #14a889;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 12px rgba(20, 168, 137, 0.6);
-}
-
-.account-wrap {
-  position: relative;
-}
-
-.account-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 12px);
-  width: 220px;
-  padding: 0.5rem;
-  background: #2a2a2f;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
-  box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.7), -4px -4px 12px rgba(255, 255, 255, 0.05);
-  transform-origin: top right;
-  overflow: hidden;
-}
-
-.account-menu__head {
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  margin-bottom: 0.35rem;
-}
-
-.account-menu__head strong {
-  display: block;
-  font-size: 0.9rem;
-}
-
-.account-menu__head small {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.78rem;
-}
-
-.account-item {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  width: 100%;
-  padding: 0.55rem 0.75rem;
-  font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.8);
-  background: transparent;
-  border: 0;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.2s ease;
-}
-
-.account-item:hover {
-  background: #1e1e22;
-  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5), inset -2px -2px 4px rgba(255, 255, 255, 0.03);
-  color: #ffffff;
-}
-
-.nav-burger {
-  display: inline-grid;
-}
-
-.mobile-panel {
-  position: fixed;
-  top: calc(var(--nav-h) + 40px);
-  left: 0;
-  right: 0;
-  bottom: 0;
-  max-height: calc(100vh - var(--nav-h) - 40px);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  background: #d6d7cb;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
-  z-index: 49;
-}
-
-.mobile-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.75rem clamp(1rem, 4vw, 3rem) 1.25rem;
-}
-
-.mobile-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.85rem 1rem;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #000000;
-  text-decoration: none;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
-}
-
-.mobile-link:hover,
-.mobile-link.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
-  background-size: 200% 200%;
-  animation: redShift 1.5s ease infinite;
-  border-color: transparent;
-}
-
-.mobile-overlay {
-  position: fixed;
-  inset: calc(var(--nav-h) + 40px) 0 0 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  z-index: 40;
-}
-
-@media (min-width: 900px) {
-  .nav-links {
-    display: flex;
-  }
-  .nav-burger {
-    display: none;
-  }
-}
-
-@media (min-width: 900px) {
-  .nav-links {
-    gap: clamp(0px, 0.4vw, 0.25rem);
-  }
-  .nav-link {
-    padding: 0.6rem clamp(0.5rem, 1vw, 1.2rem);
-    font-size: clamp(0.74rem, 0.85vw + 0.4rem, 0.9rem);
-    white-space: nowrap;
-  }
-  .nav-shell {
-    padding: 0 clamp(0.75rem, 2vw, 3rem);
-    gap: clamp(0.5rem, 1.5vw, 1.5rem);
-  }
-  .nav-logo img {
-    height: clamp(34px, 4vw, 48px) !important;
-  }
-  .nav-actions {
-    gap: clamp(0.25rem, 0.5vw, 0.5rem);
-  }
-  .icon-btn {
-    width: clamp(36px, 3vw, 44px);
-    height: clamp(36px, 3vw, 44px);
-  }
-}
-
-.announcement-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  width: 100%;
-  height: 40px;
-  padding: 0 1rem;
-  background: #1e1e22;
-  overflow: hidden;
-  position: relative;
-}
-
-.announcement-bar__content {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-wrap: nowrap;
-  justify-content: center;
-  text-align: center;
-  white-space: nowrap;
-  max-width: 100%;
-}
-
-.announcement-bar__text {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #e8e8ea;
-}
-
-.announcement-bar__code {
-  display: inline-block;
-  padding: 0.15rem 0.55rem;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: #ffffff;
-  background: #e63946;
-  border-radius: 4px;
-}
-
-.announcement-bar__cta {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #14a889;
-  text-decoration: underline;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0;
-}
-
-.announcement-bar__cta:hover {
-  color: #ffffff;
-}
-
-@media (max-width: 600px) {
-  .announcement-bar__text,
-  .announcement-bar__code,
-  .announcement-bar__cta {
-    font-size: 0.62rem;
-  }
-  .announcement-bar {
-    padding: 0 0.5rem;
-  }
-}
-
-.mobile-account {
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), -3px -3px 6px rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.02);
-  overflow: hidden;
-  margin-bottom: 0.5rem;
-}
-
-.mobile-account-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.9rem 1rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #000000;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
-
-.mobile-account-head svg {
-  transition: transform 0.25s ease;
-}
-
-.mobile-account-head[data-open='true'] svg {
-  transform: rotate(180deg);
-}
-
-.mobile-account-body {
-  overflow: hidden;
-}
-
-.mobile-account-item {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  width: 100%;
-  padding: 0.8rem 1rem;
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.75);
-  text-decoration: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  background: transparent;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.mobile-account-item:hover {
-  background: #f2f2ea;
-  color: #14a889;
-}
-
-.desktop-account-wrap {
-  position: relative;
-  display: none;
-}
-
-.desktop-account-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 12px);
-  width: 220px;
-  background: #ffffff;
-  border-radius: 14px;
-  box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light);
-  overflow: hidden;
-  z-index: 60;
-}
-
-.desktop-account-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.9rem 1rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #000000;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.desktop-account-item {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  width: 100%;
-  padding: 0.8rem 1rem;
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.75);
-  text-decoration: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  background: transparent;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.desktop-account-item:first-of-type {
-  border-top: none;
-}
-
-.desktop-account-item:hover {
-  background: #f2f2ea;
-  color: #14a889;
-}
-
-.desktop-signin-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  padding: 0.75rem 1rem 1rem;
-}
-
-.desktop-signin-input {
-  width: 100%;
-  height: 40px;
-  padding: 0 0.85rem;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 10px;
-  background: #f7f7f2;
-  font-size: 0.85rem;
-  font-family: inherit;
-  color: #000000;
-  outline: none;
-  transition: border 0.2s ease;
-}
-
-.desktop-signin-input:focus {
-  border-color: #14a889;
-}
-
-.desktop-signin-submit {
-  width: 100%;
-  padding: 0.6rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: #ffffff;
-  background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.desktop-signin-submit:hover {
-  opacity: 0.9;
-}
-
-.desktop-signin-submit--success {
-  background: #14a889;
-  cursor: default;
-  opacity: 1;
-}
-
-.desktop-signin-back {
-  align-self: flex-start;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.55);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.2rem 0;
-}
-
-.desktop-signin-back:hover {
-  color: #14a889;
-}
-
-@media (min-width: 900px) {
-  .desktop-account-wrap {
-    display: inline-flex;
-  }
-}
-
+.nav-root { --nav-h: 76px; --bg-3d: #1e1e22; --shadow-3d-dark: 6px 6px 12px rgba(0, 0, 0, 0.6); --shadow-3d-light: -6px -6px 12px rgba(255, 255, 255, 0.06); --inset-3d-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.6); --inset-3d-light: inset -4px -4px 8px rgba(255, 255, 255, 0.05); position: sticky; top: 0; z-index: 50; width: 100%; }
+.nav-root--fixed { position: fixed !important; }
+.nav-shell { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: var(--nav-h); padding: 0 clamp(1rem, 4vw, 3rem); background: #d6d7cb; border-bottom: none; box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light); transition: background 0.35s ease, box-shadow 0.35s ease; }
+.nav-shell[data-scrolled='true'] { background: #d6d7cb; box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light), 0 6px 25px rgba(20, 168, 137, 0.15); }
+.nav-links { display: none; align-items: center; gap: 0.25rem; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.nav-link { position: relative; display: inline-flex; align-items: center; padding: 0.6rem 1.2rem; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.01em; color: rgba(0, 0, 0, 0.7); text-decoration: none; border-radius: 14px; border: none; transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease; white-space: nowrap; }
+.nav-link::after { content: ""; position: absolute; left: 1.2rem; right: 1.2rem; bottom: 4px; height: 2px; background: #14a889; transform: scaleX(0); transform-origin: center; transition: transform 0.25s ease; }
+.nav-link:hover, .nav-link.active { color: #000000; }
+.nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
+.nav-logo { display: inline-flex; align-items: center; gap: 0.55rem; text-decoration: none; user-select: none; position: relative; z-index: 1; }
+.nav-actions { display: flex; align-items: center; gap: 0.5rem; }
+.icon-btn { position: relative; display: inline-grid; place-items: center; width: 44px; height: 44px; background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 14px; color: rgba(0, 0, 0, 0.8); cursor: pointer; transition: all 0.2s ease; }
+.icon-btn:hover, .icon-btn.active { color: rgba(0, 0, 0, 0.8); background: #ffffff; border: 1px solid #14a889; }
+.cart-badge { position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; padding: 0 4px; display: grid; place-items: center; font-size: 0.68rem; font-weight: 700; line-height: 1; color: #ffffff; background: #14a889; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 0 12px rgba(20, 168, 137, 0.6); }
+.mobile-panel { position: fixed; top: calc(var(--nav-h) + 40px); left: 0; right: 0; bottom: 0; max-height: calc(100vh - var(--nav-h) - 40px); overflow-y: auto; -webkit-overflow-scrolling: touch; background: #d6d7cb; border-top: 1px solid rgba(0, 0, 0, 0.06); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8); z-index: 49; }
+.mobile-inner { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.75rem clamp(1rem, 4vw, 3rem) 1.25rem; }
+.mobile-link { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; font-size: 1rem; font-weight: 500; color: #000000; text-decoration: none; border-radius: 12px; background: #ffffff; border: 1px solid rgba(0, 0, 0, 0.08); transition: all 0.2s ease; }
+.mobile-link:hover, .mobile-link.active { color: #ffffff; background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33); background-size: 200% 200%; animation: redShift 1.5s ease infinite; border-color: transparent; }
+.mobile-overlay { position: fixed; inset: calc(var(--nav-h) + 40px) 0 0 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 40; }
+@media (min-width: 900px) { .nav-links { display: flex; } .nav-burger { display: none; } .nav-links { gap: clamp(0px, 0.4vw, 0.25rem); } .nav-link { padding: 0.6rem clamp(0.5rem, 1vw, 1.2rem); font-size: clamp(0.74rem, 0.85vw + 0.4rem, 0.9rem); white-space: nowrap; } .nav-shell { padding: 0 clamp(0.75rem, 2vw, 3rem); gap: clamp(0.5rem, 1.5vw, 1.5rem); } .nav-logo img { height: clamp(34px, 4vw, 48px) !important; } .nav-actions { gap: clamp(0.25rem, 0.5vw, 0.5rem); } .icon-btn { width: clamp(36px, 3vw, 44px); height: clamp(36px, 3vw, 44px); } }
+.announcement-bar { display: flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%; height: 40px; padding: 0 1rem; background: #1e1e22; overflow: hidden; position: relative; }
+.announcement-bar__content { display: flex; align-items: center; gap: 0.6rem; flex-wrap: nowrap; justify-content: center; text-align: center; white-space: nowrap; max-width: 100%; }
+.announcement-bar__text { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #e8e8ea; }
+.announcement-bar__code { display: inline-block; padding: 0.15rem 0.55rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.04em; color: #ffffff; background: #e63946; border-radius: 4px; }
+.announcement-bar__cta { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #14a889; text-decoration: underline; cursor: pointer; background: none; border: none; padding: 0; }
+.announcement-bar__cta:hover { color: #ffffff; }
+@media (max-width: 600px) { .announcement-bar__text, .announcement-bar__code, .announcement-bar__cta { font-size: 0.62rem; } .announcement-bar { padding: 0 0.5rem; } }
+.mobile-account { border-radius: 12px; background: #ffffff; box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), -3px -3px 6px rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.02); overflow: hidden; margin-bottom: 0.5rem; }
+.mobile-account-head { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.9rem 1rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #000000; background: transparent; border: none; cursor: pointer; }
+.mobile-account-head svg { transition: transform 0.25s ease; }
+.mobile-account-head[data-open='true'] svg { transform: rotate(180deg); }
+.mobile-account-body { overflow: hidden; }
+.mobile-account-item { display: flex; align-items: center; gap: 0.65rem; width: 100%; padding: 0.8rem 1rem; font-size: 0.92rem; font-weight: 500; color: rgba(0, 0, 0, 0.75); text-decoration: none; border-top: 1px solid rgba(0, 0, 0, 0.06); background: transparent; transition: background 0.2s ease, color 0.2s ease; }
+.mobile-account-item:hover { background: #f2f2ea; color: #14a889; }
+.desktop-account-wrap { position: relative; display: none; }
+.desktop-account-menu { position: absolute; right: 0; top: calc(100% + 12px); width: 220px; background: #ffffff; border-radius: 14px; box-shadow: var(--shadow-3d-dark), var(--shadow-3d-light); overflow: hidden; z-index: 60; }
+.desktop-account-head { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.9rem 1rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #000000; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+.desktop-account-item { display: flex; align-items: center; gap: 0.65rem; width: 100%; padding: 0.8rem 1rem; font-size: 0.92rem; font-weight: 500; color: rgba(0, 0, 0, 0.75); text-decoration: none; border-top: 1px solid rgba(0, 0, 0, 0.06); background: transparent; transition: background 0.2s ease, color 0.2s ease; }
+.desktop-account-item:first-of-type { border-top: none; }
+.desktop-account-item:hover { background: #f2f2ea; color: #14a889; }
+.desktop-signin-form { display: flex; flex-direction: column; gap: 0.6rem; padding: 0.75rem 1rem 1rem; }
+.desktop-signin-input { width: 100%; height: 40px; padding: 0 0.85rem; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 10px; background: #f7f7f2; font-size: 0.85rem; font-family: inherit; color: #000000; outline: none; transition: border 0.2s ease; }
+.desktop-signin-input:focus { border-color: #14a889; }
+.desktop-signin-submit { width: 100%; padding: 0.6rem; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #ffffff; background: linear-gradient(135deg, #0a3d33, #14a889, #0a3d33); border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.2s ease; }
+.desktop-signin-submit:hover { opacity: 0.9; }
+.desktop-signin-submit--success { background: #14a889; cursor: default; opacity: 1; }
+.desktop-signin-back { align-self: flex-start; font-size: 0.78rem; font-weight: 600; color: rgba(0, 0, 0, 0.55); background: none; border: none; cursor: pointer; padding: 0.2rem 0; }
+.desktop-signin-back:hover { color: #14a889; }
+@media (min-width: 900px) { .desktop-account-wrap { display: inline-flex; } }
 `
+
 const OFFERS = [
   { text: "Free shipping on orders over ₹999.", code: null, cta: "Shop Now", href: "/products" },
   { text: "New arrivals just dropped. Use code:", code: "NEW10", cta: "Explore", href: "/products" },
@@ -601,35 +91,45 @@ export default function Navbar({ cartCount }) {
   const [registerPassword, setRegisterPassword] = useState("")
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("")
   const [registerStatus, setRegisterStatus] = useState("idle")
+  
+  // ✅ OTP States for Register
+  const [otpStepRegister, setOtpStepRegister] = useState(false);
+  const [registerOtp, setRegisterOtp] = useState("");
+
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     try { return localStorage.getItem('csw_is_logged_in') === 'true' } catch { return false }
   })
   const [showCartToast, setShowCartToast] = useState(false)
   const [redirectAfterLogin, setRedirectAfterLogin] = useState(false)
+  
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [forgotEmail, setForgotEmail] = useState('')
-  const [forgotStatus, setForgotStatus] = useState('idle') // 'idle' | 'sent'
+  const [forgotStatus, setForgotStatus] = useState('idle')
+  
+  // ✅ OTP States for Forgot Password
+  const [otpStepForgot, setOtpStepForgot] = useState(false);
+  const [forgotOtp, setForgotOtp] = useState("");
+  const [forgotNewPassword, setForgotNewPassword] = useState("");
 
   const accountRef = useRef(null)
   const cartRef = useRef(null)
   const mobilePanelRef = useRef(null)
 
+  // ✅ FIXED: logged-in users go straight to Dashboard's "My Cart" tab (not the old /cart page)
   const handleCartClick = () => {
     if (isLoggedIn) {
-      navigate('/cart')
+      navigate('/dashboard', { state: { tab: 'cart' } })
     } else {
       setShowCartToast(true)
       setTimeout(() => setShowCartToast(false), 3500)
     }
   }
 
-  // ── Cart helpers ────────────────────────────────────────────────
   const mergeAndLoadCart = (userEmail) => {
     try {
       const userKey = `csw_cart_${userEmail}`;
       const savedCart  = JSON.parse(localStorage.getItem(userKey)      || '[]');
       const guestCart  = JSON.parse(localStorage.getItem('csw_cart_items') || '[]');
-      // Merge: add guest quantities on top of saved cart
       const merged = [...savedCart];
       guestCart.forEach(guestItem => {
         const idx = merged.findIndex(
@@ -663,55 +163,61 @@ export default function Navbar({ cartCount }) {
       console.error('Cart save/clear failed:', err);
     }
   };
-  // ────────────────────────────────────────────────────────────────
 
   const [signInError, setSignInError] = useState('')
 
-  const handleSignInSubmit = (e) => {
+  // ✅ FIXED: Backend API Call for User Login
+  const handleSignInSubmit = async (e) => {
     e.preventDefault()
     setSignInError('')
-    // Validate against localStorage users
+    
     try {
-      const raw = localStorage.getItem('csw_users')
-      const users = raw ? JSON.parse(raw) : []
-      const found = users.find(u => u.email.toLowerCase() === signInEmail.toLowerCase())
-      if (!found) {
-        setSignInError('Email not registered. Please register first.')
-        return
+      const { data } = await API.post("/user-auth/login", { 
+        email: signInEmail, 
+        password: signInPassword 
+      });
+
+      if (data.success && data.token) {
+        localStorage.setItem("csw_user_token", data.token);
+        localStorage.setItem("csw_user", JSON.stringify(data.user));
+        localStorage.setItem('csw_is_logged_in', 'true');
+        localStorage.setItem('csw_logged_user_email', signInEmail);
+        
+        mergeAndLoadCart(signInEmail);
+        window.dispatchEvent(new CustomEvent('userLoggedIn'));
+        
+        setIsLoggedIn(true);
+        setShowSignInForm(false);
+        setAccountOpen(false);
+        setMobileOpen(false);
+        setMobileAccountOpen(false);
+        setSignInEmail("");
+        setSignInPassword("");
+        setSignInError('');
+        
+        if (redirectAfterLogin) {
+          navigate('/dashboard', { state: { tab: 'cart' } });
+        } else {
+          navigate('/dashboard');
+        }
+      } else {
+        setSignInError(data.message || "Login failed. Please try again.");
       }
-      if (found.password !== signInPassword) {
-        setSignInError('Incorrect password. Please try again.')
-        return
-      }
-    } catch {
-      // If localStorage fails, allow login (fallback)
-    }
-    // ✅ Login success
-    mergeAndLoadCart(signInEmail)
-    localStorage.setItem('csw_is_logged_in', 'true')
-    localStorage.setItem('csw_logged_user_email', signInEmail)
-    window.dispatchEvent(new CustomEvent('userLoggedIn'))
-    setIsLoggedIn(true)
-    setShowSignInForm(false)
-    setAccountOpen(false)
-    setMobileOpen(false)
-    setMobileAccountOpen(false)
-    setSignInEmail("")
-    setSignInPassword("")
-    setSignInError('')
-    if (redirectAfterLogin) {
-      navigate('/cart')
+    } catch (err) {
+      setSignInError(err.response?.data?.message || "Invalid credentials. Please try again.");
     }
   }
 
   const handleLogout = () => {
-    saveAndClearCart()
-    localStorage.removeItem('csw_is_logged_in')
-    setIsLoggedIn(false)
-    setAccountOpen(false)
-    setMobileOpen(false)
-    if (location.pathname === '/cart' || location.pathname === '/add-to-bag') {
-      navigate('/')
+    saveAndClearCart();
+    localStorage.removeItem('csw_is_logged_in');
+    localStorage.removeItem('csw_user_token');
+    localStorage.removeItem('csw_user');
+    setIsLoggedIn(false);
+    setAccountOpen(false);
+    setMobileOpen(false);
+    if (location.pathname === '/cart' || location.pathname === '/add-to-bag' || location.pathname === '/dashboard') {
+      navigate('/');
     }
   }
 
@@ -722,56 +228,121 @@ export default function Navbar({ cartCount }) {
     setRegisterPassword("")
     setRegisterConfirmPassword("")
     setRegisterStatus("idle")
+    setOtpStepRegister(false)
+    setRegisterOtp("")
   }
 
-  const handleForgotPasswordSubmit = (e) => {
+  // ✅ FIXED: Backend API Call for User Register with OTP
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault()
-    // TODO: connect to backend API → send reset email
-    setForgotStatus('sent')
-  }
-
-  const handleRegisterSubmit = (e) => {
-    e.preventDefault()
-    if (registerPassword !== registerConfirmPassword) {
-      alert("Passwords do not match")
-      return
-    }
-    // ── Check if email already registered ──
-    try {
-      const raw = localStorage.getItem('csw_users')
-      const existing = raw ? JSON.parse(raw) : []
-      if (existing.find(u => u.email.toLowerCase() === registerEmail.toLowerCase())) {
-        alert('This email is already registered. Please Sign In.')
+    
+    if (!otpStepRegister) {
+      if (registerPassword !== registerConfirmPassword) {
+        alert("Passwords do not match")
         return
       }
-      // ── Save new user ──
-      const joinedOn = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-      const newUser = { name: registerName, email: registerEmail, phone: registerNumber, password: registerPassword, joinedOn }
-      existing.push(newUser)
-      localStorage.setItem('csw_users', JSON.stringify(existing))
-      // Notify admin users page if open
-      window.dispatchEvent(new CustomEvent('userRegistered'))
-    } catch {
-      // Silently continue even if localStorage fails
-    }
-    setRegisterStatus("success")
-    mergeAndLoadCart(registerEmail)
-    localStorage.setItem('csw_is_logged_in', 'true')
-    localStorage.setItem('csw_logged_user_email', registerEmail)
-    window.dispatchEvent(new CustomEvent('userLoggedIn'))
-    setIsLoggedIn(true)
-    setMobileOpen(false)
-    setMobileAccountOpen(false)
-    setTimeout(() => {
-      setRegisterStatus("goToLogin")
-      if (redirectAfterLogin) {
-        navigate('/cart')
+      
+      setRegisterStatus("loading");
+      try {
+        const { data } = await API.post("/user-auth/register/otp", {
+          name: registerName,
+          email: registerEmail,
+          phone: registerNumber,
+          password: registerPassword
+        });
+
+        if (data.success) {
+          setRegisterStatus("idle");
+          setOtpStepRegister(true);
+          alert("OTP sent successfully to your email.");
+        }
+      } catch (err) {
+        setRegisterStatus("idle");
+        alert(err.response?.data?.message || "Failed to send OTP");
       }
-    }, 1500)
+      return;
+    }
+
+    // Verify OTP Step
+    setRegisterStatus("loading");
+    try {
+      const { data } = await API.post("/user-auth/register/verify", {
+        email: registerEmail,
+        otp: registerOtp
+      });
+
+      if (data.success && data.token) {
+        localStorage.setItem("csw_user_token", data.token);
+        localStorage.setItem("csw_user", JSON.stringify(data.user));
+        localStorage.setItem('csw_is_logged_in', 'true');
+        localStorage.setItem('csw_logged_user_email', registerEmail);
+        
+        setRegisterStatus("success");
+        mergeAndLoadCart(registerEmail);
+        window.dispatchEvent(new CustomEvent('userLoggedIn'));
+        setIsLoggedIn(true);
+        setMobileOpen(false);
+        setMobileAccountOpen(false);
+        setOtpStepRegister(false);
+        
+        setTimeout(() => {
+          if (redirectAfterLogin) navigate('/dashboard', { state: { tab: 'cart' } });
+          else navigate('/dashboard');
+        }, 1500);
+      }
+    } catch (err) {
+      setRegisterStatus("idle");
+      alert(err.response?.data?.message || "Invalid OTP");
+    }
   }
 
-  const updateCartCount = () => {
+  // ✅ FIXED: Backend API Call for Forgot Password with OTP
+  const handleForgotPasswordSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!otpStepForgot) {
+      try {
+        const { data } = await API.post("/user-auth/forgot-password/otp", { email: forgotEmail });
+        if (data.success) {
+          setOtpStepForgot(true);
+          alert("Password reset OTP sent to your email.");
+        }
+      } catch (err) {
+        alert(err.response?.data?.message || "Email not found");
+      }
+      return;
+    }
+
     try {
+      const { data } = await API.post("/user-auth/forgot-password/reset", {
+        email: forgotEmail,
+        otp: forgotOtp,
+        newPassword: forgotNewPassword
+      });
+      
+      if (data.success) {
+        setForgotStatus('sent');
+        setOtpStepForgot(false);
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Invalid OTP");
+    }
+  }
+
+  // ✅ FIXED: logged-in users get their cart count from the backend (/api/cart),
+  // guests still fall back to localStorage.
+  const updateCartCount = async () => {
+    try {
+      const loggedIn = localStorage.getItem('csw_is_logged_in') === 'true';
+
+      if (loggedIn) {
+        const { data } = await API.get('/cart');
+        const items = data?.data || [];
+        const count = items.reduce((acc, item) => acc + (item.quantity || 0), 0);
+        setCartItemsCount(count);
+        return;
+      }
+
       const stored = localStorage.getItem('csw_cart_items');
       if (stored) {
         const items = JSON.parse(stored);
@@ -790,6 +361,7 @@ export default function Navbar({ cartCount }) {
     updateCartCount();
     window.addEventListener('cartUpdated', updateCartCount);
     window.addEventListener('storage', updateCartCount);
+    window.addEventListener('userLoggedIn', updateCartCount);
 
     const handleShowCartPopup = () => {
       setShowCartToast(true);
@@ -797,7 +369,6 @@ export default function Navbar({ cartCount }) {
     };
     window.addEventListener('showCartLoginPopup', handleShowCartPopup);
 
-    // From cart page login wall → open sign in form
     const handleOpenSignIn = () => {
       setRedirectAfterLogin(true);
       if (window.innerWidth < 900) {
@@ -812,7 +383,6 @@ export default function Navbar({ cartCount }) {
       }
     };
 
-    // From cart page login wall → open register form
     const handleOpenRegister = () => {
       setRedirectAfterLogin(true);
       if (window.innerWidth < 900) {
@@ -833,6 +403,7 @@ export default function Navbar({ cartCount }) {
     return () => {
       window.removeEventListener('cartUpdated', updateCartCount);
       window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('userLoggedIn', updateCartCount);
       window.removeEventListener('showCartLoginPopup', handleShowCartPopup);
       window.removeEventListener('openSignIn', handleOpenSignIn);
       window.removeEventListener('openRegister', handleOpenRegister);
@@ -936,11 +507,7 @@ export default function Navbar({ cartCount }) {
           <motion.img
             src={logo}
             alt="Comfy Sport Logo"
-            style={{
-              height: '48px',
-              width: 'auto',
-              objectFit: 'contain'
-            }}
+            style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           />
@@ -951,18 +518,12 @@ export default function Navbar({ cartCount }) {
           style={{ listStyle: "none", margin: 0, padding: 0 }}
           initial="hidden"
           animate="show"
-          variants={{
-            hidden: {},
-            show: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } },
-          }}
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } } }}
         >
           {NAV_LINKS.map((link) => (
             <motion.li
               key={link.label}
-              variants={{
-                hidden: { opacity: 0, y: -12 },
-                show: { opacity: 1, y: 0 },
-              }}
+              variants={{ hidden: { opacity: 0, y: -12 }, show: { opacity: 1, y: 0 } }}
             >
               <NavLink href={link.href} label={link.label} currentPath={location.pathname + location.search} />
             </motion.li>
@@ -993,7 +554,6 @@ export default function Navbar({ cartCount }) {
               )}
             </motion.button>
 
-            {/* Cart login-required dropdown */}
             <AnimatePresence>
               {showCartToast && (
                 <motion.div
@@ -1002,22 +562,13 @@ export default function Navbar({ cartCount }) {
                   exit={{ opacity: 0, y: -8, scale: 0.97 }}
                   transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
                   style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 12px)',
-                    right: 0,
-                    zIndex: 9999,
-                    background: '#ffffff',
-                    borderRadius: '16px',
-                    padding: '1rem 1.1rem',
+                    position: 'absolute', top: 'calc(100% + 12px)', right: 0, zIndex: 9999,
+                    background: '#ffffff', borderRadius: '16px', padding: '1rem 1.1rem',
                     boxShadow: '0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(20,168,137,0.10)',
-                    border: '1px solid rgba(20,168,137,0.18)',
-                    width: 'clamp(260px, 80vw, 310px)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.75rem',
+                    border: '1px solid rgba(20,168,137,0.18)', width: 'clamp(260px, 80vw, 310px)',
+                    display: 'flex', flexDirection: 'column', gap: '0.75rem',
                   }}
                 >
-                  {/* Top row: icon + text */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
                     <div style={{
                       width: '36px', height: '36px', borderRadius: '10px',
@@ -1027,89 +578,47 @@ export default function Navbar({ cartCount }) {
                       <ShoppingBag size={17} color="#fff" />
                     </div>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#111', lineHeight: 1.3 }}>
-                        Sign in to view your cart
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.48)', marginTop: '0.1rem' }}>
-                        Please sign in or register to continue.
-                      </div>
+                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#111', lineHeight: 1.3 }}>Sign in to view your cart</div>
+                      <div style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.48)', marginTop: '0.1rem' }}>Please sign in or register to continue.</div>
                     </div>
                   </div>
-                  {/* Bottom row: buttons */}
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button
                       onClick={() => {
                         setShowCartToast(false);
                         setRedirectAfterLogin(true);
                         if (window.innerWidth < 900) {
-                          setMobileOpen(true);
-                          setMobileAccountOpen(true);
-                          setShowSignInForm(true);
-                          setShowRegisterForm(false);
+                          setMobileOpen(true); setMobileAccountOpen(true); setShowSignInForm(true); setShowRegisterForm(false);
                         } else {
-                          setAccountOpen(true);
-                          setShowSignInForm(true);
-                          setShowRegisterForm(false);
+                          setAccountOpen(true); setShowSignInForm(true); setShowRegisterForm(false);
                         }
                       }}
-                      style={{
-                        flex: 1, padding: '0.5rem 0', borderRadius: '8px',
-                        border: '1.5px solid #14a889', background: 'transparent',
-                        color: '#14a889', fontWeight: 600, fontSize: '0.82rem',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Sign In
-                    </button>
+                      style={{ flex: 1, padding: '0.5rem 0', borderRadius: '8px', border: '1.5px solid #14a889', background: 'transparent', color: '#14a889', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+                    >Sign In</button>
                     <button
                       onClick={() => {
                         setShowCartToast(false);
                         setRedirectAfterLogin(true);
                         if (window.innerWidth < 900) {
-                          setMobileOpen(true);
-                          setMobileAccountOpen(true);
-                          setShowRegisterForm(true);
-                          setShowSignInForm(false);
+                          setMobileOpen(true); setMobileAccountOpen(true); setShowRegisterForm(true); setShowSignInForm(false);
                         } else {
-                          setAccountOpen(true);
-                          setShowRegisterForm(true);
-                          setShowSignInForm(false);
+                          setAccountOpen(true); setShowRegisterForm(true); setShowSignInForm(false);
                         }
                       }}
-                      style={{
-                        flex: 1, padding: '0.5rem 0', borderRadius: '8px', border: 'none',
-                        background: 'linear-gradient(135deg,#0a3d33,#14a889)', color: '#fff',
-                        fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer',
-                      }}
-                    >
-                      Register
-                    </button>
+                      style={{ flex: 1, padding: '0.5rem 0', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg,#0a3d33,#14a889)', color: '#fff', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+                    >Register</button>
                   </div>
-                  {/* Divider */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.08)' }} />
                     <span style={{ fontSize: '0.72rem', color: 'rgba(0,0,0,0.35)', fontWeight: 500 }}>or</span>
                     <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.08)' }} />
                   </div>
-                  {/* Continue as Guest */}
                   <button
-                    onClick={() => {
-                      setShowCartToast(false);
-                      navigate('/cart');
-                    }}
-                    style={{
-                      width: '100%', padding: '0.5rem 0', borderRadius: '8px',
-                      border: '1.5px solid rgba(0,0,0,0.1)', background: 'transparent',
-                      color: 'rgba(0,0,0,0.55)', fontWeight: 600, fontSize: '0.82rem',
-                      cursor: 'pointer', display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', gap: '0.4rem',
-                      transition: 'border-color 0.2s, color 0.2s',
-                    }}
+                    onClick={() => { setShowCartToast(false); navigate('/cart'); }}
+                    style={{ width: '100%', padding: '0.5rem 0', borderRadius: '8px', border: '1.5px solid rgba(0,0,0,0.1)', background: 'transparent', color: 'rgba(0,0,0,0.55)', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', transition: 'border-color 0.2s, color 0.2s' }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#14a889'; e.currentTarget.style.color = '#0a3d33'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; e.currentTarget.style.color = 'rgba(0,0,0,0.55)'; }}
-                  >
-                    Continue as Guest →
-                  </button>
+                  >Continue as Guest →</button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1122,10 +631,7 @@ export default function Navbar({ cartCount }) {
               aria-label="My Account"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                setAccountOpen((v) => !v);
-                setRedirectAfterLogin(false);
-              }}
+              onClick={() => { setAccountOpen((v) => !v); setRedirectAfterLogin(false); }}
             >
               <User size={20} />
             </motion.button>
@@ -1143,231 +649,77 @@ export default function Navbar({ cartCount }) {
                   </div>
 
                   {showForgotPassword ? (
-                    /* ── Forgot Password Form (Desktop) ── */
                     <form className="desktop-signin-form" onSubmit={handleForgotPasswordSubmit}>
                       {forgotStatus === 'sent' ? (
                         <div style={{ textAlign: 'center', padding: '8px 0 12px' }}>
-                          <div style={{
-                            width: '42px', height: '42px', borderRadius: '50%',
-                            background: 'linear-gradient(135deg,#0a3d33,#14a889)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            margin: '0 auto 12px',
-                          }}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12"/>
-                            </svg>
+                          <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg,#0a3d33,#14a889)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                           </div>
-                          <p style={{ fontWeight: 700, fontSize: '13px', color: '#111', marginBottom: '4px' }}>Reset link sent!</p>
-                          <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '16px' }}>Check your email inbox.</p>
-                          <button
-                            type="button"
-                            className="desktop-signin-back"
-                            onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setForgotStatus('idle'); setShowSignInForm(true); }}
-                          >
-                            ← Back to Sign In
-                          </button>
+                          <p style={{ fontWeight: 700, fontSize: '13px', color: '#111', marginBottom: '4px' }}>Password Reset!</p>
+                          <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '16px' }}>Please login with new password.</p>
+                          <button type="button" className="desktop-signin-back" onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setForgotStatus('idle'); setOtpStepForgot(false); setShowSignInForm(true); }}>← Back to Sign In</button>
                         </div>
+                      ) : otpStepForgot ? (
+                        <>
+                          <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '10px', lineHeight: 1.5 }}>Enter OTP sent to your email & new password.</p>
+                          <input type="text" className="desktop-signin-input" placeholder="Enter 4-digit OTP" value={forgotOtp} onChange={(e) => setForgotOtp(e.target.value)} required autoFocus />
+                          <input type="password" className="desktop-signin-input" placeholder="New Password" value={forgotNewPassword} onChange={(e) => setForgotNewPassword(e.target.value)} required />
+                          <button type="submit" className="desktop-signin-submit">Reset Password</button>
+                          <button type="button" className="desktop-signin-back" onClick={() => setOtpStepForgot(false)}>← Change Email</button>
+                        </>
                       ) : (
                         <>
-                          <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '10px', lineHeight: 1.5 }}>
-                            Enter your registered email to receive a password reset link.
-                          </p>
-                          <input
-                            type="email"
-                            className="desktop-signin-input"
-                            placeholder="Your email address"
-                            value={forgotEmail}
-                            onChange={(e) => setForgotEmail(e.target.value)}
-                            required
-                            autoFocus
-                          />
-                          <button type="submit" className="desktop-signin-submit">Send Reset Link</button>
-                          <button
-                            type="button"
-                            className="desktop-signin-back"
-                            onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setForgotStatus('idle'); setShowSignInForm(true); }}
-                          >
-                            ← Back to Sign In
-                          </button>
+                          <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '10px', lineHeight: 1.5 }}>Enter your registered email to receive OTP.</p>
+                          <input type="email" className="desktop-signin-input" placeholder="Your email address" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} required autoFocus />
+                          <button type="submit" className="desktop-signin-submit">Send OTP</button>
+                          <button type="button" className="desktop-signin-back" onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setShowSignInForm(true); }}>← Back to Sign In</button>
                         </>
                       )}
                     </form>
                   ) : showSignInForm ? (
                     <form className="desktop-signin-form" onSubmit={handleSignInSubmit}>
-                      <input
-                        type="email"
-                        className="desktop-signin-input"
-                        placeholder="Email"
-                        value={signInEmail}
-                        onChange={(e) => setSignInEmail(e.target.value)}
-                        required
-                        autoFocus
-                      />
-                      <input
-                        type="password"
-                        className="desktop-signin-input"
-                        placeholder="Password"
-                        value={signInPassword}
-                        onChange={(e) => setSignInPassword(e.target.value)}
-                        required
-                      />
-                      <button
-                        type="button"
-                        style={{
-                          background: 'none', border: 'none', padding: '0 0 2px',
-                          fontSize: '11px', color: '#14a889', cursor: 'pointer',
-                          textAlign: 'right', width: '100%', fontWeight: 600,
-                        }}
-                        onClick={() => { setShowSignInForm(false); setShowForgotPassword(true); setForgotStatus('idle'); }}
-                      >
-                        Forgot Password?
-                      </button>
-                      <button type="submit" className="desktop-signin-submit">
-                        Sign In
-                      </button>
-                      {signInError && (
-                        <p style={{ fontSize: '11px', color: '#ef4444', fontWeight: 500, textAlign: 'center', margin: '-4px 0 0' }}>
-                          {signInError}
-                        </p>
-                      )}
-                      <button
-                        type="button"
-                        className="desktop-signin-back"
-                        onClick={() => setShowSignInForm(false)}
-                      >
-                        &larr; Back
-                      </button>
+                      <input type="email" className="desktop-signin-input" placeholder="Email" value={signInEmail} onChange={(e) => setSignInEmail(e.target.value)} required autoFocus />
+                      <input type="password" className="desktop-signin-input" placeholder="Password" value={signInPassword} onChange={(e) => setSignInPassword(e.target.value)} required />
+                      <button type="button" style={{ background: 'none', border: 'none', padding: '0 0 2px', fontSize: '11px', color: '#14a889', cursor: 'pointer', textAlign: 'right', width: '100%', fontWeight: 600 }} onClick={() => { setShowSignInForm(false); setShowForgotPassword(true); setForgotStatus('idle'); setOtpStepForgot(false); }}>Forgot Password?</button>
+                      <button type="submit" className="desktop-signin-submit">Sign In</button>
+                      {signInError && (<p style={{ fontSize: '11px', color: '#ef4444', fontWeight: 500, textAlign: 'center', margin: '-4px 0 0' }}>{signInError}</p>)}
+                      <button type="button" className="desktop-signin-back" onClick={() => setShowSignInForm(false)}>&larr; Back</button>
                     </form>
                   ) : showRegisterForm ? (
                     <form className="desktop-signin-form" onSubmit={handleRegisterSubmit}>
-                      <input
-                        type="text"
-                        className="desktop-signin-input"
-                        placeholder="Full Name"
-                        value={registerName}
-                        onChange={(e) => setRegisterName(e.target.value)}
-                        required
-                        autoFocus
-                        disabled={registerStatus !== "idle"}
-                      />
-                      <input
-                        type="tel"
-                        className="desktop-signin-input"
-                        placeholder="Mobile Number"
-                        value={registerNumber}
-                        onChange={(e) => setRegisterNumber(e.target.value)}
-                        required
-                        disabled={registerStatus !== "idle"}
-                      />
-                      <input
-                        type="email"
-                        className="desktop-signin-input"
-                        placeholder="Email"
-                        value={registerEmail}
-                        onChange={(e) => setRegisterEmail(e.target.value)}
-                        required
-                        disabled={registerStatus !== "idle"}
-                      />
-                      <input
-                        type="password"
-                        className="desktop-signin-input"
-                        placeholder="Password"
-                        value={registerPassword}
-                        onChange={(e) => setRegisterPassword(e.target.value)}
-                        required
-                        disabled={registerStatus !== "idle"}
-                      />
-                      <input
-                        type="password"
-                        className="desktop-signin-input"
-                        placeholder="Confirm Password"
-                        value={registerConfirmPassword}
-                        onChange={(e) => setRegisterConfirmPassword(e.target.value)}
-                        required
-                        disabled={registerStatus !== "idle"}
-                      />
-
-                      {registerStatus === "idle" && (
-                        <button type="submit" className="desktop-signin-submit">
-                          Register
-                        </button>
-                      )}
-                      {registerStatus === "success" && (
-                        <button type="button" className="desktop-signin-submit desktop-signin-submit--success" disabled>
-                          Registered &#10003;
-                        </button>
-                      )}
-                      {registerStatus === "goToLogin" && (
-                        <button
-                          type="button"
-                          className="desktop-signin-submit"
-                          onClick={() => {
-                            setShowRegisterForm(false)
-                            resetRegisterForm()
-                            setShowSignInForm(true)
-                          }}
-                        >
-                          Go to SignIn
-                        </button>
-                      )}
-
-                      {registerStatus === "idle" && (
-                        <button
-                          type="button"
-                          className="desktop-signin-back"
-                          onClick={() => {
-                            setShowRegisterForm(false)
-                            resetRegisterForm()
-                          }}
-                        >
-                          &larr; Back
-                        </button>
+                      {otpStepRegister ? (
+                        <>
+                          <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '10px', lineHeight: 1.5 }}>Enter OTP sent to your email.</p>
+                          <input type="text" className="desktop-signin-input" placeholder="Enter 4-digit OTP" value={registerOtp} onChange={(e) => setRegisterOtp(e.target.value)} required autoFocus />
+                          <button type="submit" className="desktop-signin-submit" disabled={registerStatus === "loading"}>{registerStatus === "loading" ? "Verifying..." : "Verify & Register"}</button>
+                          <button type="button" className="desktop-signin-back" onClick={() => setOtpStepRegister(false)}>← Change Details</button>
+                        </>
+                      ) : (
+                        <>
+                          <input type="text" className="desktop-signin-input" placeholder="Full Name" value={registerName} onChange={(e) => setRegisterName(e.target.value)} required autoFocus disabled={registerStatus === "loading"} />
+                          <input type="tel" className="desktop-signin-input" placeholder="Mobile Number" value={registerNumber} onChange={(e) => setRegisterNumber(e.target.value)} required disabled={registerStatus === "loading"} />
+                          <input type="email" className="desktop-signin-input" placeholder="Email" value={registerEmail} onChange={(e) => setRegisterEmail(e.target.value)} required disabled={registerStatus === "loading"} />
+                          <input type="password" className="desktop-signin-input" placeholder="Password" value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} required disabled={registerStatus === "loading"} />
+                          <input type="password" className="desktop-signin-input" placeholder="Confirm Password" value={registerConfirmPassword} onChange={(e) => setRegisterConfirmPassword(e.target.value)} required disabled={registerStatus === "loading"} />
+                          <button type="submit" className="desktop-signin-submit" disabled={registerStatus === "loading"}>{registerStatus === "loading" ? "Sending..." : "Send OTP & Register"}</button>
+                          <button type="button" className="desktop-signin-back" onClick={() => { setShowRegisterForm(false); resetRegisterForm(); }}>&larr; Back</button>
+                        </>
                       )}
                     </form>
                   ) : (
                     <>
                       {!isLoggedIn ? (
                         <>
-                          <button
-                            type="button"
-                            className="desktop-account-item"
-                            onClick={() => {
-                              setRedirectAfterLogin(false);
-                              setShowSignInForm(true);
-                            }}
-                          >
-                            <LogIn size={17} />
-                            Sign in
-                          </button>
-                          <button
-                            type="button"
-                            className="desktop-account-item"
-                            onClick={() => {
-                              setRedirectAfterLogin(false);
-                              setShowRegisterForm(true);
-                            }}
-                          >
-                            <UserPlus size={17} />
-                            Register
-                          </button>
+                          <button type="button" className="desktop-account-item" onClick={() => { setRedirectAfterLogin(false); setShowSignInForm(true); }}><LogIn size={17} />Sign in</button>
+                          <button type="button" className="desktop-account-item" onClick={() => { setRedirectAfterLogin(false); setShowRegisterForm(true); }}><UserPlus size={17} />Register</button>
                         </>
                       ) : (
                         <>
-                          <Link to="/dashboard" className="desktop-account-item" onClick={() => setAccountOpen(false)}>
-                            <User size={17} />
-                            View Profile
-                          </Link>
-                          <button
-                            type="button"
-                            className="desktop-account-item"
-                            onClick={handleLogout}
-                          >
-                            <LogIn size={17} style={{ transform: "rotate(180deg)" }} />
-                            Logout
-                          </button>
+                          <Link to="/dashboard" className="desktop-account-item" onClick={() => setAccountOpen(false)}><User size={17} />View Profile</Link>
+                          <button type="button" className="desktop-account-item" onClick={handleLogout}><LogIn size={17} style={{ transform: "rotate(180deg)" }} />Logout</button>
                         </>
                       )}
-                      </>
+                    </>
                   )}
                 </motion.div>
               )}
@@ -1382,14 +734,7 @@ export default function Navbar({ cartCount }) {
             onClick={() => setMobileOpen((v) => !v)}
           >
             <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={mobileOpen ? "x" : "menu"}
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                style={{ display: "grid" }}
-              >
+              <motion.span key={mobileOpen ? "x" : "menu"} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }} style={{ display: "grid" }}>
                 {mobileOpen ? <X size={22} /> : <Menu size={22} />}
               </motion.span>
             </AnimatePresence>
@@ -1400,270 +745,84 @@ export default function Navbar({ cartCount }) {
       <AnimatePresence>
         {mobileOpen && (
           <>
-            <motion.div
-              className="mobile-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMobileOpen(false)}
-            />
-            <motion.div
-              ref={mobilePanelRef}
-              className="mobile-panel"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <motion.div
-                className="mobile-inner"
-                initial="hidden"
-                animate="show"
-                variants={{
-                  hidden: {},
-                  show: { transition: { staggerChildren: 0.06 } },
-                }}
-              >
+            <motion.div className="mobile-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileOpen(false)} />
+            <motion.div ref={mobilePanelRef} className="mobile-panel" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}>
+              <motion.div className="mobile-inner" initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}>
                 <div className="mobile-account">
-                  <button
-                    type="button"
-                    className="mobile-account-head"
-                    data-open={mobileAccountOpen}
-                    onClick={() => {
-                      setMobileAccountOpen((v) => !v);
-                      setRedirectAfterLogin(false);
-                    }}
-                  >
-                    My Account
-                    <ChevronDown size={18} />
-                  </button>
+                  <button type="button" className="mobile-account-head" data-open={mobileAccountOpen} onClick={() => { setMobileAccountOpen((v) => !v); setRedirectAfterLogin(false); }}>My Account<ChevronDown size={18} /></button>
                   <AnimatePresence initial={false}>
                     {mobileAccountOpen && (
-                      <motion.div
-                        className="mobile-account-body"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                      >
+                      <motion.div className="mobile-account-body" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}>
+                        
                         {showForgotPassword ? (
-                          /* ── Forgot Password Form (Mobile) ── */
                           <form className="desktop-signin-form" onSubmit={handleForgotPasswordSubmit}>
                             {forgotStatus === 'sent' ? (
                               <div style={{ textAlign: 'center', padding: '8px 0 12px' }}>
-                                <div style={{
-                                  width: '42px', height: '42px', borderRadius: '50%',
-                                  background: 'linear-gradient(135deg,#0a3d33,#14a889)',
-                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                  margin: '0 auto 12px',
-                                }}>
-                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"/>
-                                  </svg>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg,#0a3d33,#14a889)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                 </div>
-                                <p style={{ fontWeight: 700, fontSize: '13px', color: '#111', marginBottom: '4px' }}>Reset link sent!</p>
-                                <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '16px' }}>Check your email inbox.</p>
-                                <button
-                                  type="button"
-                                  className="desktop-signin-back"
-                                  onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setForgotStatus('idle'); setShowSignInForm(true); }}
-                                >
-                                  ← Back to Sign In
-                                </button>
+                                <p style={{ fontWeight: 700, fontSize: '13px', color: '#111', marginBottom: '4px' }}>Password Reset!</p>
+                                <button type="button" className="desktop-signin-back" onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setForgotStatus('idle'); setOtpStepForgot(false); setShowSignInForm(true); }}>← Back to Sign In</button>
                               </div>
+                            ) : otpStepForgot ? (
+                              <>
+                                <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '10px', lineHeight: 1.5 }}>Enter OTP & new password.</p>
+                                <input type="text" className="desktop-signin-input" placeholder="Enter 4-digit OTP" value={forgotOtp} onChange={(e) => setForgotOtp(e.target.value)} required autoFocus />
+                                <input type="password" className="desktop-signin-input" placeholder="New Password" value={forgotNewPassword} onChange={(e) => setForgotNewPassword(e.target.value)} required />
+                                <button type="submit" className="desktop-signin-submit">Reset Password</button>
+                                <button type="button" className="desktop-signin-back" onClick={() => setOtpStepForgot(false)}>← Change Email</button>
+                              </>
                             ) : (
                               <>
-                                <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '10px', lineHeight: 1.5 }}>
-                                  Enter your registered email to receive a password reset link.
-                                </p>
-                                <input
-                                  type="email"
-                                  className="desktop-signin-input"
-                                  placeholder="Your email address"
-                                  value={forgotEmail}
-                                  onChange={(e) => setForgotEmail(e.target.value)}
-                                  required
-                                />
-                                <button type="submit" className="desktop-signin-submit">Send Reset Link</button>
-                                <button
-                                  type="button"
-                                  className="desktop-signin-back"
-                                  onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setForgotStatus('idle'); setShowSignInForm(true); }}
-                                >
-                                  ← Back to Sign In
-                                </button>
+                                <input type="email" className="desktop-signin-input" placeholder="Your email address" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} required />
+                                <button type="submit" className="desktop-signin-submit">Send OTP</button>
+                                <button type="button" className="desktop-signin-back" onClick={() => { setShowForgotPassword(false); setForgotEmail(''); setShowSignInForm(true); }}>← Back to Sign In</button>
                               </>
                             )}
                           </form>
                         ) : showSignInForm ? (
                           <form className="desktop-signin-form" onSubmit={handleSignInSubmit}>
-                            <input
-                              type="email"
-                              className="desktop-signin-input"
-                              placeholder="Email"
-                              value={signInEmail}
-                              onChange={(e) => setSignInEmail(e.target.value)}
-                              required
-                            />
-                            <input
-                              type="password"
-                              className="desktop-signin-input"
-                              placeholder="Password"
-                              value={signInPassword}
-                              onChange={(e) => setSignInPassword(e.target.value)}
-                              required
-                            />
-                            <button
-                              type="button"
-                              style={{
-                                background: 'none', border: 'none', padding: '0 0 2px',
-                                fontSize: '11px', color: '#14a889', cursor: 'pointer',
-                                textAlign: 'right', width: '100%', fontWeight: 600,
-                              }}
-                              onClick={() => { setShowSignInForm(false); setShowForgotPassword(true); setForgotStatus('idle'); }}
-                            >
-                              Forgot Password?
-                            </button>
-                            <button type="submit" className="desktop-signin-submit">
-                              Sign In
-                            </button>
-                            <button
-                              type="button"
-                              className="desktop-signin-back"
-                              onClick={() => setShowSignInForm(false)}
-                            >
-                              &larr; Back
-                            </button>
+                            <input type="email" className="desktop-signin-input" placeholder="Email" value={signInEmail} onChange={(e) => setSignInEmail(e.target.value)} required />
+                            <input type="password" className="desktop-signin-input" placeholder="Password" value={signInPassword} onChange={(e) => setSignInPassword(e.target.value)} required />
+                            <button type="button" style={{ background: 'none', border: 'none', padding: '0 0 2px', fontSize: '11px', color: '#14a889', cursor: 'pointer', textAlign: 'right', width: '100%', fontWeight: 600 }} onClick={() => { setShowSignInForm(false); setShowForgotPassword(true); setForgotStatus('idle'); setOtpStepForgot(false); }}>Forgot Password?</button>
+                            <button type="submit" className="desktop-signin-submit">Sign In</button>
+                            <button type="button" className="desktop-signin-back" onClick={() => setShowSignInForm(false)}>&larr; Back</button>
                           </form>
                         ) : showRegisterForm ? (
                           <form className="desktop-signin-form" onSubmit={handleRegisterSubmit}>
-                            <input
-                              type="text"
-                              className="desktop-signin-input"
-                              placeholder="Full Name"
-                              value={registerName}
-                              onChange={(e) => setRegisterName(e.target.value)}
-                              required
-                              disabled={registerStatus !== "idle"}
-                            />
-                            <input
-                              type="tel"
-                              className="desktop-signin-input"
-                              placeholder="Mobile Number"
-                              value={registerNumber}
-                              onChange={(e) => setRegisterNumber(e.target.value)}
-                              required
-                              disabled={registerStatus !== "idle"}
-                            />
-                            <input
-                              type="email"
-                              className="desktop-signin-input"
-                              placeholder="Email"
-                              value={registerEmail}
-                              onChange={(e) => setRegisterEmail(e.target.value)}
-                              required
-                              disabled={registerStatus !== "idle"}
-                            />
-                            <input
-                              type="password"
-                              className="desktop-signin-input"
-                              placeholder="Password"
-                              value={registerPassword}
-                              onChange={(e) => setRegisterPassword(e.target.value)}
-                              required
-                              disabled={registerStatus !== "idle"}
-                            />
-                            <input
-                              type="password"
-                              className="desktop-signin-input"
-                              placeholder="Confirm Password"
-                              value={registerConfirmPassword}
-                              onChange={(e) => setRegisterConfirmPassword(e.target.value)}
-                              required
-                              disabled={registerStatus !== "idle"}
-                            />
-
-                            {registerStatus === "idle" && (
-                              <button type="submit" className="desktop-signin-submit">
-                                Register
-                              </button>
-                            )}
-                            {registerStatus === "success" && (
-                              <button type="button" className="desktop-signin-submit desktop-signin-submit--success" disabled>
-                                Registered &#10003;
-                              </button>
-                            )}
-                            {registerStatus === "goToLogin" && (
-                              <button
-                                type="button"
-                                className="desktop-signin-submit"
-                                onClick={() => {
-                                  setShowRegisterForm(false)
-                                  resetRegisterForm()
-                                  setShowSignInForm(true)
-                                }}
-                              >
-                                Go to SignIn
-                              </button>
-                            )}
-
-                            {registerStatus === "idle" && (
-                              <button
-                                type="button"
-                                className="desktop-signin-back"
-                                onClick={() => {
-                                  setShowRegisterForm(false)
-                                  resetRegisterForm()
-                                }}
-                              >
-                                &larr; Back
-                              </button>
+                            {otpStepRegister ? (
+                              <>
+                                <p style={{ fontSize: '11px', color: 'rgba(0,0,0,0.5)', marginBottom: '10px', lineHeight: 1.5 }}>Enter OTP sent to your email.</p>
+                                <input type="text" className="desktop-signin-input" placeholder="Enter 4-digit OTP" value={registerOtp} onChange={(e) => setRegisterOtp(e.target.value)} required autoFocus />
+                                <button type="submit" className="desktop-signin-submit" disabled={registerStatus === "loading"}>{registerStatus === "loading" ? "Verifying..." : "Verify & Register"}</button>
+                                <button type="button" className="desktop-signin-back" onClick={() => setOtpStepRegister(false)}>← Change Details</button>
+                              </>
+                            ) : (
+                              <>
+                                <input type="text" className="desktop-signin-input" placeholder="Full Name" value={registerName} onChange={(e) => setRegisterName(e.target.value)} required disabled={registerStatus === "loading"} />
+                                <input type="tel" className="desktop-signin-input" placeholder="Mobile Number" value={registerNumber} onChange={(e) => setRegisterNumber(e.target.value)} required disabled={registerStatus === "loading"} />
+                                <input type="email" className="desktop-signin-input" placeholder="Email" value={registerEmail} onChange={(e) => setRegisterEmail(e.target.value)} required disabled={registerStatus === "loading"} />
+                                <input type="password" className="desktop-signin-input" placeholder="Password" value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} required disabled={registerStatus === "loading"} />
+                                <input type="password" className="desktop-signin-input" placeholder="Confirm Password" value={registerConfirmPassword} onChange={(e) => setRegisterConfirmPassword(e.target.value)} required disabled={registerStatus === "loading"} />
+                                <button type="submit" className="desktop-signin-submit" disabled={registerStatus === "loading"}>{registerStatus === "loading" ? "Sending..." : "Send OTP & Register"}</button>
+                                <button type="button" className="desktop-signin-back" onClick={() => { setShowRegisterForm(false); resetRegisterForm(); }}>&larr; Back</button>
+                              </>
                             )}
                           </form>
                         ) : (
                           <>
                             {!isLoggedIn ? (
                               <>
-                                <button
-                                  type="button"
-                                  className="mobile-account-item"
-                                  onClick={() => {
-                                    setRedirectAfterLogin(false);
-                                    setShowSignInForm(true);
-                                  }}
-                                >
-                                  <LogIn size={17} />
-                                  Sign in
-                                </button>
-                                <button
-                                  type="button"
-                                  className="mobile-account-item"
-                                  onClick={() => {
-                                    setRedirectAfterLogin(false);
-                                    setShowRegisterForm(true);
-                                  }}
-                                >
-                                  <UserPlus size={17} />
-                                  Register
-                                </button>
+                                <button type="button" className="mobile-account-item" onClick={() => { setRedirectAfterLogin(false); setShowSignInForm(true); }}><LogIn size={17} />Sign in</button>
+                                <button type="button" className="mobile-account-item" onClick={() => { setRedirectAfterLogin(false); setShowRegisterForm(true); }}><UserPlus size={17} />Register</button>
                               </>
                             ) : (
                               <>
-                                <Link to="/dashboard" className="mobile-account-item" onClick={() => setMobileOpen(false)}>
-                                  <User size={17} />
-                                  View Profile
-                                </Link>
-                                <button
-                                  type="button"
-                                  className="mobile-account-item"
-                                  onClick={handleLogout}
-                                >
-                                  <LogIn size={17} style={{ transform: "rotate(180deg)" }} />
-                                  Logout
-                                </button>
+                                <Link to="/dashboard" className="mobile-account-item" onClick={() => setMobileOpen(false)}><User size={17} />View Profile</Link>
+                                <button type="button" className="mobile-account-item" onClick={handleLogout}><LogIn size={17} style={{ transform: "rotate(180deg)" }} />Logout</button>
                               </>
                             )}
-                            </>
+                          </>
                         )}
                       </motion.div>
                     )}
@@ -1671,20 +830,9 @@ export default function Navbar({ cartCount }) {
                 </div>
 
                 {NAV_LINKS.map((link) => (
-                  <motion.div
-                    key={link.label}
-                    variants={{
-                      hidden: { opacity: 0, x: -20 },
-                      show: { opacity: 1, x: 0 },
-                    }}
-                  >
-                    <Link
-                      to={link.href}
-                      className={`mobile-link${isLinkActive(link.href, location) ? " active" : ""}`}
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      {link.label}
-                      <span aria-hidden="true">&rarr;</span>
+                  <motion.div key={link.label} variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0 } }}>
+                    <Link to={link.href} className={`mobile-link${isLinkActive(link.href, location) ? " active" : ""}`} onClick={() => setMobileOpen(false)}>
+                      {link.label}<span aria-hidden="true">&rarr;</span>
                     </Link>
                   </motion.div>
                 ))}
@@ -1694,7 +842,6 @@ export default function Navbar({ cartCount }) {
         )}
       </AnimatePresence>
     </header>
-
   )
 }
 
@@ -1702,26 +849,15 @@ function isLinkActive(href, location) {
   const [linkPath, linkQuery] = href.split("?")
   const currentPath = location.pathname
   const currentQuery = new URLSearchParams(location.search)
-
   if (linkPath !== currentPath) return false
-
-  if (!linkQuery) {
-    return location.search === ""
-  }
-
+  if (!linkQuery) return location.search === ""
   const linkParams = new URLSearchParams(linkQuery)
-  for (const [key, value] of linkParams) {
-    if (currentQuery.get(key) !== value) return false
-  }
+  for (const [key, value] of linkParams) { if (currentQuery.get(key) !== value) return false }
   return true
 }
 
 function NavLink({ href, label, currentPath }) {
   const location = { pathname: currentPath.split("?")[0], search: currentPath.includes("?") ? "?" + currentPath.split("?")[1] : "" }
   const active = isLinkActive(href, location)
-  return (
-    <Link to={href} className={`nav-link${active ? " active" : ""}`}>
-      {label}
-    </Link>
-  )
+  return (<Link to={href} className={`nav-link${active ? " active" : ""}`}>{label}</Link>)
 }
