@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Menu, ShoppingBag, User, X, LogIn, Package, Settings, ChevronDown, UserPlus } from "lucide-react"
 import { Link, NavLink as RouterNavLink, useLocation, useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
 import logo from "../../../assets/images/comfy_logo4.png"
 import API from "../../../services/api"
 
@@ -59,7 +60,8 @@ const styles = `
 
 const OFFERS = [
   { text: "Free shipping on orders over ₹999.", code: null, cta: "Shop Now", href: "/products" },
-  { text: "New arrivals just dropped. Use code:", code: "NEW10", cta: "Explore", href: "/products" },
+  { text: "New arrivals just dropped for women.", code: null, cta: "Shop Now", href: "/women" },
+  { text: "New arrivals live for kids.", code: null, cta: "Shop Now", href: "/kids" },
 ]
 
 const NAV_LINKS = [
@@ -198,7 +200,11 @@ export default function Navbar({ cartCount }) {
         if (redirectAfterLogin) {
           navigate('/dashboard', { state: { tab: 'cart' } });
         } else {
-          navigate('/dashboard');
+          toast.success("Signed in successfully! You can now Add to Cart or Buy.", {
+            icon: "🎉",
+            style: { borderRadius: '10px', background: '#0A7F6E', color: '#fff' },
+            duration: 4000
+          });
         }
       } else {
         setSignInError(data.message || "Login failed. Please try again.");
@@ -286,9 +292,16 @@ export default function Navbar({ cartCount }) {
         setOtpStepRegister(false);
         
         setTimeout(() => {
-          if (redirectAfterLogin) navigate('/dashboard', { state: { tab: 'cart' } });
-          else navigate('/dashboard');
-        }, 1500);
+          if (redirectAfterLogin) {
+            navigate('/dashboard', { state: { tab: 'cart' } });
+          } else {
+            toast.success("Account created & signed in! You can now Add to Cart or Buy.", {
+              icon: "🎉",
+              style: { borderRadius: '10px', background: '#0A7F6E', color: '#fff' },
+              duration: 4000
+            });
+          }
+        }, 1000);
       }
     } catch (err) {
       setRegisterStatus("idle");
@@ -586,7 +599,7 @@ export default function Navbar({ cartCount }) {
                     <button
                       onClick={() => {
                         setShowCartToast(false);
-                        setRedirectAfterLogin(true);
+                        setRedirectAfterLogin(false);
                         if (window.innerWidth < 900) {
                           setMobileOpen(true); setMobileAccountOpen(true); setShowSignInForm(true); setShowRegisterForm(false);
                         } else {
@@ -598,7 +611,7 @@ export default function Navbar({ cartCount }) {
                     <button
                       onClick={() => {
                         setShowCartToast(false);
-                        setRedirectAfterLogin(true);
+                        setRedirectAfterLogin(false);
                         if (window.innerWidth < 900) {
                           setMobileOpen(true); setMobileAccountOpen(true); setShowRegisterForm(true); setShowSignInForm(false);
                         } else {
@@ -608,17 +621,6 @@ export default function Navbar({ cartCount }) {
                       style={{ flex: 1, padding: '0.5rem 0', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg,#0a3d33,#14a889)', color: '#fff', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
                     >Register</button>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.08)' }} />
-                    <span style={{ fontSize: '0.72rem', color: 'rgba(0,0,0,0.35)', fontWeight: 500 }}>or</span>
-                    <div style={{ flex: 1, height: '1px', background: 'rgba(0,0,0,0.08)' }} />
-                  </div>
-                  <button
-                    onClick={() => { setShowCartToast(false); navigate('/cart'); }}
-                    style={{ width: '100%', padding: '0.5rem 0', borderRadius: '8px', border: '1.5px solid rgba(0,0,0,0.1)', background: 'transparent', color: 'rgba(0,0,0,0.55)', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', transition: 'border-color 0.2s, color 0.2s' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#14a889'; e.currentTarget.style.color = '#0a3d33'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; e.currentTarget.style.color = 'rgba(0,0,0,0.55)'; }}
-                  >Continue as Guest →</button>
                 </motion.div>
               )}
             </AnimatePresence>

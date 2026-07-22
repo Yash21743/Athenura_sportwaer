@@ -7,6 +7,7 @@ import {
   ShoppingBag,
   Truck,
 } from "lucide-react";
+import logo from "../assets/images/comfy_logo4.png";
 
 const OrderSuccess = () => {
   const location = useLocation();
@@ -63,13 +64,19 @@ const OrderSuccess = () => {
               #082c25,
               #0a7f6e
             );
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
         }
 
         .brand-logo {
-          width: 145px;
+          width: 160px;
           max-height: 70px;
           object-fit: contain;
-          margin-bottom: 22px;
+          margin: 0 auto 22px auto;
+          display: block;
         }
 
         .success-icon-wrapper {
@@ -253,7 +260,7 @@ const OrderSuccess = () => {
             {/* LOGO */}
 
             <img
-             src="/comfy_logo.png"
+              src={logo}
               alt="Comfy Sport Wear"
               className="brand-logo"
             />

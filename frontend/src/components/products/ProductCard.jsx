@@ -82,11 +82,16 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
                 onMouseLeave={(e) => (e.currentTarget.style.color = '#111111')}
               >{name}</h3>
             </Link>
-            <p className="-webkit-box text-[12px] text-[#111111]/40 leading-relaxed mb-3 font-light overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{description}</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-              {sizes.map((sz) => (
+            <p className="-webkit-box text-[12px] text-[#111111]/40 leading-relaxed mb-3 font-light overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', height: '36px', minHeight: '36px' }}>{description}</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center' }}>
+              {sizes.slice(0, 5).map((sz) => (
                 <span key={sz} style={{ fontSize: '9px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px', background: 'rgba(0,0,0,0.08)', color: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}>{sz}</span>
               ))}
+              {sizes.length > 5 && (
+                <span style={{ fontSize: '9px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px', background: 'rgba(10,127,110,0.12)', color: '#0A7F6E', border: '1px solid rgba(10,127,110,0.2)' }}>
+                  +{sizes.length - 5} More
+                </span>
+              )}
             </div>
           </div>
           <div className="flex items-center justify-between mt-4 pt-[14px] border-t border-black/10">
@@ -184,14 +189,18 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
         </Link>
 
         {/* Description */}
-        <p style={{ fontSize: '12px', color: 'rgba(17,17,17,0.7)', lineHeight: 1.5, marginBottom: '10px', flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: 400 }}>{description}</p>
+        <p style={{ fontSize: '12px', color: 'rgba(17,17,17,0.7)', lineHeight: 1.5, height: '36px', minHeight: '36px', marginBottom: '10px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontWeight: 400 }}>{description}</p>
 
         {/* Sizes */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '12px', alignItems: 'center' }}>
           {sizes.slice(0, 5).map((sz) => (
             <span key={sz} style={{ fontSize: '8px', fontWeight: 700, padding: '2px 7px', borderRadius: '5px', background: 'rgba(0,0,0,0.08)', color: 'rgba(0,0,0,0.5)', border: '1px solid rgba(0,0,0,0.1)' }}>{sz}</span>
           ))}
-          {sizes.length > 5 && <span style={{ fontSize: '8px', color: 'rgba(17,17,17,0.5)', fontWeight: 600 }}>+{sizes.length - 5}</span>}
+          {sizes.length > 5 && (
+            <span style={{ fontSize: '8px', fontWeight: 700, padding: '2px 7px', borderRadius: '5px', background: 'rgba(10,127,110,0.12)', color: '#0A7F6E', border: '1px solid rgba(10,127,110,0.2)' }}>
+              +{sizes.length - 5} More
+            </span>
+          )}
         </div>
 
         {/* Price + CTA */}

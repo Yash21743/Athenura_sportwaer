@@ -29,11 +29,6 @@ const navItems = [
     key: "cart",
   },
   {
-    label: "Edit Address",
-    icon: <MapPin size={18} />,
-    key: "addresses",
-  },
-  {
     label: "Edit Profile",
     icon: <Settings size={18} />,
     key: "settings",

@@ -3,6 +3,7 @@ import {
   BrowserRouter,
   Routes,
   Route,
+  Navigate,
   useLocation,
 } from "react-router-dom";
 
@@ -223,20 +224,12 @@ function App() {
 
         <Route
           path="/cart"
-          element={
-            <PublicLayout>
-              <AddToBag />
-            </PublicLayout>
-          }
+          element={<Navigate to="/dashboard" replace />}
         />
 
         <Route
           path="/add-to-bag"
-          element={
-            <PublicLayout>
-              <AddToBag />
-            </PublicLayout>
-          }
+          element={<Navigate to="/dashboard" replace />}
         />
 
         {/* =========================

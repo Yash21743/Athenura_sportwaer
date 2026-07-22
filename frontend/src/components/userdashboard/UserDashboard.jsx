@@ -12,7 +12,6 @@ import API from "../../services/api";
 
 import OrderHistory from "./OrderHistory";
 import MyCart from "./MyCart";
-import Addresses from "./Addresses";
 import EditProfile from "./EditProfile";
 
 /* =====================================================
@@ -287,7 +286,6 @@ const UserDashboard = () => {
       case "dashboard": return { first: "DASHBOARD", second: "OVERVIEW" };
       case "orders": return { first: "ORDER", second: "HISTORY" };
       case "cart": return { first: "MY", second: "CART" };
-      case "addresses": return { first: "EDIT", second: "ADDRESS" };
       case "settings": return { first: "EDIT", second: "PROFILE" };
       default: return { first: "MY", second: "DASHBOARD" };
     }
@@ -394,7 +392,6 @@ const UserDashboard = () => {
                           { label: "Full Name", val: profile.name || "Not set" },
                           { label: "Email", val: profile.email || "Not set" },
                           { label: "Phone", val: profile.phone || "Not set" },
-                          { label: "Default Address", val: defaultAddress ? [defaultAddress.city, defaultAddress.state].filter(Boolean).join(", ") || "Address available" : "None set" },
                         ].map((item) => (
                           <div key={item.label} className="profile-row">
                             <span>{item.label}</span>
@@ -411,7 +408,6 @@ const UserDashboard = () => {
 
                 {activeTab === "orders" && <OrderHistory orders={orders} />}
                 {activeTab === "cart" && <MyCart />}
-                {activeTab === "addresses" && <Addresses addresses={addresses} setAddresses={setAddresses} />}
                 {activeTab === "settings" && <EditProfile profile={profile} setProfile={setProfile} />}
               </>
             )}
