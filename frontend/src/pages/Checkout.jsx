@@ -139,6 +139,40 @@ const Checkout = () => {
     subtotal + shipping;
 
   // ================================
+  // CLEAR CART (backend + localStorage)
+  // ================================
+  const clearCartEverywhere = async (itemsToClear) => {
+    // 1) Clear backend cart, item by item
+    try {
+      await Promise.all(
+        itemsToClear.map((item) =>
+          API.delete("/cart", {
+            data: {
+              productId: item._id,
+              size: item.size,
+              color: item.color,
+            },
+          })
+        )
+      );
+    } catch (clearErr) {
+      console.error(
+        "Failed to clear backend cart:",
+        clearErr.response?.data || clearErr.message
+      );
+    }
+
+    // 2) Clear localStorage cache used by AddToBag.jsx
+    localStorage.removeItem("csw_cart_items");
+
+    // 3) Clear local state
+    setCartItems([]);
+
+    // 4) Notify navbar / MyCart / AddToBag to refresh
+    window.dispatchEvent(new Event("cartUpdated"));
+  };
+
+  // ================================
   // PLACE ORDER
   // ================================
   const handlePlaceOrder = async (e) => {
@@ -245,9 +279,9 @@ const Checkout = () => {
           "Order Placed Successfully!"
         );
 
-        window.dispatchEvent(
-          new Event("cartUpdated")
-        );
+        // ✅ FIX: clear cart from backend + localStorage
+        // so "Continue Shopping" doesn't show old items again
+        await clearCartEverywhere(cartItems);
 
         navigate(
           "/dashboard/order-success",
