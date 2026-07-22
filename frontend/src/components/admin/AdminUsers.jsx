@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
+import API from "../../services/api"; // ✅ same API service used by EditProfile.jsx
 
 // ─── useInView hook ──────────────────────────────────────────────────────────
 function useInView(threshold = 0.12) {
@@ -61,7 +62,10 @@ const AdminUsers = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
-  const [deleteConfirm, setDeleteConfirm] = useState(null); // id to delete
+  const [deleteConfirm, setDeleteConfirm] = useState(null); // full user object to delete
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
 
   // ── Auth guard ──
   useEffect(() => {
@@ -69,28 +73,48 @@ const AdminUsers = () => {
     if (!activeSession) navigate("/admin");
   }, [navigate]);
 
-  // ── Load users from localStorage ──
-  const loadUsers = () => {
+  // ── Load users from the real backend ──
+  // 🔧 NOTE: "/admin/users" is a best-guess endpoint based on your existing
+  // "/user-auth/..." and "/users/me" routes. If your backend uses a different
+  // path (e.g. "/users" or "/admin/all-users"), change the URL below to match.
+  const loadUsers = async () => {
     try {
-      const raw = localStorage.getItem("csw_users");
-      setUsers(raw ? JSON.parse(raw) : []);
-    } catch {
+      setLoadingUsers(true);
+      setLoadError("");
+      const res = await API.get("/admin/users");
+      const data = res.data?.data || res.data?.users || res.data || [];
+      setUsers(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to load users:", err);
+      setLoadError(
+        err.response?.data?.message ||
+        "Could not load users. Check that the admin users endpoint exists on the backend."
+      );
       setUsers([]);
+    } finally {
+      setLoadingUsers(false);
     }
   };
 
   useEffect(() => {
     loadUsers();
-    window.addEventListener("userRegistered", loadUsers);
-    return () => window.removeEventListener("userRegistered", loadUsers);
   }, []);
 
-  // ── Delete user ──
-  const handleDelete = (email) => {
-    const updated = users.filter(u => u.email !== email);
-    localStorage.setItem("csw_users", JSON.stringify(updated));
-    setUsers(updated);
-    setDeleteConfirm(null);
+  // ── Delete user (calls backend, then updates UI) ──
+  // 🔧 NOTE: same caveat as above — confirm the delete route with your backend.
+  const handleDelete = async (user) => {
+    const userId = user._id || user.id;
+    setDeletingId(userId);
+    try {
+      await API.delete(`/admin/users/${userId}`);
+      setUsers(prev => prev.filter(u => (u._id || u.id) !== userId));
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error("Failed to delete user:", err);
+      alert(err.response?.data?.message || "Failed to delete user.");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   // ── Filtered list ──
@@ -101,7 +125,10 @@ const AdminUsers = () => {
   );
 
   const todayStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
-  const newToday = users.filter(u => u.joinedOn === todayStr).length;
+  const newToday = users.filter(u => {
+    const joined = u.joinedOn || (u.createdAt ? new Date(u.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : null);
+    return joined === todayStr;
+  }).length;
 
   // ─── Styles ───────────────────────────────────────────────────────────────
   const styles = `
@@ -275,6 +302,22 @@ const AdminUsers = () => {
     .au-search::placeholder { color: rgba(255,255,255,0.3); }
     .au-search:focus { border-color: rgba(10,127,110,0.5); }
 
+    .au-refresh-btn {
+      background: rgba(10,127,110,0.12);
+      border: 1px solid rgba(10,127,110,0.3);
+      color: #14a38f;
+      border-radius: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .au-refresh-btn:hover { background: rgba(10,127,110,0.2); }
+    .au-refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
     /* Table card */
     .au-card {
       background: rgba(255,255,255,0.02);
@@ -370,8 +413,12 @@ const AdminUsers = () => {
       background: rgba(239,68,68,0.2);
       border-color: rgba(239,68,68,0.4);
     }
+    .au-delete-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
-    /* Empty state */
+    /* Empty / error / loading state */
     .au-empty {
       text-align: center;
       padding: 60px 20px;
@@ -387,6 +434,11 @@ const AdminUsers = () => {
       align-items: center;
       justify-content: center;
       margin: 0 auto 16px;
+    }
+
+    .au-empty-icon.error {
+      background: rgba(239,68,68,0.1);
+      border-color: rgba(239,68,68,0.2);
     }
 
     .au-empty-title {
@@ -474,6 +526,7 @@ const AdminUsers = () => {
       transition: all 0.2s;
     }
     .au-modal-confirm:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(239,68,68,0.3); }
+    .au-modal-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -500,7 +553,7 @@ const AdminUsers = () => {
 
       {/* Delete Confirm Modal */}
       {deleteConfirm && (
-        <div className="au-modal-overlay" onClick={() => setDeleteConfirm(null)}>
+        <div className="au-modal-overlay" onClick={() => !deletingId && setDeleteConfirm(null)}>
           <div className="au-modal" onClick={e => e.stopPropagation()}>
             <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "rgba(239,68,68,0.15)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
               <svg width="22" height="22" fill="none" stroke="#ef4444" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -508,10 +561,12 @@ const AdminUsers = () => {
               </svg>
             </div>
             <div className="au-modal-title">Delete User?</div>
-            <div className="au-modal-sub">Are you sure you want to remove <strong style={{ color: "#fff" }}>{deleteConfirm}</strong>? This cannot be undone.</div>
+            <div className="au-modal-sub">Are you sure you want to remove <strong style={{ color: "#fff" }}>{deleteConfirm.name || deleteConfirm.email}</strong>? This cannot be undone.</div>
             <div className="au-modal-btns">
-              <button className="au-modal-cancel" onClick={() => setDeleteConfirm(null)}>Cancel</button>
-              <button className="au-modal-confirm" onClick={() => handleDelete(deleteConfirm)}>Delete</button>
+              <button className="au-modal-cancel" onClick={() => setDeleteConfirm(null)} disabled={!!deletingId}>Cancel</button>
+              <button className="au-modal-confirm" onClick={() => handleDelete(deleteConfirm)} disabled={!!deletingId}>
+                {deletingId ? "Deleting..." : "Delete"}
+              </button>
             </div>
           </div>
         </div>
@@ -555,7 +610,7 @@ const AdminUsers = () => {
                 <div className="au-page-accent" />
                 <div>
                   <div className="au-page-title">Registered Users</div>
-                  <div className="au-page-subtitle">Manage all registered users from the frontend</div>
+                  <div className="au-page-subtitle">Manage all registered users from the backend</div>
                 </div>
               </div>
             </div>
@@ -615,11 +670,34 @@ const AdminUsers = () => {
                   onChange={e => setSearch(e.target.value)}
                 />
               </div>
+              <button className="au-refresh-btn" onClick={loadUsers} disabled={loadingUsers}>
+                {loadingUsers ? "Refreshing..." : "Refresh"}
+              </button>
             </div>
 
             {/* Table Card */}
             <div className="au-card">
-              {filtered.length === 0 ? (
+              {loadingUsers ? (
+                <div className="au-empty">
+                  <div className="au-empty-icon">
+                    <svg width="24" height="24" fill="none" stroke="#0A7F6E" strokeWidth="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                    </svg>
+                  </div>
+                  <div className="au-empty-title">Loading users...</div>
+                  <div className="au-empty-sub">Fetching registered users from the server.</div>
+                </div>
+              ) : loadError ? (
+                <div className="au-empty">
+                  <div className="au-empty-icon error">
+                    <svg width="24" height="24" fill="none" stroke="#ef4444" strokeWidth="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                  </div>
+                  <div className="au-empty-title">Couldn't load users</div>
+                  <div className="au-empty-sub">{loadError}</div>
+                </div>
+              ) : filtered.length === 0 ? (
                 <div className="au-empty">
                   <div className="au-empty-icon">
                     <svg width="24" height="24" fill="none" stroke="#0A7F6E" strokeWidth="2" viewBox="0 0 24 24">
@@ -648,50 +726,57 @@ const AdminUsers = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {filtered.map((user, i) => (
-                        <tr key={user.email}>
-                          <td style={{ color: "rgba(255,255,255,0.3)", fontSize: "12px", width: "40px" }}>
-                            {i + 1}
-                          </td>
-                          <td>
-                            <div className="au-name-cell">
-                              <div className="au-avatar">
-                                {user.name?.charAt(0)?.toUpperCase() || "U"}
+                      {filtered.map((user, i) => {
+                        const userId = user._id || user.id || user.email;
+                        const joined = user.joinedOn || (user.createdAt
+                          ? new Date(user.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+                          : "—");
+                        return (
+                          <tr key={userId}>
+                            <td style={{ color: "rgba(255,255,255,0.3)", fontSize: "12px", width: "40px" }}>
+                              {i + 1}
+                            </td>
+                            <td>
+                              <div className="au-name-cell">
+                                <div className="au-avatar">
+                                  {user.name?.charAt(0)?.toUpperCase() || "U"}
+                                </div>
+                                <span className="au-name-text">{user.name}</span>
                               </div>
-                              <span className="au-name-text">{user.name}</span>
-                            </div>
-                          </td>
-                          <td style={{ color: "rgba(255,255,255,0.6)" }}>{user.email}</td>
-                          <td style={{ color: "rgba(255,255,255,0.6)" }}>{user.phone || "—"}</td>
-                          <td>
-                            <span style={{
-                              background: "rgba(10,127,110,0.12)",
-                              border: "1px solid rgba(10,127,110,0.25)",
-                              color: "#14a38f",
-                              borderRadius: "6px",
-                              padding: "3px 10px",
-                              fontSize: "11px",
-                              fontWeight: 600,
-                              whiteSpace: "nowrap",
-                            }}>
-                              {user.joinedOn || "—"}
-                            </span>
-                          </td>
-                          <td>
-                            <button
-                              className="au-delete-btn"
-                              onClick={() => setDeleteConfirm(user.email)}
-                              title="Delete user"
-                            >
-                              <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-                                <path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
-                              </svg>
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                            <td style={{ color: "rgba(255,255,255,0.6)" }}>{user.email}</td>
+                            <td style={{ color: "rgba(255,255,255,0.6)" }}>{user.phone || "—"}</td>
+                            <td>
+                              <span style={{
+                                background: "rgba(10,127,110,0.12)",
+                                border: "1px solid rgba(10,127,110,0.25)",
+                                color: "#14a38f",
+                                borderRadius: "6px",
+                                padding: "3px 10px",
+                                fontSize: "11px",
+                                fontWeight: 600,
+                                whiteSpace: "nowrap",
+                              }}>
+                                {joined}
+                              </span>
+                            </td>
+                            <td>
+                              <button
+                                className="au-delete-btn"
+                                onClick={() => setDeleteConfirm(user)}
+                                disabled={deletingId === userId}
+                                title="Delete user"
+                              >
+                                <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                                  <path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                                </svg>
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

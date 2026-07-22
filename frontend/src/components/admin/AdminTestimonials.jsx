@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import AdminSidebar from "../common/adminlayout/AdminSidebar";
 import API from "../../services/api";
 
-// â”€â”€â”€ Hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Hooks ─────────────────────────────────────────────────────────────────
 function useInView(threshold = 0.12) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -19,7 +19,7 @@ function useInView(threshold = 0.12) {
   return [ref, visible];
 }
 
-// â”€â”€â”€ StatCard Subcomponent â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── StatCard Subcomponent ───────────────────────────────────────────────
 const StatCard = ({ title, value, icon, accent, delay }) => {
   const [ref, visible] = useInView();
   const [hov, setHov] = useState(false);
@@ -42,7 +42,6 @@ const StatCard = ({ title, value, icon, accent, delay }) => {
         overflow: "hidden",
       }}
     >
-      {/* Top accent line */}
       <div
         style={{
           position: "absolute",
@@ -74,7 +73,7 @@ const StatCard = ({ title, value, icon, accent, delay }) => {
   );
 };
 
-// â”€â”€â”€ Star Renderer Helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Star Renderer Helper ─────────────────────────────────────────────────
 const renderStars = (rating) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
@@ -96,45 +95,14 @@ const renderStars = (rating) => {
   return <div style={{ display: "inline-flex", alignItems: "center" }}>{stars}</div>;
 };
 
-// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const INITIAL_TESTIMONIALS = [
-  {
-    id: 1,
-    name: "Rajesh Kumar",
-    org: "Mumbai Cricket Club",
-    rating: 5,
-    status: "Approved",
-    review: "The custom cricket uniforms were top-notch! The sublimation print is bright, breathable, and didn't fade after multiple washes. All players loved the fit.",
-    time: "2 hrs ago"
-  },
-  {
-    id: 2,
-    name: "Dr. Shalini Sen",
-    org: "St. Xavier's Academy",
-    rating: 5,
-    status: "Approved",
-    review: "Ordered 150 school hoodies for the winter sports fest. Outstanding cotton fleece quality and precise emblem embroidery. Avnish helped us finalize the size charts.",
-    time: "1 day ago"
-  },
-  {
-    id: 3,
-    name: "Kabir Mehta",
-    org: "FitLife Gym Chain",
-    rating: 4,
-    status: "Pending",
-    review: "Inquired about training dry-fit t-shirts. The fabric samples sent were excellent, and the pricing quote is highly competitive. Planning to confirm 300 units next week.",
-    time: "3 days ago"
-  },
-  {
-    id: 4,
-    name: "Pooja Hegde",
-    org: "Pune Women Runners",
-    rating: 5,
-    status: "Approved",
-    review: "Fantastic training track pants! High stretch, zippered pockets, and custom branding fits perfectly. Prompt delivery network as promised.",
-    time: "1 week ago"
-  }
-];
+// ─── Status mapping helpers ────────────────────────────────────────────────
+// 🔧 The backend model (based on the GET normalizer below) stores status as
+// "active" / "inactive". The UI shows three states (Approved / Pending /
+// Rejected) but the backend only really has two. "Rejected" is treated the
+// same as "Pending" (inactive) on the backend — if you need a real third
+// state, the backend model needs a "status" enum with 3 values instead of 2.
+const toBackendStatus = (uiStatus) => (uiStatus === "Approved" ? "active" : "inactive");
+const toUiStatus = (backendStatus) => (backendStatus === "active" ? "Approved" : "Pending");
 
 const DEFAULT_NEW_TESTIMONIAL = {
   name: "",
@@ -145,12 +113,16 @@ const DEFAULT_NEW_TESTIMONIAL = {
   time: "Just now"
 };
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ──────────────────────────────────────────────────────────────
 const AdminTestimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
+  const [loadingList, setLoadingList] = useState(true);
+  const [savingAdd, setSavingAdd] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const fetchTestimonials = async () => {
     try {
+      setLoadingList(true);
       const response = await API.get('/testimonials/admin/all');
       const list = response.data?.data;
       if (list && Array.isArray(list)) {
@@ -162,13 +134,16 @@ const AdminTestimonials = () => {
           rating: t.rating || 5,
           status: t.status === 'active' ? 'Approved' : 'Pending',
           review: t.review || '',
-          time: new Date(t.createdAt).toLocaleDateString() || 'Recently',
+          time: t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'Recently',
           img: t.image || ''
         }));
         setTestimonials(normalized);
       }
     } catch (err) {
-      console.warn("Failed to fetch testimonials from API, using mock/cached.", err);
+      console.warn("Failed to fetch testimonials from API.", err);
+      toast.error("Could not load testimonials from the server.");
+    } finally {
+      setLoadingList(false);
     }
   };
 
@@ -202,12 +177,6 @@ const AdminTestimonials = () => {
   const [editingTestimonial, setEditingTestimonial] = useState(null);
   const [addingTestimonial, setAddingTestimonial] = useState(null);
 
-  useEffect(() => {
-    if (testimonials.length > 0) {
-      localStorage.setItem("csw_admin_testimonials", JSON.stringify(testimonials));
-    }
-  }, [testimonials]);
-
   // Stats Counters
   const totalReviews = testimonials.length;
   const approvedReviews = testimonials.filter((t) => t.status === "Approved").length;
@@ -231,70 +200,89 @@ const AdminTestimonials = () => {
   const sortedTestimonials = [...filteredTestimonials].sort((a, b) => {
     if (sortBy === "rating-desc") return b.rating - a.rating;
     if (sortBy === "rating-asc") return a.rating - b.rating;
-    if (sortBy === "newest") return b.id - a.id;
+    if (sortBy === "newest") return String(b.id).localeCompare(String(a.id));
     return 0;
   });
 
-  // Action handlers
+  // ── Status change: PUT to backend, then refetch ──
   const handleStatusChange = async (id, newStatus) => {
-    const apiStatus = newStatus === 'Approved' ? 'active' : 'inactive';
+    const apiStatus = toBackendStatus(newStatus);
     try {
       await API.put(`/testimonials/${id}`, { status: apiStatus });
       toast.success("Testimonial status updated!");
-      fetchTestimonials();
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update status on server.");
-      // Fallback
-      setTestimonials((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
-      );
       if (viewingTestimonial && viewingTestimonial.id === id) {
         setViewingTestimonial((prev) => ({ ...prev, status: newStatus }));
       }
+      await fetchTestimonials();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to update status on server.");
     }
   };
 
+  // ── Delete: DELETE on backend, then refetch ──
   const handleDelete = async (id, e) => {
     if (e) e.stopPropagation();
-    if (window.confirm("Are you sure you want to delete this testimonial?")) {
-      try {
-        await API.delete(`/testimonials/${id}`);
-        toast.success("Testimonial deleted successfully!");
-        fetchTestimonials();
-        if (viewingTestimonial?.id === id) setViewingTestimonial(null);
-        if (editingTestimonial?.id === id) setEditingTestimonial(null);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to delete testimonial from server.");
-        setTestimonials((prev) => prev.filter((t) => t.id !== id));
-        if (viewingTestimonial?.id === id) setViewingTestimonial(null);
-        if (editingTestimonial?.id === id) setEditingTestimonial(null);
+    if (!window.confirm("Are you sure you want to delete this testimonial?")) return;
+    try {
+      await API.delete(`/testimonials/${id}`);
+      toast.success("Testimonial deleted successfully!");
+      if (viewingTestimonial?.id === id) setViewingTestimonial(null);
+      if (editingTestimonial?.id === id) setEditingTestimonial(null);
+      await fetchTestimonials();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to delete testimonial from server.");
+    }
+  };
+
+  // ── Edit: PUT to backend (was previously local-state only — now fixed) ──
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setSavingEdit(true);
+    try {
+      await API.put(`/testimonials/${editingTestimonial.id}`, {
+        customerName: editingTestimonial.name,
+        organization: editingTestimonial.org,
+        rating: editingTestimonial.rating,
+        review: editingTestimonial.review,
+        status: toBackendStatus(editingTestimonial.status),
+      });
+      toast.success("Testimonial updated!");
+      if (viewingTestimonial?.id === editingTestimonial.id) {
+        setViewingTestimonial({ ...viewingTestimonial, ...editingTestimonial });
       }
+      setEditingTestimonial(null);
+      await fetchTestimonials();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to save changes to the server.");
+    } finally {
+      setSavingEdit(false);
     }
   };
 
-  const handleEditSubmit = (e) => {
+  // ── Add: POST to backend (was previously local-state only — now fixed) ──
+  const handleAddSubmit = async (e) => {
     e.preventDefault();
-    setTestimonials((prev) =>
-      prev.map((t) => (t.id === editingTestimonial.id ? { ...t, ...editingTestimonial } : t))
-    );
-    if (viewingTestimonial?.id === editingTestimonial.id) {
-      setViewingTestimonial({ ...viewingTestimonial, ...editingTestimonial });
+    setSavingAdd(true);
+    try {
+      await API.post('/testimonials', {
+        customerName: addingTestimonial.name,
+        organization: addingTestimonial.org,
+        rating: addingTestimonial.rating,
+        review: addingTestimonial.review,
+        status: toBackendStatus(addingTestimonial.status),
+      });
+      toast.success("Testimonial recorded!");
+      setAddingTestimonial(null);
+      await fetchTestimonials();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to save testimonial to the server.");
+    } finally {
+      setSavingAdd(false);
     }
-    setEditingTestimonial(null);
-  };
-
-  const handleAddSubmit = (e) => {
-    e.preventDefault();
-    const newId = testimonials.length > 0 ? Math.max(...testimonials.map((t) => t.id)) + 1 : 1;
-    const testimonialToAdd = {
-      ...addingTestimonial,
-      id: newId,
-      time: "Just now",
-    };
-    setTestimonials((prev) => [testimonialToAdd, ...prev]);
-    setAddingTestimonial(null);
   };
 
   // Excel / PDF Exports
@@ -411,7 +399,7 @@ const AdminTestimonials = () => {
           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
         }
 
-        /* â”€â”€ Input styling â”€â”€ */
+        /* ── Input styling ── */
         .csw-input, .csw-select, .csw-textarea {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.12);
@@ -437,7 +425,7 @@ const AdminTestimonials = () => {
           to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* â”€â”€ Responsive â”€â”€ */
+        /* ── Responsive ── */
         @media (max-width: 768px) {
           .csw-topbar { left: 0 !important; padding: 0 14px; }
           .csw-main { margin-left: 0 !important; padding: 76px 14px 32px; }
@@ -474,11 +462,8 @@ const AdminTestimonials = () => {
       <div style={{ minHeight: "100vh", background: "#070C0B", position: "relative", overflow: "hidden" }}>
         {/* Decorative Background SVGs */}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "600px", pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
-          {/* Radial Glow 1 */}
           <div style={{ position: "absolute", top: "-100px", left: "10%", width: "400px", height: "400px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255, 59, 48, 0.08) 0%, transparent 70%)", filter: "blur(40px)" }} />
-          {/* Radial Glow 2 */}
           <div style={{ position: "absolute", top: "200px", right: "5%", width: "500px", height: "500px", borderRadius: "50%", background: "radial-gradient(circle, rgba(10, 37, 64, 0.3) 0%, transparent 80%)", filter: "blur(50px)" }} />
-          {/* Tech Grid Pattern */}
           <svg width="100%" height="100%" opacity="0.03" stroke="#fff" strokeWidth="1">
             <defs>
               <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -489,7 +474,7 @@ const AdminTestimonials = () => {
           </svg>
         </div>
 
-        {/* â”€â”€ Sidebar â”€â”€ */}
+        {/* ── Sidebar ── */}
         <AdminSidebar
           activeKey="testimonials"
           isMobileOpen={mobileOpen}
@@ -497,9 +482,8 @@ const AdminTestimonials = () => {
           onCollapsedChange={setSidebarCollapsed}
         />
 
-        {/* â”€â”€ Topbar â”€â”€ */}
+        {/* ── Topbar ── */}
         <header className="csw-topbar">
-          {/* Left: Hamburger + Title */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <button
               className="csw-hamburger"
@@ -530,7 +514,6 @@ const AdminTestimonials = () => {
             </div>
           </div>
 
-          {/* Right Profile Info */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <span style={{ fontSize: "12.5px", color: "rgba(255,255,255,0.4)" }}>Admin Panel</span>
             <div
@@ -554,9 +537,8 @@ const AdminTestimonials = () => {
           </div>
         </header>
 
-        {/* â”€â”€ Main Content â”€â”€ */}
+        {/* ── Main Content ── */}
         <main className="csw-main" style={{ position: "relative", zIndex: 1 }}>
-          {/* Header row */}
           <div
             style={{
               display: "flex",
@@ -590,7 +572,6 @@ const AdminTestimonials = () => {
               </p>
             </div>
 
-            {/* Export and Add buttons */}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               <button
                 onClick={() => setAddingTestimonial(DEFAULT_NEW_TESTIMONIAL)}
@@ -757,7 +738,6 @@ const AdminTestimonials = () => {
               marginBottom: "24px",
             }}
           >
-            {/* Search Input */}
             <div
               style={{
                 position: "relative",
@@ -781,7 +761,6 @@ const AdminTestimonials = () => {
             </div>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", flex: "1 1 auto", justifyContent: "flex-end" }}>
-              {/* Status Filter */}
               <div style={{ minWidth: "140px", flex: "1 1 140px", maxWidth: "160px" }}>
                 <select
                   className="csw-select"
@@ -792,11 +771,9 @@ const AdminTestimonials = () => {
                   <option value="All">All Statuses</option>
                   <option value="Approved">Approved</option>
                   <option value="Pending">Pending</option>
-                  <option value="Rejected">Rejected</option>
                 </select>
               </div>
 
-              {/* Rating Filter */}
               <div style={{ minWidth: "130px", flex: "1 1 130px", maxWidth: "150px" }}>
                 <select
                   className="csw-select"
@@ -813,7 +790,6 @@ const AdminTestimonials = () => {
                 </select>
               </div>
 
-              {/* Sorting Filter */}
               <div style={{ minWidth: "150px", flex: "1 1 150px", maxWidth: "180px" }}>
                 <select
                   className="csw-select"
@@ -829,211 +805,215 @@ const AdminTestimonials = () => {
             </div>
           </div>
 
-          {/* â”€â”€ Desktop Table View â”€â”€ */}
-          <div
-            className="desktop-only"
-            style={{
-              background: "rgba(255,255,255,0.02)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              borderRadius: "16px",
-              overflowX: "auto",
-            }}
-          >
-            {sortedTestimonials.length > 0 ? (
-              <table className="table-view">
-                <thead>
-                  <tr>
-                    <th>Customer Info</th>
-                    <th>Rating</th>
-                    <th>Review Content</th>
-                    <th>Status</th>
-                    <th>Received</th>
-                    <th style={{ textAlign: "right" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedTestimonials.map((t) => {
-                    const isApp = t.status === "Approved";
-                    const isPend = t.status === "Pending";
-                    const isRej = t.status === "Rejected";
-
-                    const statusColor = isApp ? "#10B981" : isPend ? "#F59E0B" : "#EF4444";
-                    const statusBg = isApp ? "rgba(16,185,129,0.15)" : isPend ? "rgba(245,158,11,0.15)" : "rgba(239,68,68,0.15)";
-
-                    return (
-                      <tr key={t.id} className="table-row" onClick={() => setViewingTestimonial(t)}>
-                        <td>
-                          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                            <span style={{ fontWeight: 600, color: "#fff" }}>{t.name}</span>
-                            <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.35)" }}>{t.org || "Individual Customer"}</span>
-                          </div>
-                        </td>
-                        <td>{renderStars(t.rating)}</td>
-                        <td>
-                          <span style={{ fontSize: "12.5px", color: "rgba(255,255,255,0.7)" }}>
-                            {t.review.length > 55 ? `"${t.review.slice(0, 55)}..."` : `"${t.review}"`}
-                          </span>
-                        </td>
-                        <td>
-                          <span style={{ fontSize: "10.5px", fontWeight: 700, color: statusColor, background: statusBg, padding: "3px 9px", borderRadius: "20px" }}>
-                            {t.status}
-                          </span>
-                        </td>
-                        <td style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px" }}>{t.time}</td>
-                        <td style={{ textAlign: "right" }} onClick={(e) => e.stopPropagation()}>
-                          <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-                            <button
-                              onClick={() => setEditingTestimonial(t)}
-                              style={{
-                                background: "rgba(255,255,255,0.06)",
-                                border: "1px solid rgba(255,255,255,0.1)",
-                                borderRadius: "8px",
-                                width: "32px",
-                                height: "32px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                cursor: "pointer",
-                                color: "rgba(255,255,255,0.6)",
-                                transition: "all 0.2s",
-                              }}
-                            >
-                              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                                <path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => handleDelete(t.id)}
-                              style={{
-                                background: "rgba(10,127,110,0.07)",
-                                border: "1px solid rgba(10,127,110,0.2)",
-                                borderRadius: "8px",
-                                width: "32px",
-                                height: "32px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                cursor: "pointer",
-                                color: "#0A7F6E",
-                                transition: "all 0.2s",
-                              }}
-                            >
-                              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-                              </svg>
-                            </button>
-                          </div>
-                        </td>
+          {loadingList ? (
+            <div style={{ padding: "60px", textAlign: "center", color: "rgba(255,255,255,0.3)" }}>
+              Loading testimonials...
+            </div>
+          ) : (
+            <>
+              {/* ── Desktop Table View ── */}
+              <div
+                className="desktop-only"
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: "16px",
+                  overflowX: "auto",
+                }}
+              >
+                {sortedTestimonials.length > 0 ? (
+                  <table className="table-view">
+                    <thead>
+                      <tr>
+                        <th>Customer Info</th>
+                        <th>Rating</th>
+                        <th>Review Content</th>
+                        <th>Status</th>
+                        <th>Received</th>
+                        <th style={{ textAlign: "right" }}>Actions</th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            ) : (
-              <div style={{ padding: "40px", textAlign: "center", color: "rgba(255,255,255,0.3)" }}>
-                No testimonials found matching your search filters.
+                    </thead>
+                    <tbody>
+                      {sortedTestimonials.map((t) => {
+                        const isApp = t.status === "Approved";
+                        const statusColor = isApp ? "#10B981" : "#F59E0B";
+                        const statusBg = isApp ? "rgba(16,185,129,0.15)" : "rgba(245,158,11,0.15)";
+
+                        return (
+                          <tr key={t.id} className="table-row" onClick={() => setViewingTestimonial(t)}>
+                            <td>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                                <span style={{ fontWeight: 600, color: "#fff" }}>{t.name}</span>
+                                <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.35)" }}>{t.org || "Individual Customer"}</span>
+                              </div>
+                            </td>
+                            <td>{renderStars(t.rating)}</td>
+                            <td>
+                              <span style={{ fontSize: "12.5px", color: "rgba(255,255,255,0.7)" }}>
+                                {t.review.length > 55 ? `"${t.review.slice(0, 55)}..."` : `"${t.review}"`}
+                              </span>
+                            </td>
+                            <td>
+                              <span style={{ fontSize: "10.5px", fontWeight: 700, color: statusColor, background: statusBg, padding: "3px 9px", borderRadius: "20px" }}>
+                                {t.status}
+                              </span>
+                            </td>
+                            <td style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px" }}>{t.time}</td>
+                            <td style={{ textAlign: "right" }} onClick={(e) => e.stopPropagation()}>
+                              <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+                                <button
+                                  onClick={() => setEditingTestimonial(t)}
+                                  style={{
+                                    background: "rgba(255,255,255,0.06)",
+                                    border: "1px solid rgba(255,255,255,0.1)",
+                                    borderRadius: "8px",
+                                    width: "32px",
+                                    height: "32px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                    color: "rgba(255,255,255,0.6)",
+                                    transition: "all 0.2s",
+                                  }}
+                                >
+                                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                                    <path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(t.id)}
+                                  style={{
+                                    background: "rgba(10,127,110,0.07)",
+                                    border: "1px solid rgba(10,127,110,0.2)",
+                                    borderRadius: "8px",
+                                    width: "32px",
+                                    height: "32px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                    color: "#0A7F6E",
+                                    transition: "all 0.2s",
+                                  }}
+                                >
+                                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                                    <polyline points="3 6 5 6 21 6" />
+                                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div style={{ padding: "40px", textAlign: "center", color: "rgba(255,255,255,0.3)" }}>
+                    No testimonials found matching your search filters.
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* â”€â”€ Mobile/Tablet Grid View â”€â”€ */}
-          <div className="mobile-only">
-            {sortedTestimonials.length > 0 ? (
-              <div className="review-grid">
-                {sortedTestimonials.map((t, idx) => {
-                  const isApp = t.status === "Approved";
-                  const isPend = t.status === "Pending";
-                  const statusColor = isApp ? "#10B981" : isPend ? "#F59E0B" : "#EF4444";
-                  const statusBg = isApp ? "rgba(16,185,129,0.15)" : isPend ? "rgba(245,158,11,0.15)" : "rgba(239,68,68,0.15)";
+              {/* ── Mobile/Tablet Grid View ── */}
+              <div className="mobile-only">
+                {sortedTestimonials.length > 0 ? (
+                  <div className="review-grid">
+                    {sortedTestimonials.map((t, idx) => {
+                      const isApp = t.status === "Approved";
+                      const statusColor = isApp ? "#10B981" : "#F59E0B";
+                      const statusBg = isApp ? "rgba(16,185,129,0.15)" : "rgba(245,158,11,0.15)";
 
-                  return (
-                    <div
-                      key={t.id}
-                      className="review-card"
-                      onClick={() => setViewingTestimonial(t)}
-                      style={{
-                        opacity: pageIn ? 1 : 0,
-                        transform: pageIn ? "translateY(0)" : "translateY(16px)",
-                        transition: `opacity 0.4s ease ${idx * 0.05}s, transform 0.4s ease ${idx * 0.05}s`,
-                      }}
-                    >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                        <div>
-                          <h4 style={{ fontSize: "14.5px", fontWeight: 700, color: "#fff", margin: 0 }}>{t.name}</h4>
-                          <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>{t.org || "Individual"}</span>
+                      return (
+                        <div
+                          key={t.id}
+                          className="review-card"
+                          onClick={() => setViewingTestimonial(t)}
+                          style={{
+                            opacity: pageIn ? 1 : 0,
+                            transform: pageIn ? "translateY(0)" : "translateY(16px)",
+                            transition: `opacity 0.4s ease ${idx * 0.05}s, transform 0.4s ease ${idx * 0.05}s`,
+                          }}
+                        >
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                            <div>
+                              <h4 style={{ fontSize: "14.5px", fontWeight: 700, color: "#fff", margin: 0 }}>{t.name}</h4>
+                              <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>{t.org || "Individual"}</span>
+                            </div>
+                            <span style={{ fontSize: "10px", fontWeight: 700, background: statusBg, color: statusColor, padding: "3px 9px", borderRadius: "20px" }}>
+                              {t.status}
+                            </span>
+                          </div>
+
+                          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "10px", padding: "10px", marginBottom: "14px" }}>
+                            <div style={{ marginBottom: "6px" }}>{renderStars(t.rating)}</div>
+                            <p style={{ fontSize: "12.5px", fontStyle: "italic", color: "rgba(255,255,255,0.85)" }}>
+                              "{t.review.length > 90 ? `${t.review.slice(0, 90)}...` : t.review}"
+                            </p>
+                          </div>
+
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "12px" }} onClick={(e) => e.stopPropagation()}>
+                            <span style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.3)" }}>{t.time}</span>
+                            <div style={{ display: "flex", gap: "6px" }}>
+                              <button
+                                onClick={() => setEditingTestimonial(t)}
+                                style={{
+                                  background: "rgba(255,255,255,0.05)",
+                                  border: "1px solid rgba(255,255,255,0.08)",
+                                  borderRadius: "8px",
+                                  width: "30px",
+                                  height: "30px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  cursor: "pointer",
+                                  color: "rgba(255,255,255,0.6)",
+                                }}
+                              >
+                                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                                  <path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleDelete(t.id)}
+                                style={{
+                                  background: "rgba(10,127,110,0.05)",
+                                  border: "1px solid rgba(10,127,110,0.15)",
+                                  borderRadius: "8px",
+                                  width: "30px",
+                                  height: "30px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  cursor: "pointer",
+                                  color: "#0A7F6E",
+                                }}
+                              >
+                                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                                  <polyline points="3 6 5 6 21 6" />
+                                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                        <span style={{ fontSize: "10px", fontWeight: 700, background: statusBg, color: statusColor, padding: "3px 9px", borderRadius: "20px" }}>
-                          {t.status}
-                        </span>
-                      </div>
-
-                      <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "10px", padding: "10px", marginBottom: "14px" }}>
-                        <div style={{ marginBottom: "6px" }}>{renderStars(t.rating)}</div>
-                        <p style={{ fontSize: "12.5px", fontStyle: "italic", color: "rgba(255,255,255,0.85)" }}>
-                          "{t.review.length > 90 ? `${t.review.slice(0, 90)}...` : t.review}"
-                        </p>
-                      </div>
-
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "12px" }} onClick={(e) => e.stopPropagation()}>
-                        <span style={{ fontSize: "10.5px", color: "rgba(255,255,255,0.3)" }}>{t.time}</span>
-                        <div style={{ display: "flex", gap: "6px" }}>
-                          <button
-                            onClick={() => setEditingTestimonial(t)}
-                            style={{
-                              background: "rgba(255,255,255,0.05)",
-                              border: "1px solid rgba(255,255,255,0.08)",
-                              borderRadius: "8px",
-                              width: "30px",
-                              height: "30px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                              color: "rgba(255,255,255,0.6)",
-                            }}
-                          >
-                            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                              <path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => handleDelete(t.id)}
-                            style={{
-                              background: "rgba(10,127,110,0.05)",
-                              border: "1px solid rgba(10,127,110,0.15)",
-                              borderRadius: "8px",
-                              width: "30px",
-                              height: "30px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                              color: "#0A7F6E",
-                            }}
-                          >
-                            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M3 0" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div style={{ padding: "40px", textAlign: "center", color: "rgba(255,255,255,0.3)" }}>
+                    No testimonials found matching your search filters.
+                  </div>
+                )}
               </div>
-            ) : (
-              <div style={{ padding: "40px", textAlign: "center", color: "rgba(255,255,255,0.3)" }}>
-                No testimonials found matching your search filters.
-              </div>
-            )}
-          </div>
+            </>
+          )}
         </main>
 
-        {/* â”€â”€ View Testimonial Detail Modal â”€â”€ */}
+        {/* ── View Testimonial Detail Modal ── */}
         {viewingTestimonial && (
           <div
             style={{
@@ -1062,7 +1042,6 @@ const AdminTestimonials = () => {
                 animation: "csw-dropdown 0.22s cubic-bezier(0.4,0,0.2,1) both",
               }}
             >
-              {/* Header */}
               <div
                 style={{
                   padding: "18px 20px",
@@ -1098,7 +1077,6 @@ const AdminTestimonials = () => {
                 </button>
               </div>
 
-              {/* Modal Body */}
               <div
                 className="modal-body"
                 style={{
@@ -1109,16 +1087,14 @@ const AdminTestimonials = () => {
                   gap: "18px",
                 }}
               >
-                {/* Status bar */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "12px", borderRadius: "10px" }}>
                   <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)" }}>Live Status</span>
                   <div style={{ display: "flex", gap: "8px" }}>
-                    {["Approved", "Pending", "Rejected"].map((st) => {
+                    {["Approved", "Pending"].map((st) => {
                       const active = viewingTestimonial.status === st;
                       const activeColors = {
                         Approved: "#10B981",
                         Pending: "#F59E0B",
-                        Rejected: "#EF4444"
                       };
                       return (
                         <button
@@ -1143,7 +1119,6 @@ const AdminTestimonials = () => {
                   </div>
                 </div>
 
-                {/* Details */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "16px" }}>
                   <div>
                     <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600 }}>Reviewer Name</p>
@@ -1163,7 +1138,6 @@ const AdminTestimonials = () => {
                   </div>
                 </div>
 
-                {/* Review Text */}
                 <div>
                   <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, marginBottom: "6px" }}>Testimonial Text</p>
                   <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", lineHeight: "1.6", fontStyle: "italic", background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)", padding: "14px", borderRadius: "10px" }}>
@@ -1171,7 +1145,6 @@ const AdminTestimonials = () => {
                   </p>
                 </div>
 
-                {/* Footer Buttons */}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "16px", marginTop: "8px" }}>
                   <button
                     onClick={() => {
@@ -1212,7 +1185,7 @@ const AdminTestimonials = () => {
           </div>
         )}
 
-        {/* â”€â”€ Edit Testimonial Modal â”€â”€ */}
+        {/* ── Edit Testimonial Modal ── */}
         {editingTestimonial && (
           <div
             style={{
@@ -1280,7 +1253,6 @@ const AdminTestimonials = () => {
                   gap: "16px",
                 }}
               >
-                {/* Name */}
                 <div>
                   <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
                     Customer Name *
@@ -1293,7 +1265,6 @@ const AdminTestimonials = () => {
                   />
                 </div>
 
-                {/* Organization */}
                 <div>
                   <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
                     Organization / Club Name
@@ -1305,7 +1276,6 @@ const AdminTestimonials = () => {
                   />
                 </div>
 
-                {/* Rating selection */}
                 <div>
                   <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
                     Star Rating *
@@ -1324,7 +1294,6 @@ const AdminTestimonials = () => {
                   </select>
                 </div>
 
-                {/* Review Text */}
                 <div>
                   <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
                     Testimonial Content *
@@ -1338,11 +1307,11 @@ const AdminTestimonials = () => {
                   />
                 </div>
 
-                {/* Buttons */}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "16px", marginTop: "8px" }}>
                   <button
                     type="button"
                     onClick={() => setEditingTestimonial(null)}
+                    disabled={savingEdit}
                     style={{
                       background: "none",
                       border: "1px solid rgba(255,255,255,0.15)",
@@ -1358,6 +1327,7 @@ const AdminTestimonials = () => {
                   </button>
                   <button
                     type="submit"
+                    disabled={savingEdit}
                     style={{
                       background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
@@ -1366,11 +1336,12 @@ const AdminTestimonials = () => {
                       padding: "10px 20px",
                       fontSize: "13px",
                       fontWeight: 600,
-                      cursor: "pointer",
+                      cursor: savingEdit ? "not-allowed" : "pointer",
+                      opacity: savingEdit ? 0.7 : 1,
                       boxShadow: "0 4px 16px rgba(10,127,110,0.35)",
                     }}
                   >
-                    Save Changes
+                    {savingEdit ? "Saving..." : "Save Changes"}
                   </button>
                 </div>
               </form>
@@ -1378,7 +1349,7 @@ const AdminTestimonials = () => {
           </div>
         )}
 
-        {/* â”€â”€ Add Testimonial Modal â”€â”€ */}
+        {/* ── Add Testimonial Modal ── */}
         {addingTestimonial && (
           <div
             style={{
@@ -1446,7 +1417,6 @@ const AdminTestimonials = () => {
                   gap: "16px",
                 }}
               >
-                {/* Name */}
                 <div>
                   <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
                     Customer Name *
@@ -1460,7 +1430,6 @@ const AdminTestimonials = () => {
                   />
                 </div>
 
-                {/* Organization */}
                 <div>
                   <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
                     Organization / Club Name
@@ -1473,7 +1442,6 @@ const AdminTestimonials = () => {
                   />
                 </div>
 
-                {/* Rating selection */}
                 <div>
                   <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
                     Star Rating *
@@ -1492,7 +1460,6 @@ const AdminTestimonials = () => {
                   </select>
                 </div>
 
-                {/* Review Text */}
                 <div>
                   <label style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", fontWeight: 600, display: "block", marginBottom: "6px" }}>
                     Testimonial Content *
@@ -1507,11 +1474,11 @@ const AdminTestimonials = () => {
                   />
                 </div>
 
-                {/* Buttons */}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "16px", marginTop: "8px" }}>
                   <button
                     type="button"
                     onClick={() => setAddingTestimonial(null)}
+                    disabled={savingAdd}
                     style={{
                       background: "none",
                       border: "1px solid rgba(255,255,255,0.15)",
@@ -1527,6 +1494,7 @@ const AdminTestimonials = () => {
                   </button>
                   <button
                     type="submit"
+                    disabled={savingAdd}
                     style={{
                       background: "linear-gradient(135deg,#0A7F6E 0%,#08695C 100%)",
                       color: "#fff",
@@ -1535,11 +1503,12 @@ const AdminTestimonials = () => {
                       padding: "10px 20px",
                       fontSize: "13px",
                       fontWeight: 600,
-                      cursor: "pointer",
+                      cursor: savingAdd ? "not-allowed" : "pointer",
+                      opacity: savingAdd ? 0.7 : 1,
                       boxShadow: "0 4px 16px rgba(10,127,110,0.35)",
                     }}
                   >
-                    Record Review
+                    {savingAdd ? "Saving..." : "Record Review"}
                   </button>
                 </div>
               </form>
@@ -1552,4 +1521,3 @@ const AdminTestimonials = () => {
 };
 
 export default AdminTestimonials;
-
