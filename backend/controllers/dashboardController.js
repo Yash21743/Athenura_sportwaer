@@ -6,11 +6,11 @@ const Testimonial = require('../models/Testimonial');
 
 exports.getDashboardStats = async (req, res, next) => {
   try {
-    const [totalProducts, activeCategories, newLeads, monthlyInquiries] = await Promise.all([
+    const [totalProducts, activeCategories, totalLeads, newLeads] = await Promise.all([
       Product.countDocuments(),
       Category.countDocuments({ status: 'active' }),
-      Inquiry.countDocuments({ status: 'new' }),
-      Inquiry.countDocuments()
+      Inquiry.countDocuments(), // Total leads across ALL states
+      Inquiry.countDocuments({ status: 'new' })
     ]);
 
     res.status(200).json({
@@ -18,8 +18,9 @@ exports.getDashboardStats = async (req, res, next) => {
       data: {
         products: totalProducts,
         categories: activeCategories,
-        leads: newLeads,
-        inquiries: monthlyInquiries
+        leads: totalLeads, // All states combined
+        newLeads: newLeads,
+        inquiries: totalLeads
       }
     });
   } catch (error) {

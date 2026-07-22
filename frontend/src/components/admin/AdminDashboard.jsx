@@ -9,19 +9,19 @@ const SIDEBAR_COLLAPSED = 72;
 
 // â”€â”€â”€ Mock Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STATS = [
-  { key:"products",   label:"Total Products",    value:148, change:"+12", positive:true,
+  { key:"products",   label:"Total Products",    value:0, change:"+12", positive:true,
     accent:"#0A7F6E",
     icon:<svg width="21" height="21" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>,
   },
-  { key:"categories", label:"Active Categories", value:9,   change:"+2",  positive:true,
+  { key:"categories", label:"Active Categories", value:0,   change:"+2",  positive:true,
     accent:"#3B82F6",
     icon:<svg width="21" height="21" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>,
   },
-  { key:"leads",      label:"New Leads",          value:37,  change:"+8",  positive:true,
+  { key:"leads",      label:"Total Leads",       value:0,  change:"+8",  positive:true,
     accent:"#10B981",
     icon:<svg width="21" height="21" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
   },
-  { key:"inquiries",  label:"Monthly Inquiries",  value:214, change:"-3",  positive:false,
+  { key:"inquiries",  label:"New Leads",         value:0, change:"-3",  positive:false,
     accent:"#F59E0B",
     icon:<svg width="21" height="21" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
   },
@@ -794,10 +794,9 @@ const AdminDashboard = () => {
   const closeAll=()=>{ setShowNotif(false); setShowSearch(false); };
 
   const LIVE_STATS = [
-    { ...STATS[0], value: statsData.products || STATS[0].value },
-    // { ...STATS[1], value: statsData.categories || STATS[1].value },
-    { ...STATS[2], value: statsData.leads || STATS[2].value },
-    { ...STATS[3], value: statsData.inquiries || STATS[3].value },
+    { ...STATS[0], value: statsData.products ?? 0 },
+    { ...STATS[2], label: "Total Leads (All States)", value: statsData.leads ?? 0 },
+    { ...STATS[3], label: "New Leads", value: statsData.newLeads ?? 0 },
   ];
 
   return (

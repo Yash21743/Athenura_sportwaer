@@ -25,9 +25,16 @@ const ProductCard = ({ product, viewMode = 'grid' }) => {
   const sizes = product.sizes || [];
   const images = product.images || [];
 
+  const getImageUrl = (img) => {
+    if (!img) return '';
+    if (typeof img === 'string') return img;
+    if (typeof img === 'object' && img !== null && img.url) return img.url;
+    return '';
+  };
+
   const description = stripHtml(product.description);
-  const img1 = images[0] || '';
-  const img2 = images[1] || images[0] || '';
+  const img1 = getImageUrl(images[0]) || getImageUrl(product.featuredImage) || '';
+  const img2 = getImageUrl(images[1]) || img1;
   const stock = stockConf[stockStatus] || { dot: '#888', color: '#888', label: stockStatus };
 
   /* ─── LIST ─── */

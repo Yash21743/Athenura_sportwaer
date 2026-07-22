@@ -118,6 +118,7 @@ const AdminCategories = () => {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
+  const [deletingCategory, setDeletingCategory] = useState(null);
   const [formData, setFormData] = useState(DEFAULT_FORM);
 
   const fetchCategories = async () => {
@@ -189,18 +190,27 @@ const AdminCategories = () => {
     }));
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this category? Products in this category will remain, but will lose their category association.")) {
-      try {
-        await API.delete(`/categories/${id}`);
-        toast.success("Category deleted successfully!");
-        fetchCategories();
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to delete category.");
-        setCategories((prev) => prev.filter((c) => c.id !== id));
-      }
+  const confirmDelete = async () => {
+    if (!deletingCategory) return;
+    const id = deletingCategory.id;
+    try {
+      await API.delete(`/categories/${id}`);
+      toast.success("Category deleted successfully!");
+      fetchCategories();
+      setDeletingCategory(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete category.");
+      setCategories((prev) => prev.filter((c) => c.id !== id));
+      setDeletingCategory(null);
     }
+  };
+
+  const handleDelete = (idOrObj, e) => {
+    if (e) e.stopPropagation();
+    const item = typeof idOrObj === "object" ? idOrObj : categories.find((c) => c.id === idOrObj);
+    if (item) setDeletingCategory(item);
+    else if (idOrObj) setDeletingCategory({ id: idOrObj, name: "Category" });
   };
 
   const handleSubmit = async (e) => {
@@ -611,7 +621,7 @@ const AdminCategories = () => {
                           </svg>
                         </button>
                         <button
-                          onClick={() => handleDelete(c.id)}
+                          onClick={(e) => handleDelete(c.id, e)}
                           style={{
                             background: "rgba(10,127,110,0.06)",
                             border: "1px solid rgba(10,127,110,0.15)",
@@ -833,6 +843,96 @@ const AdminCategories = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* ── Custom Delete Confirmation Modal ── */}
+        {deletingCategory && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.8)",
+              zIndex: 350,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "16px",
+              backdropFilter: "blur(6px)",
+            }}
+            onClick={() => setDeletingCategory(null)}
+          >
+            <div
+              style={{
+                background: "#0d1b2a",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                borderRadius: "16px",
+                width: "100%",
+                maxWidth: "420px",
+                padding: "24px",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+                textAlign: "center",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  background: "rgba(239, 68, 68, 0.15)",
+                  color: "#ef4444",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 16px",
+                }}
+              >
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                </svg>
+              </div>
+              <h3 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "17px", fontWeight: 700, color: "#fff", marginBottom: "8px" }}>
+                Delete Category?
+              </h3>
+              <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.6)", marginBottom: "20px" }}>
+                Are you sure you want to delete category <strong>"{deletingCategory.name}"</strong>? Products in this category will remain, but will lose their category association.
+              </p>
+              <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+                <button
+                  onClick={() => setDeletingCategory(null)}
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    padding: "9px 20px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  style={{
+                    background: "linear-gradient(135deg, #ef4444, #dc2626)",
+                    border: "none",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    padding: "9px 20px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    boxShadow: "0 4px 14px rgba(239, 68, 68, 0.4)",
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         )}

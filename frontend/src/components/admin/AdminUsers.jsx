@@ -100,21 +100,27 @@ const AdminUsers = () => {
     loadUsers();
   }, []);
 
-  // ── Delete user (calls backend, then updates UI) ──
-  // 🔧 NOTE: same caveat as above — confirm the delete route with your backend.
-  const handleDelete = async (user) => {
+  const confirmDeleteUser = async () => {
+    if (!deleteConfirm) return;
+    const user = deleteConfirm;
     const userId = user._id || user.id;
     setDeletingId(userId);
     try {
       await API.delete(`/admin/users/${userId}`);
+      toast.success("User deleted successfully!");
       setUsers(prev => prev.filter(u => (u._id || u.id) !== userId));
       setDeleteConfirm(null);
     } catch (err) {
       console.error("Failed to delete user:", err);
-      alert(err.response?.data?.message || "Failed to delete user.");
+      toast.error(err.response?.data?.message || "Failed to delete user.");
     } finally {
       setDeletingId(null);
     }
+  };
+
+  const handleDelete = (user, e) => {
+    if (e) e.stopPropagation();
+    setDeleteConfirm(user);
   };
 
   // ── Filtered list ──
@@ -564,7 +570,7 @@ const AdminUsers = () => {
             <div className="au-modal-sub">Are you sure you want to remove <strong style={{ color: "#fff" }}>{deleteConfirm.name || deleteConfirm.email}</strong>? This cannot be undone.</div>
             <div className="au-modal-btns">
               <button className="au-modal-cancel" onClick={() => setDeleteConfirm(null)} disabled={!!deletingId}>Cancel</button>
-              <button className="au-modal-confirm" onClick={() => handleDelete(deleteConfirm)} disabled={!!deletingId}>
+              <button className="au-modal-confirm" onClick={confirmDeleteUser} disabled={!!deletingId}>
                 {deletingId ? "Deleting..." : "Delete"}
               </button>
             </div>
@@ -763,7 +769,7 @@ const AdminUsers = () => {
                             <td>
                               <button
                                 className="au-delete-btn"
-                                onClick={() => setDeleteConfirm(user)}
+                                onClick={(e) => handleDelete(user, e)}
                                 disabled={deletingId === userId}
                                 title="Delete user"
                               >
@@ -782,7 +788,6 @@ const AdminUsers = () => {
                 </div>
               )}
             </div>
-
           </div>
         </div>
       </div>

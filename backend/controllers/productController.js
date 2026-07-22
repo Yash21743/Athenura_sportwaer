@@ -110,7 +110,7 @@ exports.createProduct = async (req, res, next) => {
     let featuredImage = '';
 
     if (req.files && req.files.length > 0) {
-      images = req.files.map(file => ({ url: file.path, publicId: file.filename }));
+      images = req.files.map(file => ({ url: file.path, publicId: file.filename || 'local' }));
       featuredImage = images[0].url;
     }
 
@@ -194,11 +194,9 @@ exports.updateProduct = async (req, res, next) => {
     }
 
     if (req.files && req.files.length > 0) {
-      const newImages = req.files.map(file => ({ url: file.path, publicId: file.filename }));
-      updateData.images = [...product.images, ...newImages];
-      if (!product.featuredImage && newImages.length > 0) {
-        updateData.featuredImage = newImages[0].url;
-      }
+      const newImages = req.files.map(file => ({ url: file.path, publicId: file.filename || 'local' }));
+      updateData.images = newImages;
+      updateData.featuredImage = newImages[0].url;
     }
 
     if (updateData.removeImage) {

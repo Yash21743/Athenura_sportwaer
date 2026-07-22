@@ -170,7 +170,7 @@ const AdminLeads = () => {
           phone: l.mobileNumber || l.phone || '',
           product: typeof l.product === 'object' && l.product ? l.product.name : (l.productName || 'General'),
           qty: l.quantity || 1,
-          status: l.status === 'new' ? 'New' : (l.status === 'contacted' ? 'Follow Up' : 'Converted'),
+          status: l.status === 'new' ? 'New' : (l.status === 'contacted' ? 'Follow Up' : (l.status === 'converted' ? 'Converted' : (l.status === 'pending' ? 'Pending' : 'Pending'))),
           time: new Date(l.createdAt).toLocaleDateString() || 'Recently',
           message: l.message || '',
         }));
@@ -209,12 +209,14 @@ const AdminLeads = () => {
   const [viewingLead, setViewingLead] = useState(null);
   const [editingLead, setEditingLead] = useState(null);
   const [addingLead, setAddingLead] = useState(null);
+  const [deletingLead, setDeletingLead] = useState(null);
 
   // Stats Counters
   const totalLeads = leads.length;
   const newLeads = leads.filter((l) => l.status === "New").length;
   const followUpLeads = leads.filter((l) => l.status === "Follow Up").length;
   const convertedLeads = leads.filter((l) => l.status === "Converted").length;
+  const pendingLeads = leads.filter((l) => l.status === "Pending").length;
 
   useEffect(() => {
     if (leads.length > 0) {
@@ -244,6 +246,8 @@ const AdminLeads = () => {
     let apiStatus = 'new';
     if (newStatus === 'Follow Up') apiStatus = 'contacted';
     else if (newStatus === 'Converted') apiStatus = 'converted';
+    else if (newStatus === 'Pending') apiStatus = 'pending';
+    else if (newStatus === 'New') apiStatus = 'new';
 
     try {
       await API.put(`/inquiries/${id}`, { status: apiStatus });
@@ -275,23 +279,31 @@ const AdminLeads = () => {
     );
   };
 
-  const handleDelete = async (id, e) => {
-    if (e) e.stopPropagation();
-    if (window.confirm("Are you sure you want to delete this lead?")) {
-      try {
-        await API.delete(`/inquiries/${id}`);
-        toast.success("Lead deleted successfully!");
-        fetchLeads();
-        if (viewingLead?.id === id) setViewingLead(null);
-        if (editingLead?.id === id) setEditingLead(null);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to delete lead from server.");
-        setLeads((prev) => prev.filter((l) => l.id !== id));
-        if (viewingLead?.id === id) setViewingLead(null);
-        if (editingLead?.id === id) setEditingLead(null);
-      }
+  const confirmDelete = async () => {
+    if (!deletingLead) return;
+    const id = deletingLead.id;
+    try {
+      await API.delete(`/inquiries/${id}`);
+      toast.success("Lead deleted successfully!");
+      fetchLeads();
+      if (viewingLead?.id === id) setViewingLead(null);
+      if (editingLead?.id === id) setEditingLead(null);
+      setDeletingLead(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete lead from server.");
+      setLeads((prev) => prev.filter((l) => l.id !== id));
+      if (viewingLead?.id === id) setViewingLead(null);
+      if (editingLead?.id === id) setEditingLead(null);
+      setDeletingLead(null);
     }
+  };
+
+  const handleDelete = (idOrObj, e) => {
+    if (e) e.stopPropagation();
+    const item = typeof idOrObj === "object" ? idOrObj : leads.find((l) => l.id === idOrObj);
+    if (item) setDeletingLead(item);
+    else if (idOrObj) setDeletingLead({ id: idOrObj, name: "Lead" });
   };
 
   const handleEditSubmit = (e) => {
@@ -764,6 +776,18 @@ const AdminLeads = () => {
                 </svg>
               }
             />
+            <StatCard
+              title="Pending"
+              value={pendingLeads}
+              accent="#9CA3AF"
+              delay={0.2}
+              icon={
+                <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              }
+            />
           </div>
 
           {/* Filters Bar */}
@@ -936,7 +960,7 @@ const AdminLeads = () => {
                               </svg>
                             </button>
                             <button
-                              onClick={() => handleDelete(l.id)}
+                              onClick={(e) => handleDelete(l.id, e)}
                               style={{
                                 background: "rgba(10,127,110,0.07)",
                                 border: "1px solid rgba(10,127,110,0.2)",
@@ -1053,7 +1077,7 @@ const AdminLeads = () => {
                             </svg>
                           </button>
                           <button
-                            onClick={() => handleDelete(l.id)}
+                            onClick={(e) => handleDelete(l.id, e)}
                             style={{
                               background: "rgba(10,127,110,0.05)",
                               border: "1px solid rgba(10,127,110,0.15)",
@@ -1269,7 +1293,7 @@ const AdminLeads = () => {
                     Edit Info
                   </button>
                   <button
-                    onClick={() => handleDelete(viewingLead.id)}
+                    onClick={(e) => handleDelete(viewingLead.id, e)}
                     style={{
                       background: "rgba(10,127,110,0.07)",
                       border: "1px solid rgba(10,127,110,0.25)",
@@ -1720,6 +1744,96 @@ const AdminLeads = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* ── Custom Delete Confirmation Modal ── */}
+        {deletingLead && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.8)",
+              zIndex: 350,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "16px",
+              backdropFilter: "blur(6px)",
+            }}
+            onClick={() => setDeletingLead(null)}
+          >
+            <div
+              style={{
+                background: "#0d1b2a",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                borderRadius: "16px",
+                width: "100%",
+                maxWidth: "420px",
+                padding: "24px",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+                textAlign: "center",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  background: "rgba(239, 68, 68, 0.15)",
+                  color: "#ef4444",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 16px",
+                }}
+              >
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                </svg>
+              </div>
+              <h3 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "17px", fontWeight: 700, color: "#fff", marginBottom: "8px" }}>
+                Delete Lead?
+              </h3>
+              <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.6)", marginBottom: "20px" }}>
+                Are you sure you want to delete lead for <strong>"{deletingLead.name}"</strong>? This action cannot be undone.
+              </p>
+              <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+                <button
+                  onClick={() => setDeletingLead(null)}
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    padding: "9px 20px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  style={{
+                    background: "linear-gradient(135deg, #ef4444, #dc2626)",
+                    border: "none",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    padding: "9px 20px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    boxShadow: "0 4px 14px rgba(239, 68, 68, 0.4)",
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         )}

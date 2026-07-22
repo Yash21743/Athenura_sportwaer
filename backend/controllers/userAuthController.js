@@ -459,3 +459,148 @@ exports.getMe = async (req, res) => {
     });
   }
 };
+
+// ===============================
+// UPDATE USER PROFILE
+// PUT /api/users/me
+// ===============================
+exports.updateMe = async (req, res) => {
+  try {
+    const { name, email, phone } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email.trim().toLowerCase();
+    if (phone !== undefined) user.phone = phone;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: getUserResponse(user),
+    });
+  } catch (error) {
+    console.error("UPDATE ME ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to update profile",
+    });
+  }
+};
+
+// ===============================
+// CHANGE PASSWORD
+// PUT /api/users/me/password
+// ===============================
+exports.updatePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Current and new password are required",
+      });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 6 characters",
+      });
+    }
+
+    const user = await User.findById(req.user._id).select("+password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const isMatch = await user.matchPassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error("UPDATE PASSWORD ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to update password",
+    });
+  }
+};
+
+// ===============================
+// GET ALL USERS (Admin)
+// GET /api/admin/users
+// ===============================
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({ role: { $ne: "admin" } }).sort({ createdAt: -1 });
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users.map(u => ({
+        _id: u._id,
+        id: u._id,
+        name: u.name || "",
+        email: u.email || "",
+        phone: u.phone || "",
+        role: u.role || "user",
+        isVerified: u.isVerified || false,
+        createdAt: u.createdAt,
+      })),
+    });
+  } catch (error) {
+    console.error("GET ALL USERS ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+    });
+  }
+};
+
+// ===============================
+// DELETE USER (Admin)
+// DELETE /api/admin/users/:id
+// ===============================
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    await user.deleteOne();
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    console.error("DELETE USER ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete user",
+    });
+  }
+};

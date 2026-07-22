@@ -123,19 +123,27 @@ const AdminTestimonials = () => {
   const fetchTestimonials = async () => {
     try {
       setLoadingList(true);
-      const response = await API.get('/testimonials/admin/all');
-      const list = response.data?.data;
-      if (list && Array.isArray(list)) {
+      let list = [];
+      try {
+        const response = await API.get('/testimonials/admin/all');
+        list = response.data?.data || [];
+      } catch (adminErr) {
+        console.warn("Failed to fetch admin testimonials, attempting public endpoint fallback.", adminErr);
+        const fallbackRes = await API.get('/testimonials');
+        list = fallbackRes.data?.data || [];
+      }
+
+      if (Array.isArray(list)) {
         const normalized = list.map(t => ({
           ...t,
-          id: t._id,
-          name: t.customerName,
-          org: t.organization || '',
+          id: t._id || t.id,
+          name: t.customerName || t.name || 'Anonymous Customer',
+          org: t.organization || t.org || '',
           rating: t.rating || 5,
-          status: t.status === 'active' ? 'Approved' : 'Pending',
+          status: (t.status === 'active' || t.status === 'Approved') ? 'Approved' : 'Pending',
           review: t.review || '',
-          time: t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'Recently',
-          img: t.image || ''
+          time: t.createdAt ? new Date(t.createdAt).toLocaleDateString() : (t.time || 'Recently'),
+          img: t.image || t.img || ''
         }));
         setTestimonials(normalized);
       }
@@ -176,6 +184,7 @@ const AdminTestimonials = () => {
   const [viewingTestimonial, setViewingTestimonial] = useState(null);
   const [editingTestimonial, setEditingTestimonial] = useState(null);
   const [addingTestimonial, setAddingTestimonial] = useState(null);
+  const [deletingTestimonial, setDeletingTestimonial] = useState(null);
 
   // Stats Counters
   const totalReviews = testimonials.length;
@@ -221,19 +230,27 @@ const AdminTestimonials = () => {
   };
 
   // ── Delete: DELETE on backend, then refetch ──
-  const handleDelete = async (id, e) => {
-    if (e) e.stopPropagation();
-    if (!window.confirm("Are you sure you want to delete this testimonial?")) return;
+  const confirmDelete = async () => {
+    if (!deletingTestimonial) return;
+    const id = deletingTestimonial.id;
     try {
       await API.delete(`/testimonials/${id}`);
       toast.success("Testimonial deleted successfully!");
       if (viewingTestimonial?.id === id) setViewingTestimonial(null);
       if (editingTestimonial?.id === id) setEditingTestimonial(null);
+      setDeletingTestimonial(null);
       await fetchTestimonials();
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Failed to delete testimonial from server.");
     }
+  };
+
+  const handleDelete = (idOrObj, e) => {
+    if (e) e.stopPropagation();
+    const item = typeof idOrObj === "object" ? idOrObj : testimonials.find((t) => t.id === idOrObj);
+    if (item) setDeletingTestimonial(item);
+    else if (idOrObj) setDeletingTestimonial({ id: idOrObj, name: "Testimonial" });
   };
 
   // ── Edit: PUT to backend (was previously local-state only — now fixed) ──
@@ -883,7 +900,7 @@ const AdminTestimonials = () => {
                                   </svg>
                                 </button>
                                 <button
-                                  onClick={() => handleDelete(t.id)}
+                                  onClick={(e) => handleDelete(t.id, e)}
                                   style={{
                                     background: "rgba(10,127,110,0.07)",
                                     border: "1px solid rgba(10,127,110,0.2)",
@@ -978,7 +995,7 @@ const AdminTestimonials = () => {
                                 </svg>
                               </button>
                               <button
-                                onClick={() => handleDelete(t.id)}
+                                onClick={(e) => handleDelete(t.id, e)}
                                 style={{
                                   background: "rgba(10,127,110,0.05)",
                                   border: "1px solid rgba(10,127,110,0.15)",
@@ -1165,7 +1182,7 @@ const AdminTestimonials = () => {
                     Edit Info
                   </button>
                   <button
-                    onClick={() => handleDelete(viewingTestimonial.id)}
+                    onClick={(e) => handleDelete(viewingTestimonial.id, e)}
                     style={{
                       background: "rgba(10,127,110,0.07)",
                       border: "1px solid rgba(10,127,110,0.25)",
@@ -1512,6 +1529,96 @@ const AdminTestimonials = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* ── Custom Delete Confirmation Modal ── */}
+        {deletingTestimonial && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.8)",
+              zIndex: 350,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "16px",
+              backdropFilter: "blur(6px)",
+            }}
+            onClick={() => setDeletingTestimonial(null)}
+          >
+            <div
+              style={{
+                background: "#0d1b2a",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                borderRadius: "16px",
+                width: "100%",
+                maxWidth: "420px",
+                padding: "24px",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+                textAlign: "center",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  background: "rgba(239, 68, 68, 0.15)",
+                  color: "#ef4444",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 16px",
+                }}
+              >
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                </svg>
+              </div>
+              <h3 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "17px", fontWeight: 700, color: "#fff", marginBottom: "8px" }}>
+                Delete Testimonial?
+              </h3>
+              <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.6)", marginBottom: "20px" }}>
+                Are you sure you want to delete testimonial by <strong>"{deletingTestimonial.name}"</strong>? This action cannot be undone.
+              </p>
+              <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+                <button
+                  onClick={() => setDeletingTestimonial(null)}
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    padding: "9px 20px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  style={{
+                    background: "linear-gradient(135deg, #ef4444, #dc2626)",
+                    border: "none",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    padding: "9px 20px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    boxShadow: "0 4px 14px rgba(239, 68, 68, 0.4)",
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         )}

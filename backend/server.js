@@ -104,6 +104,11 @@ app.use(
   userRoutes
 );
 
+app.use(
+  "/api/admin/users",
+  userRoutes
+);
+
 // GET /api/addresses
 app.use(
   "/api/addresses",

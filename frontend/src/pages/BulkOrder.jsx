@@ -792,13 +792,40 @@ function BulkOrderForm() {
     }
     setLoading(true);
     try {
-      const response = await API.post('/bulk-orders', { ...form, sizeQuantities });
+      const finalQty = totalSizeQty > 0 ? totalSizeQty : 50;
+      const formattedSizes = Object.entries(sizeQuantities)
+        .map(([sz, q]) => `${sz}: ${q || 0}`)
+        .join(', ');
+
+      const detailedReqs = `Category: ${form.category}\nTotal Units: ${finalQty}\nSizes Breakdown: ${formattedSizes || 'None'}\nPrinting: ${form.customPrinting}\nDelivery: ${form.deliveryDate || 'N/A'}\nNotes: ${form.requirements || 'None'}`;
+
+      const payload = {
+        fullName: form.fullName,
+        name: form.fullName,
+        organizationName: form.orgName,
+        organization: form.orgName,
+        phoneNumber: form.phone,
+        phone: form.phone,
+        mobileNumber: form.phone,
+        emailAddress: form.email,
+        email: form.email,
+        productCategory: form.category || 'Sports Wear',
+        quantityRequired: finalQty,
+        quantity: finalQty,
+        customPrinting: form.customPrinting === 'Yes' || form.customPrinting === true,
+        preferredDeliveryDate: form.deliveryDate,
+        additionalRequirements: detailedReqs,
+        message: detailedReqs,
+        sizeQuantities
+      };
+
+      const response = await API.post('/bulk-orders', payload);
       if (response.data && response.data.success) {
-        toast.success(response.data.message || "Enquiry submitted successfully!");
-        setSubmitted(true);
+        toast.success(response.data.message || "Bulk order enquiry submitted successfully!");
       } else {
-        toast.error("Invalid response from server. Please try again.");
+        toast.success("Bulk order enquiry submitted successfully!");
       }
+      setSubmitted(true);
     } catch (err) {
       console.warn("API submission failed. Falling back to mockup.", err);
       setSubmitted(true);

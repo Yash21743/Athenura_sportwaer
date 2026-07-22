@@ -24,13 +24,20 @@ exports.createInquiry = async (req, res, next) => {
       }
     }
 
+    let finalQty = req.body.quantityRequired || quantity;
+    if (req.body.sizeQuantities && typeof req.body.sizeQuantities === 'object') {
+      const sumSizes = Object.values(req.body.sizeQuantities).reduce((acc, v) => acc + (parseInt(v, 10) || 0), 0);
+      if (sumSizes > 0) finalQty = sumSizes;
+    }
+    if (!finalQty || isNaN(finalQty)) finalQty = 1;
+
     const inquiry = await Inquiry.create({
       name: name.trim(),
       mobileNumber,
       email: email.trim().toLowerCase(),
       productName: productName ? productName.trim() : '',
       product: productId || undefined,
-      quantity: quantity ? parseInt(quantity) : undefined,
+      quantity: parseInt(finalQty, 10),
       message: message ? message.trim() : '',
       status: 'new',
     });
@@ -95,8 +102,9 @@ exports.updateInquiry = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Inquiry not found' });
     }
 
-    const validStatuses = ['new', 'contacted', 'in-progress', 'quoted', 'converted', 'closed', 'spam'];
-    if (status && !validStatuses.includes(status)) {
+    const validStatuses = ['new', 'contacted', 'in-progress', 'quoted', 'converted', 'closed', 'pending', 'spam'];
+    const statusLower = status ? status.toLowerCase() : undefined;
+    if (statusLower && !validStatuses.includes(statusLower)) {
       return res.status(400).json({
         success: false,
         message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
@@ -106,7 +114,7 @@ exports.updateInquiry = async (req, res, next) => {
     inquiry = await Inquiry.findByIdAndUpdate(
       req.params.id,
       {
-        status: status || inquiry.status,
+        status: statusLower || inquiry.status,
         adminNotes: adminNotes !== undefined ? adminNotes : inquiry.adminNotes,
         followUpDate: followUpDate || inquiry.followUpDate,
       },

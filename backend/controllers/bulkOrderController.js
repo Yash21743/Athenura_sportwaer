@@ -9,10 +9,9 @@ exports.createBulkOrder = async (req, res, next) => {
     const organizationName = req.body.organizationName || req.body.orgName;
     const phoneNumber = req.body.phoneNumber || req.body.phone;
     const emailAddress = req.body.emailAddress || req.body.email;
-    const productCategory = req.body.productCategory || req.body.category;
-    const quantityRequired = req.body.quantityRequired || req.body.quantity;
+    const productCategory = req.body.productCategory || req.body.category || 'Sports Wear';
     const preferredDeliveryDate = req.body.preferredDeliveryDate || req.body.deliveryDate;
-    const additionalRequirements = req.body.additionalRequirements || req.body.requirements;
+    const additionalRequirements = req.body.additionalRequirements || req.body.requirements || req.body.message;
 
     let customPrinting = false;
     const customPrintingRaw = req.body.customPrinting;
@@ -24,10 +23,17 @@ exports.createBulkOrder = async (req, res, next) => {
       }
     }
 
-    if (!fullName || !phoneNumber || !emailAddress || !productCategory || !quantityRequired) {
+    let quantityRequired = req.body.quantityRequired || req.body.quantity;
+    if (req.body.sizeQuantities && typeof req.body.sizeQuantities === 'object') {
+      const sumSizes = Object.values(req.body.sizeQuantities).reduce((acc, v) => acc + (parseInt(v, 10) || 0), 0);
+      if (sumSizes > 0) quantityRequired = sumSizes;
+    }
+    if (!quantityRequired || isNaN(quantityRequired)) quantityRequired = 1;
+
+    if (!fullName || !phoneNumber || !emailAddress) {
       return res.status(400).json({
         success: false,
-        message: 'Full name, phone number, email, product category, and quantity are required',
+        message: 'Full name, phone number, and email are required',
       });
     }
 
@@ -37,7 +43,7 @@ exports.createBulkOrder = async (req, res, next) => {
       phoneNumber,
       emailAddress: emailAddress.trim().toLowerCase(),
       productCategory,
-      quantityRequired: parseInt(quantityRequired),
+      quantityRequired: parseInt(quantityRequired, 10),
       customPrinting,
       preferredDeliveryDate: preferredDeliveryDate || undefined,
       additionalRequirements: additionalRequirements ? additionalRequirements.trim() : '',
@@ -104,8 +110,9 @@ exports.updateBulkOrder = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Bulk order not found' });
     }
 
-    const validStatuses = ['pending', 'reviewing', 'quoted', 'confirmed', 'in-production', 'shipped', 'delivered', 'cancelled'];
-    if (status && !validStatuses.includes(status)) {
+    const validStatuses = ['pending', 'reviewing', 'quoted', 'confirmed', 'in-production', 'shipped', 'delivered', 'completed', 'cancelled'];
+    const statusLower = status ? status.toLowerCase() : undefined;
+    if (statusLower && !validStatuses.includes(statusLower)) {
       return res.status(400).json({
         success: false,
         message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
@@ -115,7 +122,7 @@ exports.updateBulkOrder = async (req, res, next) => {
     order = await BulkOrder.findByIdAndUpdate(
       req.params.id,
       {
-        status: status || order.status,
+        status: statusLower || order.status,
         adminNotes: adminNotes !== undefined ? adminNotes : order.adminNotes,
         quotedPrice: quotedPrice ? parseFloat(quotedPrice) : order.quotedPrice,
       },

@@ -11,7 +11,7 @@ const { uploadSingle } = require('../middleware/upload');
 router.get('/', getTestimonials);
 router.get('/admin/all', protect, getAdminTestimonials);
 router.get('/:id', protect, getTestimonial);
-router.post('/', protect, uploadSingle, createTestimonial);
+router.post('/', uploadSingle, createTestimonial);
 router.put('/:id', protect, uploadSingle, updateTestimonial);
 router.delete('/:id', protect, deleteTestimonial);
 

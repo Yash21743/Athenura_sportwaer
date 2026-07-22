@@ -283,7 +283,20 @@ const KidsProducts = () => {
           list.length > 0 &&
           list[0]._id
         ) {
-          setProducts(list.filter((p) => p.status !== 'inactive'));
+          const normalized = list
+            .filter((p) => p.status !== 'inactive')
+            .map((p) => ({
+              ...p,
+              code: p.productCode || p.code || '',
+              sizes: p.availableSizes || p.sizes || [],
+              colors: p.availableColors || p.colors || [],
+              images: (p.images || []).map((img) =>
+                typeof img === 'object' && img !== null ? img.url : img
+              ),
+              category: typeof p.category === 'object' && p.category ? p.category.name : p.category,
+              stockStatus: p.stockStatus || (p.inStock ? 'In Stock' : 'Out of Stock'),
+            }));
+          setProducts(normalized);
         } else throw new Error('Empty or invalid response');
       } catch {
         setProducts(mockProducts);

@@ -1,4 +1,5 @@
 const Contact = require('../models/Contact');
+const Inquiry = require('../models/Inquiry');
 const { sendContactNotification, sendContactAckToUser } = require('../utils/emailService');
 const { buildFilter, buildPagination, paginationMeta } = require('../utils/helpers');
 
@@ -18,6 +19,20 @@ exports.createContact = async (req, res, next) => {
       message: message.trim(),
       status: 'unread',
     });
+
+    // ✅ Also save to Inquiry model so contact form queries appear under Leads in Admin Dashboard
+    try {
+      await Inquiry.create({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        mobileNumber: phone && phone.trim() ? phone.trim() : '0000000000',
+        productName: subject ? `Contact Form: ${subject.trim()}` : 'General Contact Form Query',
+        message: message.trim(),
+        status: 'new',
+      });
+    } catch (inquiryErr) {
+      console.error('Failed to create Inquiry lead from contact form:', inquiryErr.message);
+    }
 
     try {
       await sendContactNotification(contact);

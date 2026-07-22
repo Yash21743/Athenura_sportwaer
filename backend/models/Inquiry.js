@@ -10,9 +10,8 @@ const inquirySchema = new mongoose.Schema({
   },
   mobileNumber: {
     type: String,
-    required: [true, 'Mobile number is required'],
     trim: true,
-    match: [/^[0-9]{10,15}$/, 'Please provide a valid mobile number'],
+    default: 'N/A',
   },
   email: {
     type: String,
@@ -40,7 +39,7 @@ const inquirySchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['new', 'contacted', 'in-progress', 'quoted', 'converted', 'closed', 'spam'],
+    enum: ['new', 'contacted', 'in-progress', 'quoted', 'converted', 'closed', 'pending', 'spam'],
     default: 'new',
   },
   adminNotes: {

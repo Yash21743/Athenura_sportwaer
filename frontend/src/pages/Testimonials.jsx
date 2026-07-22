@@ -950,26 +950,48 @@ export default function TestimonialsPage() {
                     </div>
                     <div className="tm-user-profile">
                       {(() => {
-                        const idNum = Number(item.id) || 0;
-                        const fallbackHashes = [
-                          "1534528741775-53994a69daeb",
-                          "1517841905240-472988babdf9",
-                          "1507003211169-0a1dd7228f2d",
-                          "1500648767791-00dcc994a43e",
-                          "1494790108377-be9c29b29330",
-                          "1539571696357-5a69c17a67c6",
-                          "1506794778202-cad84cf45f1d",
-                          "1438761681033-6461ffad8d80",
-                          "1507003211169-0a1dd7228f2d",
-                          "1544005313-94ddf0286df2",
-                          "1506794778202-cad84cf45f1d",
-                          "1573496359142-b8d87734a5a2"
+                        if (item.img && typeof item.img === "string" && item.img.startsWith("http")) {
+                          return <img className="tm-avatar" src={item.img} alt={item.name} loading="lazy" />;
+                        }
+
+                        const nameStr = (item.name || "Customer").trim();
+                        const initial = nameStr.charAt(0).toUpperCase() || "A";
+                        const colors = [
+                          { bg: "linear-gradient(135deg, #14a889, #0a3d33)", color: "#ffffff", border: "rgba(20,168,137,0.4)" },
+                          { bg: "linear-gradient(135deg, #3B82F6, #1d4ed8)", color: "#ffffff", border: "rgba(59,130,246,0.4)" },
+                          { bg: "linear-gradient(135deg, #8B5CF6, #6d28d9)", color: "#ffffff", border: "rgba(139,92,246,0.4)" },
+                          { bg: "linear-gradient(135deg, #F59E0B, #b45309)", color: "#ffffff", border: "rgba(245,158,11,0.4)" },
+                          { bg: "linear-gradient(135deg, #EC4899, #be185d)", color: "#ffffff", border: "rgba(236,72,153,0.4)" },
                         ];
-                        const hash = fallbackHashes[idNum % fallbackHashes.length];
-                        const avatarUrl = (item.img && typeof item.img === "string" && item.img.startsWith("http")) 
-                          ? item.img 
-                          : `https://images.unsplash.com/photo-${hash}?w=120&q=80&fit=crop`;
-                        return <img className="tm-avatar" src={avatarUrl} alt={item.name} loading="lazy" />;
+                        let charCodeSum = 0;
+                        for (let i = 0; i < nameStr.length; i++) {
+                          charCodeSum += nameStr.charCodeAt(i);
+                        }
+                        const scheme = colors[charCodeSum % colors.length];
+
+                        return (
+                          <div
+                            className="tm-avatar-initial"
+                            style={{
+                              width: "44px",
+                              height: "44px",
+                              borderRadius: "50%",
+                              background: scheme.bg,
+                              color: scheme.color,
+                              border: `2px solid ${scheme.border}`,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontWeight: 700,
+                              fontSize: "17px",
+                              fontFamily: "'Montserrat', sans-serif",
+                              boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                              flexShrink: 0,
+                            }}
+                          >
+                            {initial}
+                          </div>
+                        );
                       })()}
                       <div className="tm-user-details">
                         <h4 className="tm-user-name">{item.name}</h4>

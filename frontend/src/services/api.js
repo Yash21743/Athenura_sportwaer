@@ -7,9 +7,13 @@ const API = axios.create({
   },
 });
 
-// ✅ Automatically attach the correct token — admin (sessionStorage) OR user (localStorage)
 API.interceptors.request.use(
   (config) => {
+    // ✅ Delete application/json Content-Type when sending FormData to allow multipart/form-data boundary creation
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+
     const adminToken = sessionStorage.getItem("csw_admin_token");
     const userToken = localStorage.getItem("csw_user_token");
 

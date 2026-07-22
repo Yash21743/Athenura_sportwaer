@@ -168,7 +168,7 @@ const AdminBulkOrders = () => {
           qty: o.quantityRequired || 0,
           printing: o.customPrinting ? 'Yes' : 'No',
           deliveryDate: o.preferredDeliveryDate ? new Date(o.preferredDeliveryDate).toISOString().split('T')[0] : '',
-          status: o.status === 'pending' ? 'New' : (o.status === 'quoted' ? 'Quoted' : 'Approved'),
+          status: o.status === 'pending' ? 'New' : (o.status === 'quoted' ? 'Quoted' : (o.status === 'completed' ? 'Completed' : (o.status === 'cancelled' ? 'Cancelled' : 'Approved'))),
           requirements: o.additionalRequirements || '',
           time: new Date(o.createdAt).toLocaleDateString() || 'Recently'
         }));
@@ -207,6 +207,7 @@ const AdminBulkOrders = () => {
   const [viewingOrder, setViewingOrder] = useState(null);
   const [editingOrder, setEditingOrder] = useState(null);
   const [addingOrder, setAddingOrder] = useState(null);
+  const [deletingOrder, setDeletingOrder] = useState(null);
 
   useEffect(() => {
     if (orders.length > 0) {
@@ -244,6 +245,9 @@ const AdminBulkOrders = () => {
     let apiStatus = 'pending';
     if (newStatus === 'Quoted') apiStatus = 'quoted';
     else if (newStatus === 'Approved') apiStatus = 'confirmed';
+    else if (newStatus === 'Completed') apiStatus = 'completed';
+    else if (newStatus === 'Cancelled') apiStatus = 'cancelled';
+    else if (newStatus === 'New') apiStatus = 'pending';
 
     try {
       await API.put(`/bulk-orders/${id}`, { status: apiStatus });
@@ -262,23 +266,31 @@ const AdminBulkOrders = () => {
     }
   };
 
-  const handleDelete = async (id, e) => {
-    if (e) e.stopPropagation();
-    if (window.confirm("Are you sure you want to delete this bulk order request?")) {
-      try {
-        await API.delete(`/bulk-orders/${id}`);
-        toast.success("Bulk order deleted!");
-        fetchOrders();
-        if (viewingOrder?.id === id) setViewingOrder(null);
-        if (editingOrder?.id === id) setEditingOrder(null);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to delete order from server.");
-        setOrders((prev) => prev.filter((o) => o.id !== id));
-        if (viewingOrder?.id === id) setViewingOrder(null);
-        if (editingOrder?.id === id) setEditingOrder(null);
-      }
+  const confirmDelete = async () => {
+    if (!deletingOrder) return;
+    const id = deletingOrder.id;
+    try {
+      await API.delete(`/bulk-orders/${id}`);
+      toast.success("Bulk order deleted!");
+      fetchOrders();
+      if (viewingOrder?.id === id) setViewingOrder(null);
+      if (editingOrder?.id === id) setEditingOrder(null);
+      setDeletingOrder(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete order from server.");
+      setOrders((prev) => prev.filter((o) => o.id !== id));
+      if (viewingOrder?.id === id) setViewingOrder(null);
+      if (editingOrder?.id === id) setEditingOrder(null);
+      setDeletingOrder(null);
     }
+  };
+
+  const handleDelete = (idOrObj, e) => {
+    if (e) e.stopPropagation();
+    const item = typeof idOrObj === "object" ? idOrObj : orders.find((o) => o.id === idOrObj);
+    if (item) setDeletingOrder(item);
+    else if (idOrObj) setDeletingOrder({ id: idOrObj, name: "Bulk Order" });
   };
 
   const handleEditSubmit = (e) => {
@@ -913,7 +925,7 @@ const AdminBulkOrders = () => {
                               </svg>
                             </button>
                             <button
-                              onClick={() => handleDelete(o.id)}
+                              onClick={(e) => handleDelete(o.id, e)}
                               style={{
                                 background: "rgba(10,127,110,0.07)",
                                 border: "1px solid rgba(10,127,110,0.2)",
@@ -1017,7 +1029,7 @@ const AdminBulkOrders = () => {
                             </svg>
                           </button>
                           <button
-                            onClick={() => handleDelete(o.id)}
+                            onClick={(e) => handleDelete(o.id, e)}
                             style={{
                               background: "rgba(10,127,110,0.05)",
                               border: "1px solid rgba(10,127,110,0.15)",
@@ -1240,7 +1252,7 @@ const AdminBulkOrders = () => {
                     Edit Order
                   </button>
                   <button
-                    onClick={() => handleDelete(viewingOrder.id)}
+                    onClick={(e) => handleDelete(viewingOrder.id, e)}
                     style={{
                       background: "rgba(10,127,110,0.07)",
                       border: "1px solid rgba(10,127,110,0.25)",
@@ -1734,6 +1746,96 @@ const AdminBulkOrders = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* ── Custom Delete Confirmation Modal ── */}
+        {deletingOrder && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.8)",
+              zIndex: 350,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "16px",
+              backdropFilter: "blur(6px)",
+            }}
+            onClick={() => setDeletingOrder(null)}
+          >
+            <div
+              style={{
+                background: "#0d1b2a",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                borderRadius: "16px",
+                width: "100%",
+                maxWidth: "420px",
+                padding: "24px",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
+                textAlign: "center",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  background: "rgba(239, 68, 68, 0.15)",
+                  color: "#ef4444",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 16px",
+                }}
+              >
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                </svg>
+              </div>
+              <h3 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "17px", fontWeight: 700, color: "#fff", marginBottom: "8px" }}>
+                Delete Bulk Order?
+              </h3>
+              <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.6)", marginBottom: "20px" }}>
+                Are you sure you want to delete order for <strong>"{deletingOrder.name || deletingOrder.productCategory || 'Bulk Order'}"</strong>? This action cannot be undone.
+              </p>
+              <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+                <button
+                  onClick={() => setDeletingOrder(null)}
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    padding: "9px 20px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  style={{
+                    background: "linear-gradient(135deg, #ef4444, #dc2626)",
+                    border: "none",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    padding: "9px 20px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    boxShadow: "0 4px 14px rgba(239, 68, 68, 0.4)",
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         )}

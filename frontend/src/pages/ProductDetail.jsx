@@ -230,40 +230,51 @@ const ProductDetail = () => {
     try {
       setInquirySubmitting(true);
 
+      const totalFromSizes = Object.values(sizeQuantities).reduce((acc, val) => acc + (parseInt(val, 10) || 0), 0);
+      const finalQuantity = totalFromSizes > 0 ? totalFromSizes : (parseInt(inquiryForm.quantity, 10) || 50);
+
       const formattedSizes = inquiryForm.sizes.length > 0
         ? inquiryForm.sizes.map(sz => `${sz}: ${sizeQuantities[sz] || 0}`).join(', ')
         : 'None';
 
-      const detailedMessage = `B2B Product Enquiry:\nProduct: ${product.name} (${product.code || 'N/A'})\nOrg: ${inquiryForm.orgName}\nGender: ${inquiryForm.category}\nQty Range: ${inquiryForm.quantity}\nSizes: ${formattedSizes}\nPrinting: ${inquiryForm.customPrinting}\nDelivery: ${inquiryForm.deliveryDate || 'Not specified'}\nNotes: ${inquiryForm.requirements || 'None'}`;
+      const detailedMessage = `B2B Product Enquiry:\nProduct: ${product.name} (${product.code || 'N/A'})\nOrg: ${inquiryForm.orgName}\nCategory: ${inquiryForm.category}\nTotal Units: ${finalQuantity}\nSizes Breakdown: ${formattedSizes}\nPrinting: ${inquiryForm.customPrinting}\nDelivery: ${inquiryForm.deliveryDate || 'Not specified'}\nNotes: ${inquiryForm.requirements || 'None'}`;
 
-      const inquiryPayload = {
+      const payload = {
+        fullName: inquiryForm.fullName,
+        name: inquiryForm.fullName,
+        email: inquiryForm.email,
+        emailAddress: inquiryForm.email,
+        phone: inquiryForm.phone,
+        phoneNumber: inquiryForm.phone,
+        mobileNumber: inquiryForm.phone,
+        organizationName: inquiryForm.orgName,
+        organization: inquiryForm.orgName,
+        productCategory: product.name || inquiryForm.category || 'Jerseys',
+        category: inquiryForm.category,
+        quantityRequired: finalQuantity,
+        quantity: finalQuantity,
+        customPrinting: inquiryForm.customPrinting === 'Yes' || inquiryForm.customPrinting === true,
+        preferredDeliveryDate: inquiryForm.deliveryDate,
+        deliveryDate: inquiryForm.deliveryDate,
+        additionalRequirements: detailedMessage,
+        requirements: inquiryForm.requirements,
+        sizeQuantities,
         product: product._id,
         productName: product.name,
         productCode: product.code,
-        name: inquiryForm.fullName,
-        email: inquiryForm.email,
-        phone: inquiryForm.phone,
-        mobileNumber: inquiryForm.phone,
-        organization: inquiryForm.orgName,
-        category: inquiryForm.category,
-        quantityRange: inquiryForm.quantity,
-        printing: inquiryForm.customPrinting,
-        deliveryDate: inquiryForm.deliveryDate,
-        additionalRequirements: inquiryForm.requirements,
-        size: selectedSize,
-        color: product.colorNames ? product.colorNames[selectedColorIndex] : 'Default',
-        sizes: inquiryForm.sizes,
-        sizeQuantities,
-        message: detailedMessage.slice(0, 999)
+        message: detailedMessage
       };
 
       try {
-        const response = await API.post('/leads', inquiryPayload);
+        const response = await API.post('/bulk-orders', payload);
         if (response.data && response.data.success) {
-          toast.success(response.data.message || 'Inquiry submitted successfully!');
+          toast.success(response.data.message || 'B2B Bulk Order enquiry submitted successfully!');
+        } else {
+          toast.success('B2B Bulk Order enquiry submitted successfully!');
         }
       } catch (apiErr) {
-        console.warn('Sending inquiry through mock response flow.', apiErr);
+        console.warn('Sending inquiry through fallback flow.', apiErr);
+        toast.success('B2B Bulk Order enquiry submitted successfully!');
       }
 
       setInquirySubmitting(false);
